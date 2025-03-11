@@ -37,7 +37,7 @@ const FeaturedProducts = () => {
   const { addToCart } = useCart();
   const [notifications, setNotifications] = useState<{id: number, productId: number}[]>([]);
 
-  const handleAddToCart = (product: any) => {
+  const handleAddToCart = (product: Product) => {
     // Ajouter au panier et ouvrir le panier
     addToCart(product, true);
     

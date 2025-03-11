@@ -45,8 +45,8 @@ const ConfirmationPage = () => {
               <h2 className="text-lg font-medium text-amber-800 mb-2">Informations importantes</h2>
               <ul className="text-sm text-amber-700 list-disc list-inside space-y-1">
                 <li>Votre commande sera préparée fraîchement pour le jour de retrait choisi</li>
-                <li>Merci de vous présenter avec une pièce d'identité</li>
-                <li>Le paiement s'effectue sur place (CB, espèces)</li>
+                <li>Merci de vous présenter avec une pièce d&apos;identité</li>
+                <li>Le paiement s&apos;effectue sur place (CB, espèces)</li>
                 <li>Nous vous avons envoyé un récapitulatif par email</li>
               </ul>
             </div>
@@ -56,14 +56,14 @@ const ConfirmationPage = () => {
                 href="/"
                 className="inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
               >
-                Retour à l'accueil
+                Retour à l&apos;accueil
               </Link>
               
               <Link
                 href="/boutique"
                 className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
               >
-                Découvrir d'autres produits
+                Découvrir d&apos;autres produits
               </Link>
             </div>
           </div>
