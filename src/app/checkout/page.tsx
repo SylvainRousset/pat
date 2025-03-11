@@ -151,15 +151,13 @@ const CheckoutPage = () => {
                             <Image
                               src={item.image}
                               alt={item.name}
-                              fill
+                              width={80}
+                              height={80}
                               priority
-                              style={{ objectFit: 'cover' }}
+                              quality={90}
                               sizes="80px"
-                              onLoadingComplete={(img) => {
-                                // Force un re-rendu quand l'image est chargée
-                                img.style.opacity = "1";
-                              }}
-                              className="opacity-0 transition-opacity duration-200"
+                              className="h-full w-full object-cover"
+                              unoptimized
                             />
                           </div>
                           <div className="ml-4 flex flex-1 flex-col">
