@@ -66,13 +66,13 @@ const AboutSection = () => {
             <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
               <span className="text-gray-400">Image de pâtisserie</span>
             </div>
-            {/* Commenté car l'image n'existe pas encore */}
-            {/* <Image
-              src="/about-patisserie.jpg"
+            
+            <Image
+              src="/images/logo_coquelicot.avif"
               alt="Nos créations pâtissières"
               fill
               style={{ objectFit: 'cover' }}
-            /> */}
+            /> 
           </div>
         </div>
       </div>
