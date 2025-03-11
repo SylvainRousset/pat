@@ -7,7 +7,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
 import DatePicker, { registerLocale } from 'react-datepicker';
-import fr from 'date-fns/locale/fr';
+import { fr } from 'date-fns/locale/fr';
 import "react-datepicker/dist/react-datepicker.css";
 
 // Enregistrer la locale française
