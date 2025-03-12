@@ -9,7 +9,7 @@ import Footer from '@/components/Footer';
 
 // Données fictives pour démo - à remplacer par des données dynamiques réelles
 const productData = {
-  id: '2',
+  id: 2,
   name: 'La Boîte à FlowerCake',
   price: '€24.00',
   portions: '12 mignardises',
@@ -46,7 +46,7 @@ export default function ProductDetail() {
       name: productData.name,
       price: productData.price,
       image: productData.images[0] || '/images/placeholder.jpg',
-      quantity: 1
+      slug: `/produit/${productData.id}`
     });
   };
 

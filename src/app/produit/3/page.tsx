@@ -9,7 +9,7 @@ import Footer from '@/components/Footer';
 
 // Données du produit "La Boîte Revisitée"
 const productData = {
-  id: '3',
+  id: 3,
   name: 'La Boîte à Revisite',
   subtitle: 'Revisite du Paris-Brest',
   price: '€20.00',
@@ -51,7 +51,7 @@ export default function ProductDetail() {
       name: productData.name,
       price: productData.price,
       image: productData.images[0] || '/images/placeholder.jpg',
-      quantity: 1
+      slug: `/produit/${productData.id}`
     });
   };
 

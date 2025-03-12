@@ -9,7 +9,7 @@ import Footer from '@/components/Footer';
 
 // Données du produit "La Boîte à Choux"
 const productData = {
-  id: '1',
+  id: 1,
   name: 'La Boîte à Choux',
   price: '18 €',
   portions: '12 mignardises',
@@ -47,7 +47,7 @@ export default function ProductDetail() {
       name: productData.name,
       price: productData.price,
       image: productData.images[0] || '/images/placeholder.jpg',
-      quantity: 1
+      slug: `/produit/${productData.id}`
     });
   };
 
