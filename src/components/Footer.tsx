@@ -9,12 +9,12 @@ const Footer = () => {
           {/* Logo et description */}
           <div className="col-span-1">
           <Link href="/">
-                <img
+                <Image
                   src="/images/logo_coquelicot.avif"
                   alt="Pâtisserie Logo"
                   width={150}
-                  height={150}
-                  className="object-contain"
+                  height={100}
+                  className="h-auto"
                 />
               </Link>
             <p className="text-gray-300 text-sm">
