@@ -1,3 +1,5 @@
+
+
 const Hero = () => {
   return (
     <div className="relative w-full h-[600px] overflow-hidden">
@@ -29,7 +31,7 @@ const Hero = () => {
           Pâtisserie Événementielle Élégante
         </h1>
         <p className="text-xl md:text-2xl mb-8 max-w-2xl">
-          L&apos;art de sublimer vos moments gourmands avec délicatesse et poésie.
+          L'art de sublimer vos moments gourmands avec délicatesse et poésie.
         </p>
         
       </div>

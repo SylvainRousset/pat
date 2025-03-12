@@ -80,7 +80,7 @@ const Cart = () => {
                           <div>
                             <div className="flex justify-between text-base font-medium text-gray-900">
                               <h3>
-                                <Link href={item.slug} className="hover:text-amber-600">
+                                <Link href={`/produit/${item.id}`} className="hover:text-amber-600">
                                   {item.name}
                                 </Link>
                               </h3>

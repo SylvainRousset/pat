@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 const AboutSection = () => {
   return (
@@ -9,12 +10,12 @@ const AboutSection = () => {
             <div className="text-center md:text-left">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Bienvenue chez Coquelicot</h2>
               <p className="text-xl md:text-2xl text-amber-700 italic mb-6">
-                L&apos;atelier sucré qui sublime vos envies !
+                L'atelier sucré qui sublime vos envies !
               </p>
             </div>
 
             <p className="text-gray-700 leading-relaxed">
-              Chez Coquelicot, je créé des douceurs artisanales pensées pour tous vos plaisirs sucrés, qu&apos;ils soient du quotidien ou des grands moments à célébrer.
+              Chez Coquelicot, je créé des douceurs artisanales pensées pour tous vos plaisirs sucrés, qu'ils soient du quotidien ou des grands moments à célébrer.
             </p>
 
             <p className="text-gray-700 leading-relaxed font-medium">
@@ -31,7 +32,7 @@ const AboutSection = () => {
                   Boîte à choux, boîte à macarons et boîte à flowercakes, composées de 12 pièces aux 4 saveurs de saison. Non modifiables, elles sont idéales pour un plaisir instantané.
                 </p>
                 <p className="text-gray-700 leading-relaxed">
-                  Boîte à revisites : chaque mois, une pâtisserie classique revisitée en 4 déclinaisons, dont une fidèle à l&apos;originale, avec une touche créative et un soupçon d&apos;inspiration gastronomique. Ces boîtes peuvent également se transformer en éditions spéciales, adaptées aux événements de l&apos;année tels que la Chandeleur, la Saint-Valentin, Mardi Gras, Pâques ou la Fête des Mères.....etc, pour une expérience gourmande encore plus festive.
+                  Boîte à revisites : chaque mois, une pâtisserie classique revisitée en 4 déclinaisons, dont une fidèle à l'originale, avec une touche créative et un soupçon d'inspiration gastronomique. Ces boîtes peuvent également se transformer en éditions spéciales, adaptées aux événements de l'année tels que la Chandeleur, la Saint-Valentin, Mardi Gras, Pâques ou la Fête des Mères.....etc, pour une expérience gourmande encore plus festive.
                 </p>
               </div>
             </div>
@@ -43,7 +44,7 @@ const AboutSection = () => {
               <div className="space-y-4">
                 <p className="text-amber-700 font-medium text-sm mb-2">(Délai minimum 2 semaines)</p>
                 <p className="text-gray-700 leading-relaxed">
-                  Mariages, anniversaires, baby showers, gender reveal, événements d&apos;entreprise… Tout peut être personnalisé ! Wedding Cake, Layer Cake, pyramides de choux, plateaux gourmands, et buffet sucré : je réalise vos idées avec style et passion.
+                  Mariages, anniversaires, baby showers, gender reveal, événements d'entreprise… Tout peut être personnalisé ! Wedding Cake, Layer Cake, pyramides de choux, plateaux gourmands, et buffet sucré : je réalise vos idées avec style et passion.
                 </p>
                 <p className="text-amber-700 font-medium text-sm mb-2">(Délai 72h)</p>
                 <p className="text-gray-700 leading-relaxed">
@@ -56,6 +57,11 @@ const AboutSection = () => {
               <p className="text-gray-700 leading-relaxed">
                 Tout est disponible en ligne, prêt à être dégusté ou commandé pour vos moments précieux. Chez Coquelicot, chaque création raconte une histoire… la vôtre !
               </p>
+              <div className="mt-6 text-center md:text-left">
+                <Link href="/contact" className="inline-block bg-amber-600 hover:bg-amber-700 text-white font-medium py-3 px-6 rounded-md transition-colors">
+                  Envoyez-nous votre demande
+                </Link>
+              </div>
             </div>
 
           
@@ -65,8 +71,8 @@ const AboutSection = () => {
             <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
               <span className="text-gray-400">Image de pâtisserie</span>
             </div>
-            
-            <Image
+           
+             <Image
               src="/images/logo_coquelicot.avif"
               alt="Nos créations pâtissières"
               fill

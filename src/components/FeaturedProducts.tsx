@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useCart, CartItem } from '@/context/CartContext';
+import { useCart } from '@/context/CartContext';
 
 // Données fictives pour les produits en vedette
 const featuredProducts = [
@@ -37,7 +37,7 @@ const FeaturedProducts = () => {
   const { addToCart } = useCart();
   const [notifications, setNotifications] = useState<{id: number, productId: number}[]>([]);
 
-  const handleAddToCart = (product: Omit<CartItem, 'quantity'>) => {
+  const handleAddToCart = (product: any) => {
     // Ajouter au panier et ouvrir le panier
     addToCart(product, true);
     
@@ -62,7 +62,7 @@ const FeaturedProducts = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
-          {featuredProducts.map((product) => (
+          {featuredProducts.map((product, index) => (
             <div key={product.id} className="bg-white overflow-hidden transition-transform hover:scale-105 max-w-sm mx-auto w-full relative">
               {/* Notification d'ajout au panier */}
               {notifications.some(n => n.productId === product.id) && (
@@ -71,41 +71,42 @@ const FeaturedProducts = () => {
                 </div>
               )}
               
-              <div className="relative aspect-[4/3] w-full">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  sizes="(max-width: 768px) 90vw, (max-width: 1024px) 45vw, 30vw"
-                  quality={90}
-                  priority={product.id === 1}
-                  loading={product.id === 1 ? 'eager' : 'lazy'}
-                  className="hover:scale-110 transition-transform duration-300"
-                />
+              <div className="relative aspect-[4/3] overflow-hidden rounded-md mb-4">
+                <Link href={`/produit/${product.id}`}>
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    className="object-cover hover:scale-110 transition-transform duration-300"
+                    sizes="(max-width: 768px) 90vw, (max-width: 1024px) 45vw, 30vw"
+                    quality={90}
+                    priority={index === 0}
+                    loading={index === 0 ? "eager" : "lazy"}
+                  />
+                </Link>
               </div>
               <div className="p-2 md:p-4">
-                <h3 className="text-lg md:text-xl font-semibold mb-2">{product.name}</h3>
-                <p className="text-gray-600 mb-3 h-12 overflow-hidden text-sm md:text-base">{product.description}</p>
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-lg font-medium text-gray-900">{product.name}</h3>
+                  <span className="text-amber-600 font-semibold">{product.price}</span>
+                </div>
+                <p className="text-gray-500 text-sm mb-4">{product.description}</p>
                 <div className="flex justify-between items-center">
-                  <span className="text-amber-700 font-bold text-sm md:text-base">{product.price}</span>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleAddToCart(product)}
-                      className="bg-amber-600 hover:bg-amber-700 text-white px-2 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm transition-colors flex items-center"
-                    >
-                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                      Ajouter
-                    </button>
-                    <Link
-                      href={product.slug}
-                      className="bg-white border border-amber-600 text-amber-600 hover:bg-amber-50 px-2 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm transition-colors"
-                    >
-                      Détails
-                    </Link>
-                  </div>
+                  <button
+                    onClick={() => handleAddToCart(product)}
+                    className="bg-amber-600 hover:bg-amber-700 text-white px-2 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm transition-colors flex items-center"
+                  >
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    Ajouter
+                  </button>
+                  <Link 
+                    href={`/produit/${product.id}`}
+                    className="text-amber-600 hover:text-amber-800 font-medium text-sm transition-colors"
+                  >
+                    Détails
+                  </Link>
                 </div>
               </div>
             </div>
