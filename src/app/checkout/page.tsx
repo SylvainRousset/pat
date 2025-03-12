@@ -113,12 +113,12 @@ const CheckoutPage = () => {
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="bg-white rounded-lg shadow p-6 text-center">
               <h1 className="text-2xl font-semibold text-gray-900 mb-4">Votre panier est vide</h1>
-              <p className="text-gray-600 mb-6">Vous n'avez aucun article dans votre panier.</p>
+              <p className="text-gray-600 mb-6">Vous n&apos;avez aucun article dans votre panier.</p>
               <button
                 onClick={() => router.push('/')}
                 className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-md transition-colors"
               >
-                Retour à l'accueil
+                Retour à l&apos;accueil
               </button>
             </div>
           </div>
@@ -299,7 +299,7 @@ const CheckoutPage = () => {
                         <p className="mt-2 text-sm text-red-600">{formErrors.dateRetrait}</p>
                       )}
                       <p className="mt-3 text-sm text-gray-500">
-                        Retrait sous 48h, indiquer la date et l'heure de retrait (en fonction des heures d'ouverture du labo)
+                        Retrait sous 48h, indiquer la date et l&apos;heure de retrait (en fonction des heures d&apos;ouverture du labo)
                       </p>
                     </div>
                     

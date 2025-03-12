@@ -176,7 +176,7 @@ export default function ProductDetail() {
                     ))}
                   </ul>
                   <p className="text-gray-700 mt-4">
-                    La sensibilisation aux allergènes alimentaires est cruciale pour assurer la sécurité de tous, en particulier des personnes souffrant d'allergies sévères.
+                    La sensibilisation aux allergènes alimentaires est cruciale pour assurer la sécurité de tous, en particulier des personnes souffrant d&apos;allergies sévères.
                   </p>
                   <p className="text-gray-700 mt-4">
                     En intégrant ces précautions dans la présentation des aliments, je favorise un environnement alimentaire plus sûr et inclusif.
