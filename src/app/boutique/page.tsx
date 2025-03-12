@@ -42,7 +42,7 @@ export default function BoutiquePage() {
       name: product.name,
       price: product.price,
       image: product.image,
-      quantity: 1
+      slug: `/produit/${product.id}`
     });
     
     // Afficher la notification
