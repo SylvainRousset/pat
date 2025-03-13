@@ -456,28 +456,24 @@ L'équipe Coquelicot`,
           clientMessageId: clientResponse[0].headers['x-message-id']
         });
       } catch (error) {
-        const emailError = error as SendGridError;
-        console.error('Erreur spécifique SendGrid (commande):', emailError);
-        if (emailError.response) {
-          console.error('Détails de l\'erreur SendGrid:', JSON.stringify(emailError.response.body));
-        }
-        
+        const err = error as SendGridError;
+        console.error('Erreur générale lors de l\'envoi des emails:', err);
         return NextResponse.json(
           { 
-            error: 'Erreur lors de l\'envoi des emails de commande',
-            details: emailError.message,
-            response: emailError.response ? emailError.response.body : null
+            error: 'Erreur générale lors de l\'envoi des emails',
+            message: err.message
           },
           { status: 500 }
         );
       }
     }
-  } catch (error: any) {
-    console.error('Erreur générale lors de l\'envoi des emails:', error);
+  } catch (error) {
+    const err = error as SendGridError;
+    console.error('Erreur générale lors de l\'envoi des emails:', err);
     return NextResponse.json(
       { 
         error: 'Erreur générale lors de l\'envoi des emails',
-        message: error.message
+        message: err.message
       },
       { status: 500 }
     );

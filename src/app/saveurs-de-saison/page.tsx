@@ -17,7 +17,7 @@ export default function SaveursDeSaison() {
               <div className="prose max-w-none text-center">
                 <p className="text-lg mb-6">
                   Je vous invite à découvrir ma carte des saveurs, qui se renouvellera chaque saison avec quatre parfums uniques. 
-                  Chacun d'eux a été minutieusement élaboré à partir de produits locaux et de haute qualitée, 
+                  Chacun d&apos;eux a été minutieusement élaboré à partir de produits locaux et de haute qualitée, 
                   soigneusement sélectionnés pour garantir une expérience gustative inégalée.
                 </p>
               </div>
@@ -42,7 +42,7 @@ export default function SaveursDeSaison() {
               <div className="bg-white rounded-lg shadow-lg p-8 flex flex-col justify-center">
                 <div className="prose max-w-none">
                   <p className="mb-6">
-                    La Carte des Saisons évolue tout au long de l'année pour célébrer les saveurs de chaque saison : 
+                    La Carte des Saisons évolue tout au long de l&apos;année pour célébrer les saveurs de chaque saison : 
                     printemps, été, automne, hiver.
                   </p>
 

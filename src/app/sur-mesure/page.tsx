@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -11,13 +10,13 @@ export default function SurMesure() {
       <Navbar />
       <main className="min-h-screen bg-[#f8f5f0] py-12">
         <div className="container mx-auto px-4">
-          <section className="mb-16">
+          <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl font-bold text-center text-gray-900 mb-8">Le Sur-Mesure</h1>
             <div className="bg-white rounded-lg shadow-lg p-8 mb-12">
               <div className="prose max-w-none">
                 <p className="mb-6">Chez Coquelicot, je crois en la personnalisation et en la créativité pour vos événements spéciaux.</p>
                 
-                <p className="mb-6">Que ce soit pour un mariage, un PACS, un baptême, une baby shower, un gender reveal, un anniversaire ou même un événement d'entreprise, les créations telles que le layer cake, le wedding cake, la pyramide de choux ou buffet sucré sont entièrement adaptables.</p>
+                <p className="mb-6">Que ce soit pour un mariage, un PACS, un baptême, une baby shower, un gender reveal, un anniversaire ou même un événement d&apos;entreprise, les créations telles que le layer cake, le wedding cake, la pyramide de choux ou buffet sucré sont entièrement adaptables.</p>
                 
                 <p className="mb-6">Vous avez la liberté de choisir les saveurs et le design qui vous reflètent le mieux, dans une ambiance bohème et florale. Je ne travaille pas la pâte à sucre, privilégiant des textures, des goûts, et des créations peu sucrées. Laissez libre cours à votre imagination, et ensemble, créons des douceurs inoubliables pour chaque moment précieux de votre vie.</p>
               </div>
@@ -34,26 +33,24 @@ export default function SurMesure() {
             </div>
 
             <div className="bg-white rounded-lg shadow-lg p-8 mb-12">
-              <h2 className="text-3xl font-semibold mb-6">L'éclosion de vos moments précieux</h2>
+              <h2 className="text-3xl font-semibold mb-6">L&apos;éclosion de vos moments précieux</h2>
               <p className="mb-6">Pour vos événements uniques, je vous propose des créations sur-mesure adaptées à vos envies et à votre moment précieux. Voici comment cela fonctionne :</p>
               
               <ol className="list-decimal list-inside space-y-4 mb-8">
-                <li><strong>Prendre contact :</strong> Vous pouvez me joindre par téléphone, par e-mail (l'adresse est indiquée sur le site) ou via le formulaire de contact disponible directement en ligne.</li>
-                <li><strong>Un rendez-vous personnalisé :</strong> Si nécessaire, nous convenons ensemble d'un rendez-vous pour discuter de vos souhaits et idées. Ce moment d'échange me permet de mieux comprendre vos attentes pour votre événement.</li>
-                <li><strong>Croquis et devis :</strong> À partir de vos idées, je réalise un croquis de votre gâteau ou pièce montée, accompagné d'un devis détaillé.</li>
+                <li><strong>Prendre contact :</strong> Vous pouvez me joindre par téléphone, par e-mail (l&apos;adresse est indiquée sur le site) ou via le formulaire de contact disponible directement en ligne.</li>
+                <li><strong>Un rendez-vous personnalisé :</strong> Si nécessaire, nous convenons ensemble d&apos;un rendez-vous pour discuter de vos souhaits et idées. Ce moment d&apos;échange me permet de mieux comprendre vos attentes pour votre événement.</li>
+                <li><strong>Croquis et devis :</strong> À partir de vos idées, je réalise un croquis de votre gâteau ou pièce montée, accompagné d&apos;un devis détaillé.</li>
                 <li><strong>Validation et organisation :</strong> Une fois le devis accepté, des arrhes seront demandées pour confirmer la prestation. Nous finalisons ensuite la date et les derniers détails.</li>
               </ol>
 
               <p className="mb-6">Les créations sur-mesure sont disponibles pour les wedding cakes, layer cakes, pyramides de choux, ainsi que pour les plateaux de choux, macarons ou flower cakes, ou toute envie particulière. Chaque réalisation est pensée pour sublimer votre événement et le rendre inoubliable.</p>
               
-              <p className="mb-6">N'hésitez pas à me contacter pour donner vie à votre moment unique !</p>
+              <p className="mb-6">N&apos;hésitez pas à me contacter pour donner vie à votre moment unique !</p>
               
               <div className="bg-amber-50 border-l-4 border-amber-500 p-4">
-                <p className="text-amber-700">⚠️ Pour toute commande sur-mesure il est nécessaire de la passer au minimum 2 semaines avant la date de l'événement ! Le prix de la part commence à partir de 6€ pour les layers cake.</p>
+                <p className="text-amber-700">⚠️ Pour toute commande sur-mesure il est nécessaire de la passer au minimum 2 semaines avant la date de l&apos;événement ! Le prix de la part commence à partir de 6€ pour les layers cake.</p>
               </div>
             </div>
-
-         
 
             <h2 className="text-3xl font-semibold text-center mb-12">Les Services</h2>
             <p className="text-center text-lg mb-12">Découvrez les créations sur mesure pour tous vos événements, des gâteaux aux mignardises sucrées.</p>
@@ -104,7 +101,7 @@ export default function SurMesure() {
                 </div>
               </div>
             </div>
-          </section>
+          </div>
         </div>
       </main>
       <Footer />
