@@ -33,16 +33,6 @@ const featuredProducts = [
   },
 ];
 
-// Type pour les produits en vedette
-type FeaturedProduct = {
-  id: number;
-  name: string;
-  description: string;
-  price: string;
-  image: string;
-  slug: string;
-};
-
 const FeaturedProducts = () => {
   const { addToCart } = useCart();
   const [notifications, setNotifications] = useState<{id: number, productId: number}[]>([]);
