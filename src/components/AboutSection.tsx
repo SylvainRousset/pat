@@ -44,7 +44,7 @@ const AboutSection = () => {
               <div className="space-y-4">
                 <p className="text-amber-700 font-medium text-sm mb-2">(Délai minimum 2 semaines)</p>
                 <p className="text-gray-700 leading-relaxed">
-                  Mariages, anniversaires, baby showers, gender reveal, événements d'entreprise… Tout peut être personnalisé ! Wedding Cake, Layer Cake, pyramides de choux, plateaux gourmands, et buffet sucré : je réalise vos idées avec style et passion.
+                  Mariages, anniversaires, baby showers, gender reveal, événements d&apos;entreprise… Tout peut être personnalisé ! Wedding Cake, Layer Cake, pyramides de choux, plateaux gourmands, et buffet sucré : je réalise vos idées avec style et passion.
                 </p>
                 <p className="text-amber-700 font-medium text-sm mb-2">(Délai 72h)</p>
                 <p className="text-gray-700 leading-relaxed">
@@ -83,11 +83,11 @@ const AboutSection = () => {
             
             <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-amber-500 ml-auto max-w-[90%]">
               <div className="text-gray-700 font-normal text-sm space-y-2">
-                <p className="font-semibold text-amber-700 text-base">Bonjour, je m'appelle Julie Ferioli</p>
-                <p>Pâtissière spécialisée dans la restauration gastronomique depuis 15 ans, j'ai eu le privilège de travailler dans des établissements prestigieux de la gastronomie française et de côtoyer de grands chefs étoilés.</p>
-                <p>Aujourd'hui, je souhaite partager mon univers avec vous en proposant des créations originales qui éveilleront vos papilles. Chaque dessert que je prépare est le fruit de mes années d'expérience et de ma passion pour la pâtisserie.</p>
+                <p className="font-semibold text-amber-700 text-base">Bonjour, je m&apos;appelle Julie Ferioli</p>
+                <p>Pâtissière spécialisée dans la restauration gastronomique depuis 15 ans, j&apos;ai eu le privilège de travailler dans des établissements prestigieux de la gastronomie française et de côtoyer de grands chefs étoilés.</p>
+                <p>Aujourd&apos;hui, je souhaite partager mon univers avec vous en proposant des créations originales qui éveilleront vos papilles. Chaque dessert que je prépare est le fruit de mes années d&apos;expérience et de ma passion pour la pâtisserie.</p>
                 <p>Mon objectif est de vous offrir des saveurs uniques qui reflètent mon savoir-faire et ma vision de la gourmandise.</p>
-                <p>Rejoignez-moi dans cette aventure culinaire où l'innovation rencontre la tradition !</p>
+                <p>Rejoignez-moi dans cette aventure culinaire où l&apos;innovation rencontre la tradition !</p>
               </div>
             </div>
           </div>

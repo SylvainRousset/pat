@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useCart } from '@/context/CartContext';
+import { useCart, CartItem } from '@/context/CartContext';
 
 // Données fictives pour les produits en vedette
 const featuredProducts = [
@@ -33,11 +33,21 @@ const featuredProducts = [
   },
 ];
 
+// Type pour les produits en vedette
+type FeaturedProduct = {
+  id: number;
+  name: string;
+  description: string;
+  price: string;
+  image: string;
+  slug: string;
+};
+
 const FeaturedProducts = () => {
   const { addToCart } = useCart();
   const [notifications, setNotifications] = useState<{id: number, productId: number}[]>([]);
 
-  const handleAddToCart = (product: any) => {
+  const handleAddToCart = (product: Omit<CartItem, 'quantity'>) => {
     // Ajouter au panier et ouvrir le panier
     addToCart(product, true);
     

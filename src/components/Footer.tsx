@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 
 const Footer = () => {
   return (
@@ -39,11 +38,6 @@ const Footer = () => {
               <li>
                 <Link href="/sur-mesure" className="text-gray-300 hover:text-white transition-colors">
                   Sur Mesure
-                </Link>
-              </li>
-              <li>
-                <Link href="/a-propos" className="text-gray-300 hover:text-white transition-colors">
-                  À Propos
                 </Link>
               </li>
               <li>
