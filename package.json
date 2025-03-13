@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@sendgrid/mail": "^8.1.4",
     "@types/react-datepicker": "^7.0.0",
     "next": "15.2.1",
     "react": "^19.0.0",

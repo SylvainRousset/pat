@@ -7,7 +7,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
 import DatePicker, { registerLocale } from 'react-datepicker';
-import { fr } from 'date-fns/locale/fr';
+import fr from 'date-fns/locale/fr';
 import "react-datepicker/dist/react-datepicker.css";
 
 // Enregistrer la locale française
@@ -25,6 +25,7 @@ const CheckoutPage = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -82,7 +83,7 @@ const CheckoutPage = () => {
     return errors;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const errors = validateForm();
@@ -92,17 +93,69 @@ const CheckoutPage = () => {
     }
     
     setIsSubmitting(true);
+    setEmailError(null);
     
-    // Simuler un envoi de commande
-    setTimeout(() => {
-      // Réinitialiser le panier
+    try {
+      // Formater la date pour l'affichage
+      const formattedDate = selectedDate ? selectedDate.toLocaleDateString('fr-FR', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }) : '';
+      
+      // Préparer les données pour l'API
+      const orderData = {
+        clientInfo: formData,
+        orderDetails: {
+          dateRetrait: formattedDate,
+        },
+        cartItems: cart,
+        totalPrice: totalPrice,
+      };
+      
+      console.log("Données de commande envoyées:", JSON.stringify(orderData));
+      
+      // Appeler l'API d'envoi d'e-mails
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+      
+      const result = await response.json();
+      console.log("Réponse de l'API d'envoi d'emails:", result);
+      
+      if (!response.ok) {
+        console.error("Erreur détaillée:", result);
+        throw new Error(result.error || result.details || 'Une erreur est survenue lors de l\'envoi des e-mails');
+      }
+      
+      // Si tout s'est bien passé, réinitialiser le panier et rediriger
       clearCart();
-      
-      // Rediriger vers une page de confirmation
       router.push('/checkout/confirmation');
+    } catch (error) {
+      console.error('Erreur lors de la soumission de la commande:', error);
+      const errorMessage = typeof error === 'object' && error !== null && 'message' in error 
+        ? (error as Error).message 
+        : 'Une erreur est survenue lors de l\'envoi des e-mails de confirmation';
       
+      console.error("Message d'erreur:", errorMessage);
+      setEmailError(errorMessage);
+      
+      // Afficher l'alerte pour l'utilisateur
+      alert("Problème d'envoi d'email: " + errorMessage + 
+            "\n\nLa commande a été enregistrée, mais l'email n'a pas pu être envoyé. " +
+            "Nous vous contacterons pour confirmer votre commande.");
+      
+      // Rediriger quand même vers la page de confirmation
+      clearCart();
+      router.push('/checkout/confirmation');
+    } finally {
       setIsSubmitting(false);
-    }, 1500);
+    }
   };
 
   if (cart.length === 0) {
@@ -113,12 +166,12 @@ const CheckoutPage = () => {
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="bg-white rounded-lg shadow p-6 text-center">
               <h1 className="text-2xl font-semibold text-gray-900 mb-4">Votre panier est vide</h1>
-              <p className="text-gray-600 mb-6">Vous n&apos;avez aucun article dans votre panier.</p>
+              <p className="text-gray-600 mb-6">Vous n'avez aucun article dans votre panier.</p>
               <button
                 onClick={() => router.push('/')}
                 className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-md transition-colors"
               >
-                Retour à l&apos;accueil
+                Retour à l'accueil
               </button>
             </div>
           </div>
@@ -299,7 +352,7 @@ const CheckoutPage = () => {
                         <p className="mt-2 text-sm text-red-600">{formErrors.dateRetrait}</p>
                       )}
                       <p className="mt-3 text-sm text-gray-500">
-                        Retrait sous 48h, indiquer la date et l&apos;heure de retrait (en fonction des heures d&apos;ouverture du labo)
+                        Retrait sous 48h, indiquer la date et l'heure de retrait (en fonction des heures d'ouverture du labo)
                       </p>
                     </div>
                     

@@ -159,14 +159,6 @@ const Navbar = () => {
                   </Link>
                 </li>
                 <li className="w-full md:w-auto text-center">
-                  <Link
-                    href="/a-propos"
-                    className="text-gray-800 hover:text-amber-700 font-medium block py-2 md:py-0"
-                  >
-                    À Propos
-                  </Link>
-                </li>
-                <li className="w-full md:w-auto text-center">
                   <button
                     onClick={toggleCart}
                     className="text-gray-800 hover:text-amber-700 font-medium flex items-center justify-center py-2 md:py-0 w-full"

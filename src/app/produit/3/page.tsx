@@ -9,7 +9,7 @@ import Footer from '@/components/Footer';
 
 // Données du produit "La Boîte Revisitée"
 const productData = {
-  id: 3,
+  id: '3',
   name: 'La Boîte à Revisite',
   subtitle: 'Revisite du Paris-Brest',
   price: '€20.00',
@@ -47,11 +47,11 @@ export default function ProductDetail() {
 
   const handleAddToCart = () => {
     addToCart({
-      id: productData.id,
+      id: parseInt(productData.id),
       name: productData.name,
       price: productData.price,
       image: productData.images[0] || '/images/placeholder.jpg',
-      slug: `/produit/${productData.id}`
+      slug: productData.name.toLowerCase().replace(/\s+/g, '-')
     });
   };
 
@@ -176,7 +176,7 @@ export default function ProductDetail() {
                     ))}
                   </ul>
                   <p className="text-gray-700 mt-4">
-                    La sensibilisation aux allergènes alimentaires est cruciale pour assurer la sécurité de tous, en particulier des personnes souffrant d&apos;allergies sévères.
+                    La sensibilisation aux allergènes alimentaires est cruciale pour assurer la sécurité de tous, en particulier des personnes souffrant d'allergies sévères.
                   </p>
                   <p className="text-gray-700 mt-4">
                     En intégrant ces précautions dans la présentation des aliments, je favorise un environnement alimentaire plus sûr et inclusif.

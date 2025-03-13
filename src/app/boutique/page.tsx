@@ -10,21 +10,21 @@ import Footer from '@/components/Footer';
 // Données des produits
 const products = [
   {
-    id: 1,
+    id: '1',
     name: 'La Boîte à Choux',
     price: '18 €',
     image: '/images/laboite-a-choux.avif',
     description: 'Une sélection raffinée de choux gourmands aux saveurs printanières.'
   },
   {
-    id: 2,
+    id: '2',
     name: 'La Boîte à Flowercake',
     price: '24 €',
     image: '/images/laboite-a-flowercake.avif',
     description: 'Des créations florales délicates pour célébrer le printemps.'
   },
   {
-    id: 3,
+    id: '3',
     name: 'La Boîte Revisitée',
     price: '20 €',
     image: '/images/la-boite-arevisite.avif',
@@ -42,15 +42,15 @@ export default function BoutiquePage() {
       name: product.name,
       price: product.price,
       image: product.image,
-      slug: `/produit/${product.id}`
+      quantity: 1
     });
     
     // Afficher la notification
-    setAddedToCart(prev => ({ ...prev, [product.id.toString()]: true }));
+    setAddedToCart(prev => ({ ...prev, [product.id]: true }));
     
     // Masquer la notification après 2 secondes
     setTimeout(() => {
-      setAddedToCart(prev => ({ ...prev, [product.id.toString()]: false }));
+      setAddedToCart(prev => ({ ...prev, [product.id]: false }));
     }, 2000);
   };
 
@@ -73,7 +73,7 @@ export default function BoutiquePage() {
               {products.map((product) => (
                 <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
                   {/* Notification d'ajout au panier */}
-                  {addedToCart[product.id.toString()] && (
+                  {addedToCart[product.id] && (
                     <div className="absolute top-2 right-2 z-10 bg-green-500 text-white text-sm py-1 px-3 rounded-full animate-bounce">
                       Ajouté au panier!
                     </div>
