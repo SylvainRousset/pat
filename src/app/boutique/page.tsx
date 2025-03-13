@@ -38,17 +38,17 @@ export default function BoutiquePage() {
 
   const handleAddToCart = (product: typeof products[0]) => {
     addToCart({
-      id: product.id,
+      id: parseInt(product.id),
       name: product.name,
       price: product.price,
       image: product.image,
-      quantity: 1
+      slug: product.name.toLowerCase().replace(/\s+/g, '-')
     });
     
     // Afficher la notification
     setAddedToCart(prev => ({ ...prev, [product.id]: true }));
     
-    // Masquer la notification après 2 secondes
+    // Réinitialiser après 2 secondes
     setTimeout(() => {
       setAddedToCart(prev => ({ ...prev, [product.id]: false }));
     }, 2000);
