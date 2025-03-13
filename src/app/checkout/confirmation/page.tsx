@@ -1,77 +1,75 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import Link from 'next/link';
+import { FaCheckCircle } from 'react-icons/fa';
 
-const ConfirmationPage = () => {
-  const router = useRouter();
-
-  // Rediriger vers la page d'accueil si l'utilisateur accède directement à cette page
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // Vérifier si le panier est vide dans le localStorage
-      const cart = localStorage.getItem('cart');
-      if (cart && JSON.parse(cart).length > 0) {
-        // Si le panier n'est pas vide, l'utilisateur a probablement accédé directement à cette page
-        router.push('/');
-      }
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [router]);
-
+export default function ConfirmationPage() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gray-50 py-12">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-lg shadow p-8 text-center">
-            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
-              <svg className="h-10 w-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+      <main className="min-h-screen bg-[#f8f5f0] py-12">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-8">
+            <div className="text-center mb-8">
+              <div className="flex justify-center mb-4">
+                <FaCheckCircle className="text-green-500 text-6xl" />
+              </div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">Commande confirmée !</h1>
+              <p className="text-lg text-gray-600">
+                Merci pour votre commande. Votre demande a été enregistrée avec succès.
+              </p>
+              <p className="text-lg text-gray-600 mt-2">
+                Un e-mail de confirmation a été envoyé à votre adresse.
+              </p>
             </div>
             
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Commande confirmée !</h1>
-            
-            <p className="text-lg text-gray-600 mb-6">
-              Merci pour votre commande. Nous vous attendons en boutique à la date choisie.
-            </p>
-            
-            <div className="bg-amber-50 border border-amber-200 rounded-md p-4 mb-8">
-              <h2 className="text-lg font-medium text-amber-800 mb-2">Informations importantes</h2>
-              <ul className="text-sm text-amber-700 list-disc list-inside space-y-1">
-                <li>Votre commande sera préparée fraîchement pour le jour de retrait choisi</li>
-                <li>Merci de vous présenter avec une pièce d'identité</li>
-                <li>Le paiement s'effectue sur place (CB, espèces)</li>
-                <li>Nous vous avons envoyé un récapitulatif par email</li>
+            <div className="bg-amber-50 border border-amber-100 rounded-lg p-6 mb-8">
+              <h2 className="text-xl font-semibold text-amber-800 mb-4">Informations importantes</h2>
+              <ul className="space-y-3 text-amber-700">
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  <span>Votre commande sera disponible à la date et à l&apos;heure que vous avez sélectionnées.</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  <span>Veuillez vous présenter à l&apos;adresse suivante : <strong>3 rue des prés du roi 64800 NAY</strong></span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  <span>N&apos;oubliez pas d&apos;apporter une preuve de votre commande (email de confirmation ou numéro de commande).</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  <span>Le paiement s&apos;effectuera sur place lors du retrait de votre commande.</span>
+                </li>
               </ul>
             </div>
             
-            <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-              <Link
-                href="/"
-                className="inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
-              >
-                Retour à l'accueil
-              </Link>
-              
-              <Link
-                href="/boutique"
-                className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
-              >
-                Découvrir d'autres produits
-              </Link>
+            <div className="text-center">
+              <p className="text-gray-600 mb-6">
+                Si vous avez des questions concernant votre commande, n&apos;hésitez pas à me contacter.
+              </p>
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <Link 
+                  href="/boutique" 
+                  className="inline-block bg-amber-600 hover:bg-amber-700 text-white font-medium py-3 px-6 rounded-md transition-colors"
+                >
+                  Retour à la boutique
+                </Link>
+                <Link 
+                  href="/contact" 
+                  className="inline-block bg-white border border-amber-600 hover:bg-amber-50 text-amber-600 font-medium py-3 px-6 rounded-md transition-colors"
+                >
+                  Nous contacter
+                </Link>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </main>
       <Footer />
     </>
   );
-};
-
-export default ConfirmationPage; 
+} 

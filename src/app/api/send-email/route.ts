@@ -1,6 +1,52 @@
 import { NextResponse } from 'next/server';
 import sgMail from '@sendgrid/mail';
 
+// Types pour les données
+interface ClientInfo {
+  name?: string;
+  email: string;
+  phone?: string;
+  prenom?: string;
+  nom?: string;
+  telephone?: string;
+}
+
+interface OrderDetails {
+  dateRetrait: string;
+}
+
+interface CartItem {
+  name: string;
+  quantity: number;
+  price: string;
+  image?: string;
+}
+
+interface ContactData {
+  type: 'contact';
+  clientInfo: ClientInfo;
+  message: string;
+}
+
+interface OrderData {
+  type: 'order';
+  clientInfo: ClientInfo;
+  orderDetails: OrderDetails;
+  cartItems: CartItem[];
+  totalPrice: string;
+}
+
+type RequestData = ContactData | OrderData;
+
+// Type pour les erreurs SendGrid
+interface SendGridError extends Error {
+  response?: {
+    body?: unknown;
+    statusCode?: number;
+    headers?: Record<string, string>;
+  };
+}
+
 // Configuration de l'API key SendGrid (à configurer dans les variables d'environnement)
 // Vous devrez créer un compte SendGrid et obtenir une clé API
 if (process.env.SENDGRID_API_KEY) {
@@ -12,7 +58,7 @@ if (process.env.SENDGRID_API_KEY) {
 
 // Adresse email vérifiée pour l'envoi
 const VERIFIED_SENDER = 'sylvaindebisca@gmail.com'; // Assurez-vous que cette adresse est vérifiée dans SendGrid
-const ADMIN_EMAIL = 'coquelicot.traiteursucre@gmail.com'; // Adresse de réception des messages
+const ADMIN_EMAIL = 'sylvaindebisca@gmail.com'; // Adresse de réception des messages
 
 export async function POST(request: Request) {
   try {
@@ -30,7 +76,7 @@ export async function POST(request: Request) {
     }
 
     // Récupérer les données de la requête
-    const data = await request.json();
+    const data = await request.json() as RequestData;
     console.log('Type de requête reçue:', data.type);
     
     // Traitement différent selon le type de message
@@ -148,7 +194,8 @@ Ce message a été envoyé depuis le formulaire de contact du site web Pâtisser
           response: response[0].statusCode,
           sendgridMessageId: response[0].headers['x-message-id']
         });
-      } catch (emailError: any) {
+      } catch (error) {
+        const emailError = error as SendGridError;
         console.error('Erreur spécifique SendGrid (contact):', emailError);
         if (emailError.response) {
           console.error('Détails de l\'erreur SendGrid:', JSON.stringify(emailError.response.body));
@@ -165,7 +212,8 @@ Ce message a été envoyé depuis le formulaire de contact du site web Pâtisser
       }
     } else {
       // Gestion des commandes (code existant)
-      const { clientInfo, orderDetails, cartItems, totalPrice } = data;
+      const orderData = data as OrderData;
+      const { clientInfo, orderDetails, cartItems, totalPrice } = orderData;
       
       console.log('Données de commande reçues:', { 
         client: clientInfo, 
@@ -233,7 +281,7 @@ Ce message a été envoyé depuis le formulaire de contact du site web Pâtisser
                   </tr>
                 </thead>
                 <tbody>
-                  ${cartItems.map((item: any) => `
+                  ${cartItems.map((item) => `
                     <tr>
                       <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${item.name}</td>
                       <td style="padding: 10px; text-align: center; border-bottom: 1px solid #e5e7eb;">${item.quantity}</td>
@@ -258,7 +306,7 @@ Téléphone: ${clientInfo.telephone}
 Date de retrait: ${orderDetails.dateRetrait}
 
 Articles commandés:
-${cartItems.map((item: any) => `- ${item.name} - Quantité: ${item.quantity} - Prix: ${item.price}`).join('\n')}
+${cartItems.map((item) => `- ${item.name} - Quantité: ${item.quantity} - Prix: ${item.price}`).join('\n')}
 
 Prix total: ${totalPrice}`,
         headers: {
@@ -312,7 +360,7 @@ Prix total: ${totalPrice}`,
                   </tr>
                 </thead>
                 <tbody>
-                  ${cartItems.map((item: any) => `
+                  ${cartItems.map((item) => `
                     <tr>
                       <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${item.name}</td>
                       <td style="padding: 10px; text-align: center; border-bottom: 1px solid #e5e7eb;">${item.quantity}</td>
@@ -344,7 +392,7 @@ Cher(e) ${clientInfo.prenom},
 Nous avons bien reçu votre commande et nous sommes ravis de vous confirmer qu'elle est en cours de préparation.
 
 Détails de votre commande:
-${cartItems.map((item: any) => `- ${item.name} - Quantité: ${item.quantity} - Prix: ${item.price}`).join('\n')}
+${cartItems.map((item) => `- ${item.name} - Quantité: ${item.quantity} - Prix: ${item.price}`).join('\n')}
 
 Prix total: ${totalPrice}
 Date de retrait: ${orderDetails.dateRetrait}
@@ -407,7 +455,8 @@ L'équipe Coquelicot`,
           adminMessageId: adminResponse[0].headers['x-message-id'],
           clientMessageId: clientResponse[0].headers['x-message-id']
         });
-      } catch (emailError: any) {
+      } catch (error) {
+        const emailError = error as SendGridError;
         console.error('Erreur spécifique SendGrid (commande):', emailError);
         if (emailError.response) {
           console.error('Détails de l\'erreur SendGrid:', JSON.stringify(emailError.response.body));

@@ -63,60 +63,69 @@ const CheckoutPage = () => {
   const validateForm = () => {
     const errors: Record<string, string> = {};
     
-    if (!formData.nom.trim()) errors.nom = 'Le nom est requis';
-    if (!formData.prenom.trim()) errors.prenom = 'Le prénom est requis';
+    if (!formData.nom.trim()) {
+      errors.nom = "Le nom est requis";
+    }
+    
+    if (!formData.prenom.trim()) {
+      errors.prenom = "Le prénom est requis";
+    }
     
     if (!formData.telephone.trim()) {
-      errors.telephone = 'Le numéro de téléphone est requis';
-    } else if (!/^(\+33|0)[1-9](\d{2}){4}$/.test(formData.telephone.replace(/\s/g, ''))) {
-      errors.telephone = 'Format de téléphone invalide';
+      errors.telephone = "Le numéro de téléphone est requis";
+    } else if (!/^[0-9]{10}$/.test(formData.telephone.replace(/\s/g, ''))) {
+      errors.telephone = "Le format du numéro de téléphone est invalide";
     }
     
     if (!formData.email.trim()) {
-      errors.email = 'L\'email est requis';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = 'Format d\'email invalide';
+      errors.email = "L&apos;email est requis";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "L&apos;email est invalide";
     }
     
-    if (!selectedDate) errors.dateRetrait = 'Veuillez choisir une date de retrait';
+    if (!selectedDate) {
+      errors.dateRetrait = "La date de retrait est requise";
+    }
     
-    return errors;
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const errors = validateForm();
-    if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
+    if (!validateForm()) {
       return;
     }
     
     setIsSubmitting(true);
-    setEmailError(null);
     
     try {
       // Formater la date pour l'affichage
-      const formattedDate = selectedDate ? selectedDate.toLocaleDateString('fr-FR', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      }) : '';
+      const formattedDate = selectedDate ? 
+        new Intl.DateTimeFormat('fr-FR', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }).format(selectedDate) : '';
       
-      // Préparer les données pour l'API
+      // Préparer les données de la commande
       const orderData = {
+        type: 'order',
         clientInfo: formData,
         orderDetails: {
-          dateRetrait: formattedDate,
+          dateRetrait: formattedDate
         },
         cartItems: cart,
-        totalPrice: totalPrice,
+        totalPrice: totalPrice
       };
       
-      console.log("Données de commande envoyées:", JSON.stringify(orderData));
+      console.log("Envoi des données de commande:", orderData);
       
-      // Appeler l'API d'envoi d'e-mails
+      // Appel à l'API d'envoi d'email
       const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: {
@@ -126,34 +135,23 @@ const CheckoutPage = () => {
       });
       
       const result = await response.json();
-      console.log("Réponse de l'API d'envoi d'emails:", result);
+      console.log("Réponse de l'API d'email:", result);
       
       if (!response.ok) {
-        console.error("Erreur détaillée:", result);
-        throw new Error(result.error || result.details || 'Une erreur est survenue lors de l\'envoi des e-mails');
+        throw new Error(result.error || "Erreur lors de l&apos;envoi de l&apos;email");
       }
       
-      // Si tout s'est bien passé, réinitialiser le panier et rediriger
+      // Rediriger vers la page de confirmation
       clearCart();
       router.push('/checkout/confirmation');
+      
     } catch (error) {
-      console.error('Erreur lors de la soumission de la commande:', error);
-      const errorMessage = typeof error === 'object' && error !== null && 'message' in error 
-        ? (error as Error).message 
-        : 'Une erreur est survenue lors de l\'envoi des e-mails de confirmation';
-      
-      console.error("Message d'erreur:", errorMessage);
-      setEmailError(errorMessage);
-      
-      // Afficher l'alerte pour l'utilisateur
-      alert("Problème d'envoi d'email: " + errorMessage + 
-            "\n\nLa commande a été enregistrée, mais l'email n'a pas pu être envoyé. " +
-            "Nous vous contacterons pour confirmer votre commande.");
-      
-      // Rediriger quand même vers la page de confirmation
-      clearCart();
-      router.push('/checkout/confirmation');
-    } finally {
+      console.error("Erreur lors de la soumission:", error);
+      if (error instanceof Error) {
+        setEmailError(error.message);
+      } else {
+        setEmailError("Une erreur s&apos;est produite lors de l&apos;envoi de l&apos;email");
+      }
       setIsSubmitting(false);
     }
   };
@@ -357,6 +355,17 @@ const CheckoutPage = () => {
                     </div>
                     
                     <div className="pt-6">
+                      {emailError && (
+                        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+                          <p className="text-red-600">
+                            <strong>Erreur d&apos;envoi d&apos;email:</strong> {emailError}
+                          </p>
+                          <p className="text-sm text-red-500 mt-1">
+                            Veuillez réessayer ou contacter le support si le problème persiste.
+                          </p>
+                        </div>
+                      )}
+                      
                       <button
                         type="submit"
                         disabled={isSubmitting}

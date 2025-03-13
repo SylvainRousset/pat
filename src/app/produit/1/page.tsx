@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
@@ -39,9 +39,26 @@ const productData = {
 
 export default function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState(0);
+  const [isAdding, setIsAdding] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
   const { addToCart } = useCart();
 
+  // Réinitialiser le message après 2 secondes
+  useEffect(() => {
+    if (addedToCart) {
+      const timer = setTimeout(() => {
+        setAddedToCart(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [addedToCart]);
+
   const handleAddToCart = () => {
+    // Éviter les clics multiples
+    if (isAdding) return;
+    
+    setIsAdding(true);
+    
     addToCart({
       id: parseInt(productData.id),
       name: productData.name,
@@ -49,6 +66,14 @@ export default function ProductDetail() {
       image: productData.images[0] || '/images/placeholder.jpg',
       slug: productData.name.toLowerCase().replace(/\s+/g, '-')
     });
+    
+    // Afficher le message de confirmation
+    setAddedToCart(true);
+    
+    // Réactiver le bouton après un court délai
+    setTimeout(() => {
+      setIsAdding(false);
+    }, 300);
   };
 
   return (
@@ -138,12 +163,13 @@ export default function ProductDetail() {
                 <div className="pt-4">
                   <button
                     onClick={handleAddToCart}
-                    className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-md transition-colors flex items-center justify-center"
+                    disabled={isAdding}
+                    className={`w-full ${isAdding ? 'bg-amber-400' : 'bg-amber-600 hover:bg-amber-700'} text-white font-bold py-3 px-6 rounded-md transition-colors flex items-center justify-center`}
                   >
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
-                    Ajouter au panier
+                    {addedToCart ? 'Ajouté !' : 'Ajouter au panier'}
                   </button>
                 </div>
                 
@@ -172,7 +198,7 @@ export default function ProductDetail() {
                     ))}
                   </ul>
                   <p className="text-gray-700 mt-4">
-                    La sensibilisation aux allergènes alimentaires est cruciale pour assurer la sécurité de tous, en particulier des personnes souffrant d'allergies sévères.
+                    La sensibilisation aux allergènes alimentaires est cruciale pour assurer la sécurité de tous, en particulier des personnes souffrant d&apos;allergies sévères.
                   </p>
                   <p className="text-gray-700 mt-4">
                     En intégrant ces précautions dans la présentation des aliments, je favorise un environnement alimentaire plus sûr et inclusif.
