@@ -4,6 +4,7 @@ import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import Cart from "@/components/Cart";
 
+// Optimisation des polices avec préchargement et fallback système
 const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair",
