@@ -59,7 +59,7 @@ export default function BoutiquePage() {
       <Navbar />
       <main className="min-h-screen bg-[#f8f5f0] py-8">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-bold text-center text-gray-900 mb-8">Nos Créations Gourmandes</h1>
+          <h1 className="text-4xl font-bold text-center text-gray-900 mb-8">Les Saveurs de Saison</h1>
           
           <div className="bg-white rounded-lg shadow-lg p-6 mb-12 max-w-4xl mx-auto">
             <h2 className="text-2xl font-bold text-amber-700 mb-4 text-center">Carte des Saveurs Hiver</h2>
@@ -88,13 +88,19 @@ export default function BoutiquePage() {
             </div>
             
             <p className="text-gray-700 mb-6 text-center">
-              Chaque saison, je vous propose des saveurs uniques déclinées dans différentes créations pâtissières. 
-              Les compositions des boîtes sont fixes et contiennent une sélection de quatre saveurs saisonnières, 
-              garantissant une harmonie parfaite des goûts.
+              La Carte des Saisons évolue tout au long de l'année pour célébrer les saveurs de chaque saison : printemps, été, automne, hiver.
+            </p>
+            
+            <p className="text-gray-700 mb-6 text-center">
+              Chaque saison, découvrez 4 saveurs uniques déclinées dans 3 créations pâtissières : une boîte à choux, une boîte à macarons, une boîte à flower cakes.
+            </p>
+            
+            <p className="text-gray-700 mb-6 text-center">
+              Chaque boîte contient les 4 saveurs de la saison, les compositions des boîtes sont fixes et ne peuvent pas être modifiées ni divisées.
             </p>
             
             <p className="text-lg font-semibold text-amber-600 italic text-center">
-              Une invitation gourmande à savourer l&apos;excellence pâtissière, sans compromis !
+              Une invitation gourmande à savourer les saisons, sans compromis !
             </p>
           </div>
           

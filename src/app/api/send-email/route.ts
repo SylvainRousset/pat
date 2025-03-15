@@ -13,6 +13,7 @@ interface ClientInfo {
 
 interface OrderDetails {
   dateRetrait: string;
+  heureRetrait?: string;
 }
 
 interface CartItem {
@@ -268,6 +269,10 @@ Ce message a été envoyé depuis le formulaire de contact du site web Pâtisser
                   <td style="padding: 8px; font-weight: bold;">Date de retrait:</td>
                   <td style="padding: 8px;">${orderDetails.dateRetrait}</td>
                 </tr>
+                <tr>
+                  <td style="padding: 8px; font-weight: bold;">Heure de retrait:</td>
+                  <td style="padding: 8px;">${orderDetails.heureRetrait || 'Non spécifiée'}</td>
+                </tr>
               </table>
               
               <h2 style="color: #1f2937; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px;">Articles commandés</h2>
@@ -304,6 +309,7 @@ Nom: ${clientInfo.prenom} ${clientInfo.nom}
 Email: ${clientInfo.email}
 Téléphone: ${clientInfo.telephone}
 Date de retrait: ${orderDetails.dateRetrait}
+Heure de retrait: ${orderDetails.heureRetrait || 'Non spécifiée'}
 
 Articles commandés:
 ${cartItems.map((item) => `- ${item.name} - Quantité: ${item.quantity} - Prix: ${item.price}`).join('\n')}
@@ -376,6 +382,7 @@ Prix total: ${totalPrice}`,
               
               <div style="background-color: #f9fafb; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
                 <p style="margin: 0;"><strong>Date de retrait:</strong> ${orderDetails.dateRetrait}</p>
+                <p style="margin: 10px 0 0 0;"><strong>Heure de retrait:</strong> ${orderDetails.heureRetrait || 'Non spécifiée'}</p>
                 <p style="margin: 10px 0 0 0;"><strong>Adresse:</strong> 3 rue des prés du roi 64800 NAY</p>
               </div>
               
@@ -396,6 +403,7 @@ ${cartItems.map((item) => `- ${item.name} - Quantité: ${item.quantity} - Prix: 
 
 Prix total: ${totalPrice}
 Date de retrait: ${orderDetails.dateRetrait}
+Heure de retrait: ${orderDetails.heureRetrait || 'Non spécifiée'}
 
 Veuillez vous présenter à notre boutique avec une pièce d'identité pour récupérer votre commande.
 Adresse: 3 rue des prés du roi 64800 NAY

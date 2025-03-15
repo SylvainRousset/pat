@@ -23,6 +23,7 @@ const CheckoutPage = () => {
     email: '',
   });
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -49,6 +50,19 @@ const CheckoutPage = () => {
       setFormErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors.dateRetrait;
+        return newErrors;
+      });
+    }
+  };
+
+  const handleTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedTime(e.target.value);
+    
+    // Effacer l'erreur d'heure si elle existe
+    if (formErrors.heureRetrait) {
+      setFormErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.heureRetrait;
         return newErrors;
       });
     }
@@ -87,6 +101,10 @@ const CheckoutPage = () => {
       errors.dateRetrait = "La date de retrait est requise";
     }
     
+    if (!selectedTime) {
+      errors.heureRetrait = "L'heure de retrait est requise";
+    }
+    
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -107,9 +125,7 @@ const CheckoutPage = () => {
           weekday: 'long', 
           year: 'numeric', 
           month: 'long', 
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
+          day: 'numeric'
         }).format(selectedDate) : '';
       
       // Préparer les données de la commande
@@ -117,7 +133,8 @@ const CheckoutPage = () => {
         type: 'order',
         clientInfo: formData,
         orderDetails: {
-          dateRetrait: formattedDate
+          dateRetrait: formattedDate,
+          heureRetrait: selectedTime
         },
         cartItems: cart,
         totalPrice: totalPrice
@@ -349,9 +366,49 @@ const CheckoutPage = () => {
                       {formErrors.dateRetrait && (
                         <p className="mt-2 text-sm text-red-600">{formErrors.dateRetrait}</p>
                       )}
-                      <p className="mt-3 text-sm text-gray-500">
-                        Retrait sous 48h, indiquer la date et l&apos;heure de retrait (en fonction des heures d&apos;ouverture du labo)
-                      </p>
+                    </div>
+                    
+                    <div className="mt-4">
+                      <label htmlFor="heureRetrait" className="block text-sm font-medium text-gray-700 mb-2">
+                        Heure de retrait (entre 9h et 20h)
+                      </label>
+                      <select
+                        id="heureRetrait"
+                        name="heureRetrait"
+                        value={selectedTime}
+                        onChange={handleTimeChange}
+                        className={`block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm p-3 ${
+                          formErrors.heureRetrait ? 'border-red-300' : ''
+                        }`}
+                      >
+                        <option value="">Sélectionnez une heure</option>
+                        <option value="09:00">09:00</option>
+                        <option value="09:30">09:30</option>
+                        <option value="10:00">10:00</option>
+                        <option value="10:30">10:30</option>
+                        <option value="11:00">11:00</option>
+                        <option value="11:30">11:30</option>
+                        <option value="12:00">12:00</option>
+                        <option value="12:30">12:30</option>
+                        <option value="13:00">13:00</option>
+                        <option value="13:30">13:30</option>
+                        <option value="14:00">14:00</option>
+                        <option value="14:30">14:30</option>
+                        <option value="15:00">15:00</option>
+                        <option value="15:30">15:30</option>
+                        <option value="16:00">16:00</option>
+                        <option value="16:30">16:30</option>
+                        <option value="17:00">17:00</option>
+                        <option value="17:30">17:30</option>
+                        <option value="18:00">18:00</option>
+                        <option value="18:30">18:30</option>
+                        <option value="19:00">19:00</option>
+                        <option value="19:30">19:30</option>
+                        <option value="20:00">20:00</option>
+                      </select>
+                      {formErrors.heureRetrait && (
+                        <p className="mt-2 text-sm text-red-600">{formErrors.heureRetrait}</p>
+                      )}
                     </div>
                     
                     <div className="pt-6">

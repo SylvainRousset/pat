@@ -162,14 +162,6 @@ const Navbar = () => {
                 </li>
                 <li className="w-full md:w-auto text-center">
                   <Link
-                    href="/saveurs-de-saison"
-                    className="text-gray-800 hover:text-amber-700 font-medium block py-2 md:py-0"
-                  >
-                    Saveurs de Saison
-                  </Link>
-                </li>
-                <li className="w-full md:w-auto text-center">
-                  <Link
                     href="/creations"
                     className="text-gray-800 hover:text-amber-700 font-medium block py-2 md:py-0"
                   >

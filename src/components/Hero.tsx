@@ -3,7 +3,7 @@ import Head from 'next/head';
 
 const Hero = () => {
   return (
-    <div className="relative w-full h-[600px] overflow-hidden">
+    <div className="relative w-full max-w-5xl mx-auto h-[250px] sm:h-[300px] md:h-[400px] overflow-hidden rounded-lg my-2 md:my-4">
       {/* Vidéo d'arrière-plan */}
       <div className="absolute inset-0 z-0">
         <div className="relative w-full h-full">
@@ -27,11 +27,11 @@ const Hero = () => {
       </div>
 
       {/* Contenu */}
-      <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-4">
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-12">
+      <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-3 md:px-4">
+        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2 md:mb-4">
           Pâtisserie Événementielle Élégante
         </h1>
-        <p className="text-xl md:text-2xl mb-8 max-w-2xl">
+        <p className="text-sm sm:text-base md:text-lg mb-2 md:mb-4 max-w-md md:max-w-xl">
           L&apos;art de sublimer vos moments gourmands avec délicatesse et poésie.
         </p>
       </div>
