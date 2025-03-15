@@ -88,7 +88,7 @@ export default function BoutiquePage() {
             </div>
             
             <p className="text-gray-700 mb-6 text-center">
-              La Carte des Saisons évolue tout au long de l'année pour célébrer les saveurs de chaque saison : printemps, été, automne, hiver.
+              La Carte des Saisons évolue tout au long de l&apos;année pour célébrer les saveurs de chaque saison : printemps, été, automne, hiver.
             </p>
             
             <p className="text-gray-700 mb-6 text-center">

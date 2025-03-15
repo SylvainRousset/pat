@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 const Footer = () => {
   return (
@@ -8,7 +9,7 @@ const Footer = () => {
           {/* Logo et description */}
           <div className="col-span-1">
           <Link href="/">
-                <img
+                <Image
                   src="/images/logo_coquelicot.avif"
                   alt="Pâtisserie Logo"
                   width={150}

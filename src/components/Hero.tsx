@@ -1,6 +1,3 @@
-import Image from 'next/image';
-import Head from 'next/head';
-
 const Hero = () => {
   return (
     <div className="relative w-full max-w-5xl mx-auto h-[250px] sm:h-[300px] md:h-[400px] overflow-hidden rounded-lg my-2 md:my-4">

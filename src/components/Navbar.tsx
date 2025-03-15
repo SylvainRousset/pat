@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 
 const Navbar = () => {
@@ -61,12 +62,13 @@ const Navbar = () => {
             {/* Logo */}
             <div className="mb-2 md:mb-4">
               <Link href="/">
-                <img
+                <Image
                   src="/images/logo_coquelicot.avif"
                   alt="Pâtisserie Logo"
                   width={150}
                   height={150}
                   className="object-contain"
+                  priority
                 />
               </Link>
             </div>
