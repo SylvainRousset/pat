@@ -68,7 +68,7 @@ const AboutSection = () => {
           </div>
 
           <div className="order-1 md:order-2">
-            <div className="relative h-[400px] rounded-lg overflow-hidden shadow-xl mb-4">
+            <div className="relative h-[300px] md:h-[400px] rounded-lg overflow-hidden shadow-xl mb-4">
               <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
                 <span className="text-gray-400">Image de pâtisserie</span>
               </div>
@@ -78,6 +78,7 @@ const AboutSection = () => {
                 alt="Nos créations pâtissières"
                 fill
                 style={{ objectFit: 'cover' }}
+                sizes="(max-width: 640px) 90vw, (max-width: 768px) 45vw, 40vw"
               /> 
             </div>
             

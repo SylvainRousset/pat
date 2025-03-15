@@ -52,45 +52,45 @@ const FeaturedProducts = () => {
   };
 
   return (
-    <section className="py-8 md:py-16 bg-white w-full overflow-hidden">
+    <section className="py-6 md:py-16 bg-white w-full overflow-hidden">
       <div className="w-full max-w-6xl mx-auto">
-        <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-2xl md:text-4xl font-bold mb-3 md:mb-4">Nos Créations du Mois de Mars</h2>
+        <div className="text-center mb-6 md:mb-12 px-4 sm:px-0">
+          <h2 className="text-xl md:text-4xl font-bold mb-2 md:mb-4">Nos Créations du Mois de Mars</h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-sm md:text-base">
             Découvrez nos pâtisseries les plus appréciées, préparées chaque jour avec passion et des ingrédients de saison.
           </p>
         </div>
 
         {/* Carte des saveurs d'hiver */}
-        <div className="max-w-3xl mx-auto mb-10">
-          <div className="bg-[#f8f5f0] rounded-lg shadow-md p-5">
-            <h3 className="text-xl font-bold text-center text-gray-900 mb-2">Carte des Saveurs Hiver</h3>
-            <p className="text-sm text-center text-amber-700 mb-4">Janvier - Mars</p>
+        <div className="max-w-3xl mx-auto mb-6 md:mb-10 px-4 sm:px-0">
+          <div className="bg-[#f8f5f0] rounded-lg shadow-md p-3 md:p-5">
+            <h3 className="text-lg md:text-xl font-bold text-center text-gray-900 mb-1 md:mb-2">Carte des Saveurs Hiver</h3>
+            <p className="text-xs md:text-sm text-center text-amber-700 mb-2 md:mb-4">Janvier - Mars</p>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 max-w-2xl mx-auto">
               <div className="flex items-center">
-                <span className="w-2.5 h-2.5 bg-amber-600 rounded-full mr-2"></span>
-                <span className="font-medium">Chocolat Passions</span>
+                <span className="w-2 md:w-2.5 h-2 md:h-2.5 bg-amber-600 rounded-full mr-2"></span>
+                <span className="font-medium text-sm md:text-base">Chocolat Passions</span>
               </div>
               <div className="flex items-center">
-                <span className="w-2.5 h-2.5 bg-amber-600 rounded-full mr-2"></span>
-                <span className="font-medium">Noisette Vanille Popcorn</span>
+                <span className="w-2 md:w-2.5 h-2 md:h-2.5 bg-amber-600 rounded-full mr-2"></span>
+                <span className="font-medium text-sm md:text-base">Noisette Vanille Popcorn</span>
               </div>
               <div className="flex items-center">
-                <span className="w-2.5 h-2.5 bg-amber-600 rounded-full mr-2"></span>
-                <span className="font-medium">Caramel Fleur de Sel Kalamansi</span>
+                <span className="w-2 md:w-2.5 h-2 md:h-2.5 bg-amber-600 rounded-full mr-2"></span>
+                <span className="font-medium text-sm md:text-base">Caramel Fleur de Sel Kalamansi</span>
               </div>
               <div className="flex items-center">
-                <span className="w-2.5 h-2.5 bg-amber-600 rounded-full mr-2"></span>
-                <span className="font-medium">Matcha Sésame Noir Noix de Coco Mangue Combava</span>
+                <span className="w-2 md:w-2.5 h-2 md:h-2.5 bg-amber-600 rounded-full mr-2"></span>
+                <span className="font-medium text-sm md:text-base">Matcha Sésame Noir Noix de Coco Mangue Combava</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 px-4 sm:px-0">
           {featuredProducts.map((product, index) => (
-            <div key={product.id} className="bg-white overflow-hidden transition-transform hover:scale-105 max-w-sm mx-auto w-full relative">
+            <div key={product.id} className="bg-white overflow-hidden transition-transform hover:scale-105 max-w-sm mx-auto w-full relative shadow-sm rounded-lg">
               {/* Notification d'ajout au panier */}
               {notifications.some(n => n.productId === product.id) && (
                 <div className="absolute top-2 right-2 z-10 bg-green-500 text-white px-3 py-1 rounded-full text-xs animate-bounce">
@@ -105,7 +105,7 @@ const FeaturedProducts = () => {
                     alt={product.name}
                     fill
                     className="object-cover hover:scale-110 transition-transform duration-300"
-                    sizes="(max-width: 768px) 90vw, (max-width: 1024px) 45vw, 30vw"
+                    sizes="(max-width: 640px) 80vw, (max-width: 768px) 40vw, (max-width: 1024px) 30vw, 25vw"
                     quality={90}
                     priority={index === 0}
                     loading={index === 0 ? "eager" : "lazy"}
@@ -140,10 +140,10 @@ const FeaturedProducts = () => {
           ))}
         </div>
 
-        <div className="text-center mt-8 md:mt-12">
+        <div className="text-center mt-6 md:mt-12">
           <Link
             href="/boutique"
-            className="inline-block bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 md:py-3 px-6 md:px-8 rounded-full transition-colors text-sm md:text-base"
+            className="inline-block bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 md:py-3 px-5 md:px-8 rounded-full transition-colors text-sm md:text-base"
           >
             Voir tous nos produits
           </Link>
