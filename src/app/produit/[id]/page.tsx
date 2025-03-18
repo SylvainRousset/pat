@@ -1,15 +1,11 @@
 import { Suspense } from 'react';
 import ProductDetailClient from './ProductDetailClient';
 
-// Définition d'un type compatible avec Next.js 15
-type PageProps = {
-  params: Promise<{ id: string }> | { id: string }
-  searchParams?: Promise<Record<string, string | string[]>> | Record<string, string | string[]>
-}
-
-export default async function ProductPage({ params }: PageProps) {
+export default async function ProductPage({ params }: {
+  params?: { id: string } | Promise<{ id: string }>
+}) {
   // Résoudre la promesse si params est une Promise
-  const resolvedParams = params instanceof Promise ? await params : params;
+  const resolvedParams = params instanceof Promise ? await params : (params || { id: '' });
   
   return (
     <Suspense fallback={<div>Chargement...</div>}>
