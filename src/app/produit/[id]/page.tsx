@@ -1,11 +1,14 @@
 import { Suspense } from 'react';
 import ProductDetailClient from './ProductDetailClient';
 
-// Page côté serveur avec typage correct pour Next.js App Router
-export default function ProductPage({ params }: { params: { id: string } }) {
+type Props = {
+  params: { id: string }
+}
+
+export default function ProductPage(props: Props) {
   return (
     <Suspense fallback={<div>Chargement...</div>}>
-      <ProductDetailClient params={params} />
+      <ProductDetailClient params={props.params} />
     </Suspense>
   );
 } 
