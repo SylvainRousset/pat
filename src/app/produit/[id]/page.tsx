@@ -1,14 +1,19 @@
 import { Suspense } from 'react';
 import ProductDetailClient from './ProductDetailClient';
 
-type Params = {
-  id: string
+interface Params {
+  id: string;
 }
 
-export default function ProductPage(props: { params: Params }) {
+interface PageProps {
+  params: Params;
+  searchParams?: Record<string, string | string[]>;
+}
+
+export default function ProductPage({ params }: PageProps) {
   return (
     <Suspense fallback={<div>Chargement...</div>}>
-      <ProductDetailClient params={props.params} />
+      <ProductDetailClient params={params} />
     </Suspense>
   );
 } 
