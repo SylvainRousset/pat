@@ -9,7 +9,9 @@ import {
   doc, 
   query, 
   where,
-  serverTimestamp
+  serverTimestamp,
+  Query,
+  DocumentData
 } from 'firebase/firestore';
 import { ref, deleteObject } from 'firebase/storage';
 
@@ -54,7 +56,7 @@ export const getAllProducts = async () => {
 
 // Récupérer les produits filtrés
 export const getFilteredProducts = async (filters: { showInShop?: boolean, showOnHome?: boolean }) => {
-  let q = productsCollection;
+  let q: Query<DocumentData, DocumentData> = productsCollection;
   
   if (filters.showInShop !== undefined || filters.showOnHome !== undefined) {
     const conditions = [];
