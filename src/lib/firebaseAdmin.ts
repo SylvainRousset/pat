@@ -12,6 +12,28 @@ import {
   serverTimestamp
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import admin from 'firebase-admin';
+import { cert } from 'firebase-admin/app';
+import { getFirestore, Timestamp, FieldValue } from 'firebase-admin/firestore';
+import { getStorage } from 'firebase-admin/storage';
+
+// Interface pour les produits
+interface Product {
+  id: string;
+  name: string;
+  price: string;
+  image: string;
+  description: string;
+  showInShop: boolean;
+  showOnHome: boolean;
+  [key: string]: unknown;
+}
+
+// Interface pour les erreurs
+interface ApiError {
+  message: string;
+  code?: string | number;
+}
 
 // Type pour les produits
 export interface Product {
@@ -63,17 +85,23 @@ export const getFilteredProducts = async (filters: { showInShop?: boolean, showO
   })) as Product[];
 };
 
-// Récupérer un produit par ID
-export const getProductById = async (id: string) => {
-  const docRef = doc(db, 'products', id);
-  const docSnap = await getDoc(docRef);
-  
-  if (docSnap.exists()) {
+// Obtenir un produit par son ID
+export const getProductById = async (productId: string): Promise<Product | null> => {
+  try {
+    const db = getFirestore();
+    const productRef = db.collection('products').doc(productId);
+    const productDoc = await productRef.get();
+    
+    if (!productDoc.exists) {
+      return null;
+    }
+    
     return {
-      id: docSnap.id,
-      ...docSnap.data()
-    } as Product;
-  } else {
+      id: productDoc.id,
+      ...productDoc.data() as Omit<Product, 'id'>
+    };
+  } catch (error) {
+    console.error('Erreur lors de la récupération du produit par ID:', error);
     return null;
   }
 };
@@ -107,10 +135,15 @@ export const updateProduct = async (id: string, product: Partial<Product>) => {
 };
 
 // Supprimer un produit
-export const deleteProduct = async (id: string) => {
-  const docRef = doc(db, 'products', id);
-  await deleteDoc(docRef);
-  return { id };
+export const deleteProduct = async (productId: string): Promise<boolean> => {
+  try {
+    const db = getFirestore();
+    await db.collection('products').doc(productId).delete();
+    return true;
+  } catch (error) {
+    console.error('Erreur lors de la suppression du produit:', error);
+    return false;
+  }
 };
 
 // Télécharger une image

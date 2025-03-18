@@ -8,6 +8,12 @@ import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
+// Définir un type pour l'erreur Firebase
+interface FirebaseError {
+  code: string;
+  message: string;
+}
+
 export default function AdminLogin() {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -32,14 +38,15 @@ export default function AdminLogin() {
       
       // Rediriger vers le tableau de bord
       router.push('/admin/dashboard');
-    } catch (error: any) {
-      console.error('Erreur de connexion:', error);
+    } catch (err: unknown) {
+      const firebaseError = err as FirebaseError;
+      console.error('Erreur de connexion:', firebaseError);
       
       // Gérer les erreurs d'authentification
-      if (error.code === 'auth/invalid-credential') {
+      if (firebaseError.code === 'auth/invalid-credential') {
         setError('Email ou mot de passe incorrect');
-      } else if (error.code === 'auth/too-many-requests') {
-        setError('Trop de tentatives de connexion. Veuillez réessayer plus tard.');
+      } else if (firebaseError.code === 'auth/too-many-requests') {
+        setError('Trop de tentatives infructueuses. Veuillez réessayer plus tard.');
       } else {
         setError('Une erreur est survenue lors de la connexion');
       }

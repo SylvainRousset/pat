@@ -143,7 +143,7 @@ export default function AdminDashboard() {
       
       // Si nous avons un fichier image, nous le téléchargeons d'abord
       let imagePath = newProduct.image;
-      let additionalImagePaths: string[] = [...additionalImages];
+      const additionalImagePaths: string[] = [...additionalImages];
       
       if (imageFile) {
         setSuccessMessage('Téléchargement de l\'image principale en cours...');
@@ -1032,7 +1032,7 @@ export default function AdminDashboard() {
 
                         setSuccessMessage('Produit mis à jour avec succès !');
                         setIsDetailsModalOpen(false);
-                      } catch (error) {
+                      } catch (err) {
                         setErrorMessage('Erreur lors de la mise à jour du produit');
                       }
                     }}

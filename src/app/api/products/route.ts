@@ -51,7 +51,7 @@ let products: Product[] = [
   }
 ];
 
-// GET - Récupérer tous les produits ou filtrés
+// GET - Récupérer tous les produits
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -69,15 +69,15 @@ export async function GET(request: NextRequest) {
     }
     
     // Si des filtres sont spécifiés, utiliser getFilteredProducts
-    const products = Object.keys(filters).length > 0 
+    const allProducts = Object.keys(filters).length > 0 
       ? await getFilteredProducts(filters)
       : await getAllProducts();
     
-    return NextResponse.json(products);
+    return NextResponse.json(allProducts);
   } catch (error) {
     console.error('Erreur lors de la récupération des produits:', error);
     return NextResponse.json(
-      { error: 'Erreur lors de la récupération des produits' },
+      { error: 'Erreur serveur lors de la récupération des produits' },
       { status: 500 }
     );
   }

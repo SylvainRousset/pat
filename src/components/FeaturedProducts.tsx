@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useCart, CartItem } from '@/context/CartContext';
+import { useCart } from '@/context/CartContext';
+import { ProductType } from '@/types/product';
 
 // Type pour les produits
 interface Product {
