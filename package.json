@@ -13,6 +13,7 @@
     "@types/react-datepicker": "^7.0.0",
     "cloudinary": "^2.6.0",
     "firebase": "^11.4.0",
+    "firebase-admin": "^13.2.0",
     "next": "15.2.1",
     "react": "^19.0.0",
     "react-datepicker": "^8.2.0",
