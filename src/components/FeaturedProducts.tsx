@@ -15,8 +15,6 @@ interface Product {
 }
 
 const FeaturedProducts = () => {
-  const { addToCart } = useCart();
-  const [notifications, setNotifications] = useState<{id: number, productId: number}[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,26 +43,6 @@ const FeaturedProducts = () => {
     
     fetchProducts();
   }, []);
-
-  const handleAddToCart = (product: Product) => {
-    // Ajouter au panier et ouvrir le panier
-    addToCart({
-      id: parseInt(product.id),
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      slug: product.name.toLowerCase().replace(/\s+/g, '-')
-    }, true);
-    
-    // Créer une notification
-    const notificationId = Date.now();
-    setNotifications(prev => [...prev, { id: notificationId, productId: parseInt(product.id) }]);
-    
-    // Supprimer la notification après 2 secondes
-    setTimeout(() => {
-      setNotifications(prev => prev.filter(n => n.id !== notificationId));
-    }, 2000);
-  };
 
   return (
     <section className="bg-white py-12 md:py-16">

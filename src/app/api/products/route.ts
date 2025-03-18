@@ -9,17 +9,6 @@ import {
 } from '@/lib/firebaseAdmin';
 import { deleteImage } from '@/lib/cloudinary';
 
-// Type pour les produits
-interface Product {
-  id: string;
-  name: string;
-  price: string;
-  image: string;
-  description: string;
-  showInShop: boolean;
-  showOnHome: boolean;
-}
-
 // GET - Récupérer tous les produits
 export async function GET(request: NextRequest) {
   try {

@@ -138,9 +138,9 @@ export const deleteProduct = async (productId: string): Promise<boolean> => {
 };
 
 // Télécharger une image
-export const uploadProductImage = async (file: File, filename: string) => {
+export const uploadProductImage = async (file: File) => {
   try {
-    console.log('Simulation de téléchargement d\'image:', file.name);
+    console.log('Simulation de téléchargement d&apos;image:', file.name);
     
     // Au lieu d'utiliser Firebase Storage, nous allons simplement retourner un chemin local
     // Cela suppose que les images sont déjà disponibles dans le dossier public/images
@@ -153,12 +153,12 @@ export const uploadProductImage = async (file: File, filename: string) => {
     
     // Retourner un chemin local vers le dossier public/images
     const imagePath = `/images/${fileName}`;
-    console.log('Chemin d\'image simulé:', imagePath);
+    console.log('Chemin d&apos;image simulé:', imagePath);
     
     return imagePath;
   } catch (error) {
-    console.error('Erreur lors de la simulation de téléchargement d\'image:', error);
-    throw new Error(`Erreur lors du téléchargement de l'image: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
+    console.error('Erreur lors de la simulation de téléchargement d&apos;image:', error);
+    throw new Error(`Erreur lors du téléchargement de l&apos;image: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
   }
 };
 

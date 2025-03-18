@@ -373,7 +373,7 @@ export default function AdminDashboard() {
                       <div className="bg-amber-50 p-3 rounded-md mb-2 text-sm">
                         <p className="font-medium text-amber-800 mb-1">Note importante :</p>
                         <p className="text-amber-700 mb-1">
-                          Vous pouvez télécharger des images depuis votre ordinateur ou entrer des URLs d'images.
+                          Vous pouvez télécharger des images depuis votre ordinateur ou entrer des URLs d&apos;images.
                         </p>
                       </div>
                       <input
@@ -390,7 +390,7 @@ export default function AdminDashboard() {
                         name="image"
                         value={newProduct.image}
                         onChange={handleInputChange}
-                        placeholder="ou entrez l'URL de l'image principale"
+                        placeholder="ou entrez l&apos;URL de l&apos;image principale"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
                       />
                       
@@ -739,7 +739,7 @@ export default function AdminDashboard() {
                         type="text"
                         value={selectedProduct.notice || ''}
                         onChange={(e) => setSelectedProduct({ ...selectedProduct, notice: e.target.value })}
-                        placeholder="ex: Commandez 48h à l'avance"
+                        placeholder="ex: Commandez 48h à l&apos;avance"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
                       />
                     </div>
@@ -903,7 +903,7 @@ export default function AdminDashboard() {
                                       });
                                     }}
                                     className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                                    title="Supprimer l'image"
+                                    title="Supprimer l&apos;image"
                                   >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -922,7 +922,7 @@ export default function AdminDashboard() {
                         
                         {/* Option pour ajouter des URLs d'images directement */}
                         <div>
-                          <h4 className="text-sm font-medium text-gray-700 mb-2">Ou ajouter des URLs d'images</h4>
+                          <h4 className="text-sm font-medium text-gray-700 mb-2">Ou ajouter des URLs d&apos;images</h4>
                           <textarea
                             value={(selectedProduct.images || []).filter(url => url !== selectedProduct.image).join('\n')}
                             onChange={(e) => {
@@ -931,11 +931,11 @@ export default function AdminDashboard() {
                               setSelectedProduct({ ...selectedProduct, images: allImages });
                             }}
                             rows={3}
-                            placeholder="Entrez une URL d'image par ligne"
+                            placeholder="Entrez une URL d&apos;image par ligne"
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
                           />
                           <p className="text-xs text-gray-500 mt-1">
-                            Note: L'image principale est automatiquement incluse.
+                            Note: L&apos;image principale est automatiquement incluse.
                           </p>
                         </div>
                       </div>
@@ -1032,7 +1032,7 @@ export default function AdminDashboard() {
 
                         setSuccessMessage('Produit mis à jour avec succès !');
                         setIsDetailsModalOpen(false);
-                      } catch (error) {
+                      } catch {
                         setErrorMessage('Erreur lors de la mise à jour du produit');
                       }
                     }}
