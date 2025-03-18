@@ -13,6 +13,13 @@ import {
 } from 'firebase/firestore';
 import { ref, deleteObject } from 'firebase/storage';
 
+// Type pour le timestamp Firebase
+interface FirebaseTimestamp {
+  toDate: () => Date;
+  seconds: number;
+  nanoseconds: number;
+}
+
 // Interface pour les produits
 export interface Product {
   id: string;
@@ -22,8 +29,8 @@ export interface Product {
   description: string;
   showInShop: boolean;
   showOnHome: boolean;
-  createdAt?: any;
-  updatedAt?: any;
+  createdAt?: FirebaseTimestamp;
+  updatedAt?: FirebaseTimestamp;
   portions?: string;
   address?: string;
   images?: string[];
@@ -131,7 +138,7 @@ export const deleteProduct = async (productId: string): Promise<boolean> => {
 };
 
 // Télécharger une image
-export const uploadProductImage = async (file: File, productId: string) => {
+export const uploadProductImage = async (file: File, filename: string) => {
   try {
     console.log('Simulation de téléchargement d\'image:', file.name);
     

@@ -20,37 +20,6 @@ interface Product {
   showOnHome: boolean;
 }
 
-// Données fictives pour les produits (dans une vraie application, cela serait stocké dans une base de données)
-let products: Product[] = [
-  {
-    id: '1',
-    name: 'La Boîte à Choux',
-    price: '18 €',
-    image: '/images/laboite-a-choux.avif',
-    description: 'Une sélection raffinée de choux gourmands aux saveurs printanières.',
-    showInShop: true,
-    showOnHome: true
-  },
-  {
-    id: '2',
-    name: 'La Boîte à Flowercake',
-    price: '24 €',
-    image: '/images/laboite-a-flowercake.avif',
-    description: 'Des créations florales délicates pour célébrer le printemps.',
-    showInShop: true,
-    showOnHome: true
-  },
-  {
-    id: '3',
-    name: 'La Boîte Revisitée',
-    price: '20 €',
-    image: '/images/la-boite-arevisite.avif',
-    description: 'Nos classiques réinventés avec une touche de modernité.',
-    showInShop: true,
-    showOnHome: true
-  }
-];
-
 // GET - Récupérer tous les produits
 export async function GET(request: NextRequest) {
   try {
@@ -111,9 +80,9 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json(addedProduct, { status: 201 });
   } catch (error) {
-    console.error('Erreur lors de l\'ajout du produit:', error);
+    console.error('Erreur lors de l&apos;ajout du produit:', error);
     return NextResponse.json(
-      { error: 'Erreur lors de l\'ajout du produit' },
+      { error: 'Erreur lors de l&apos;ajout du produit' },
       { status: 500 }
     );
   }
@@ -174,11 +143,11 @@ export async function DELETE(request: NextRequest) {
     // Si le produit a une image et qu'elle est hébergée sur Cloudinary, la supprimer
     if (product.image && product.image.includes('cloudinary.com')) {
       try {
-        console.log('Suppression de l\'image Cloudinary:', product.image);
+        console.log('Suppression de l&apos;image Cloudinary:', product.image);
         const imageDeleted = await deleteImage(product.image);
         console.log('Image supprimée de Cloudinary:', imageDeleted);
       } catch (imageError) {
-        console.error('Erreur lors de la suppression de l\'image:', imageError);
+        console.error('Erreur lors de la suppression de l&apos;image:', imageError);
         // On continue même si la suppression de l'image échoue
       }
     }

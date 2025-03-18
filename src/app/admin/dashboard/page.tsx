@@ -146,7 +146,7 @@ export default function AdminDashboard() {
       const additionalImagePaths: string[] = [...additionalImages];
       
       if (imageFile) {
-        setSuccessMessage('Téléchargement de l\'image principale en cours...');
+        setSuccessMessage('Téléchargement de l&apos;image principale en cours...');
         
         // Créer un FormData pour l'upload
         const formData = new FormData();
@@ -161,20 +161,20 @@ export default function AdminDashboard() {
           
           if (!uploadResponse.ok) {
             const errorData = await uploadResponse.json();
-            throw new Error(errorData.error || 'Erreur lors du téléchargement de l\'image');
+            throw new Error(errorData.error || 'Erreur lors du téléchargement de l&apos;image');
           }
           
           const responseData = await uploadResponse.json();
           
           if (!responseData.imageUrl) {
-            throw new Error('URL de l\'image non reçue du serveur');
+            throw new Error('URL de l&apos;image non reçue du serveur');
           }
           
           imagePath = responseData.imageUrl;
           setSuccessMessage('Image principale téléchargée avec succès.');
         } catch (uploadError) {
-          console.error('Erreur lors de l\'upload:', uploadError);
-          setErrorMessage(`Erreur lors du téléchargement de l'image: ${uploadError instanceof Error ? uploadError.message : 'Erreur inconnue'}`);
+          console.error('Erreur lors de l&apos;upload:', uploadError);
+          setErrorMessage(`Erreur lors du téléchargement de l&apos;image: ${uploadError instanceof Error ? uploadError.message : 'Erreur inconnue'}`);
           return; // Arrêter l'exécution si l'upload échoue
         }
       }
@@ -194,7 +194,7 @@ export default function AdminDashboard() {
             });
             
             if (!uploadResponse.ok) {
-              console.error('Erreur lors du téléchargement d\'une image additionnelle');
+              console.error('Erreur lors du téléchargement d&apos;une image additionnelle');
               continue; // Continuer avec les autres images même si une échoue
             }
             
@@ -204,7 +204,7 @@ export default function AdminDashboard() {
               additionalImagePaths.push(responseData.imageUrl);
             }
           } catch (error) {
-            console.error('Erreur lors du téléchargement d\'une image additionnelle:', error);
+            console.error('Erreur lors du téléchargement d&apos;une image additionnelle:', error);
             // Continuer avec les autres images
           }
         }
@@ -230,7 +230,7 @@ export default function AdminDashboard() {
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Erreur lors de l\'ajout du produit');
+        throw new Error(errorData.error || 'Erreur lors de l&apos;ajout du produit');
       }
       
       const addedProduct = await response.json();
@@ -261,7 +261,7 @@ export default function AdminDashboard() {
       }, 3000);
     } catch (error) {
       console.error('Erreur complète:', error);
-      setErrorMessage((error as Error).message || 'Erreur lors de l\'ajout du produit');
+      setErrorMessage((error as Error).message || 'Erreur lors de l&apos;ajout du produit');
     }
   };
 
@@ -1032,7 +1032,7 @@ export default function AdminDashboard() {
 
                         setSuccessMessage('Produit mis à jour avec succès !');
                         setIsDetailsModalOpen(false);
-                      } catch (err) {
+                      } catch (error) {
                         setErrorMessage('Erreur lors de la mise à jour du produit');
                       }
                     }}
