@@ -1,42 +1,54 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
-// Données des produits
-const products = [
-  {
-    id: '1',
-    name: 'La Boîte à Choux',
-    price: '18 €',
-    image: '/images/laboite-a-choux.avif',
-    description: 'Une sélection raffinée de choux gourmands aux saveurs printanières.'
-  },
-  {
-    id: '2',
-    name: 'La Boîte à Flowercake',
-    price: '24 €',
-    image: '/images/laboite-a-flowercake.avif',
-    description: 'Des créations florales délicates pour célébrer le printemps.'
-  },
-  {
-    id: '3',
-    name: 'La Boîte Revisitée',
-    price: '20 €',
-    image: '/images/la-boite-arevisite.avif',
-    description: 'Nos classiques réinventés avec une touche de modernité.'
-  }
-];
+// Type pour les produits
+interface Product {
+  id: string;
+  name: string;
+  price: string;
+  image: string;
+  description: string;
+}
 
 export default function BoutiquePage() {
   const { addToCart } = useCart();
   const [addedToCart, setAddedToCart] = useState<Record<string, boolean>>({});
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleAddToCart = (product: typeof products[0]) => {
+  // Charger les produits au chargement de la page
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setIsLoading(true);
+        // Récupérer uniquement les produits à afficher dans la boutique
+        const response = await fetch('/api/products?showInShop=true');
+        
+        if (!response.ok) {
+          throw new Error('Erreur lors de la récupération des produits');
+        }
+        
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        setError('Impossible de charger les produits. Veuillez réessayer plus tard.');
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchProducts();
+  }, []);
+
+  const handleAddToCart = (product: Product) => {
     addToCart({
       id: parseInt(product.id),
       name: product.name,
@@ -106,56 +118,73 @@ export default function BoutiquePage() {
           
           <h2 className="text-xl md:text-3xl font-bold text-center text-gray-900 mb-4 md:mb-8">Nos Boîtes Gourmandes</h2>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-            {products.map((product) => (
-              <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
-                {/* Notification d'ajout au panier */}
-                {addedToCart[product.id] && (
-                  <div className="absolute top-2 right-2 z-10 bg-green-500 text-white text-xs md:text-sm py-1 px-2 md:px-3 rounded-full animate-bounce">
-                    Ajouté !
-                  </div>
-                )}
-                
-                <Link href={`/produit/${product.id}`} className="block relative aspect-[4/3] w-full">
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    fill
-                    className="object-cover hover:scale-110 transition-transform duration-300"
-                    sizes="(max-width: 640px) 90vw, (max-width: 768px) 45vw, (max-width: 1024px) 30vw, 25vw"
-                  />
-                </Link>
-                
-                <div className="p-3 md:p-6">
-                  <div className="flex justify-between items-start mb-1 md:mb-2">
-                    <h2 className="text-lg md:text-xl font-bold text-gray-900">{product.name}</h2>
-                    <span className="text-amber-600 font-semibold">{product.price}</span>
-                  </div>
+          {isLoading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-600 mx-auto"></div>
+              <p className="mt-4 text-gray-700">Chargement des produits...</p>
+            </div>
+          ) : error ? (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 max-w-lg mx-auto">
+              {error}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+              {products.map((product) => (
+                <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
+                  {/* Notification d'ajout au panier */}
+                  {addedToCart[product.id] && (
+                    <div className="absolute top-2 right-2 z-10 bg-green-500 text-white text-xs md:text-sm py-1 px-2 md:px-3 rounded-full animate-bounce">
+                      Ajouté !
+                    </div>
+                  )}
                   
-                  <p className="text-gray-600 text-sm md:text-base mb-3 md:mb-4">{product.description}</p>
+                  <Link href={`/produit/${product.id}`} className="block relative aspect-[4/3] w-full">
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      className="object-cover hover:scale-110 transition-transform duration-300"
+                      sizes="(max-width: 640px) 90vw, (max-width: 768px) 45vw, (max-width: 1024px) 30vw, 25vw"
+                    />
+                  </Link>
                   
-                  <div className="flex justify-between items-center">
-                    <Link 
-                      href={`/produit/${product.id}`}
-                      className="text-amber-600 hover:text-amber-800 font-medium text-sm md:text-base"
-                    >
-                      Détails
-                    </Link>
+                  <div className="p-3 md:p-6">
+                    <div className="flex justify-between items-start mb-1 md:mb-2">
+                      <h2 className="text-lg md:text-xl font-bold text-gray-900">{product.name}</h2>
+                      <span className="text-amber-600 font-semibold">{product.price}</span>
+                    </div>
                     
-                    <button
-                      onClick={() => handleAddToCart(product)}
-                      className="bg-amber-600 hover:bg-amber-700 text-white text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 rounded-md transition-colors flex items-center"
-                    >
-                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                      Ajouter
-                    </button>
+                    <p className="text-gray-600 text-sm md:text-base mb-3 md:mb-4">{product.description}</p>
+                    
+                    <div className="flex justify-between items-center">
+                      <Link 
+                        href={`/produit/${product.id}`}
+                        className="text-amber-600 hover:text-amber-800 font-medium text-sm md:text-base"
+                      >
+                        Détails
+                      </Link>
+                      
+                      <button
+                        onClick={() => handleAddToCart(product)}
+                        className="bg-amber-600 hover:bg-amber-700 text-white text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 rounded-md transition-colors flex items-center"
+                      >
+                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        Ajouter
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
+          
+          {!isLoading && !error && products.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              Aucun produit disponible pour le moment.
+            </div>
+          )}
         </div>
       </main>
       <Footer />
