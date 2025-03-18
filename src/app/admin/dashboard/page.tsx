@@ -400,7 +400,7 @@ export default function AdminDashboard() {
                           <div className="relative h-32 w-32 rounded overflow-hidden border border-gray-300">
                             <Image
                               src={imagePreview}
-                              alt="Aperçu de l'image"
+                              alt="Aperçu de l&apos;image"
                               fill
                               className="object-cover"
                             />
@@ -518,7 +518,7 @@ export default function AdminDashboard() {
                         className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
                       />
                       <label htmlFor="showOnHome" className="ml-2 block text-sm text-gray-700">
-                        Afficher sur la page d'accueil
+                        Afficher sur la page d&apos;accueil
                       </label>
                     </div>
                   </div>
@@ -767,7 +767,7 @@ export default function AdminDashboard() {
                           id="detail-show-on-home"
                         />
                         <label htmlFor="detail-show-on-home" className="ml-2 block text-sm text-gray-700">
-                          Afficher sur la page d'accueil
+                          Afficher sur la page d&apos;accueil
                         </label>
                       </div>
                     </div>
