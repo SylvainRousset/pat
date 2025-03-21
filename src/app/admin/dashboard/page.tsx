@@ -54,8 +54,14 @@ export default function AdminDashboard() {
         if (user) {
           console.log("Utilisateur authentifié:", user.email);
           setIsAuthenticated(true);
-          // Charger les produits depuis l'API
-          fetchProducts();
+          
+          // Tester d'abord l'API simple pour vérifier que les API fonctionnent
+          testApi().then(apiWorks => {
+            if (apiWorks) {
+              // Si l'API de test fonctionne, charger les produits
+              fetchProducts();
+            }
+          });
         } else {
           console.log("Utilisateur non authentifié, redirection vers page de connexion");
           setIsAuthenticated(false);
@@ -73,15 +79,45 @@ export default function AdminDashboard() {
     checkAuth();
   }, []);
 
+  // Fonction pour tester l'API
+  const testApi = async () => {
+    try {
+      console.log("Test de l'API...");
+      const response = await fetch('/api/check');
+      if (!response.ok) {
+        throw new Error(`Erreur ${response.status}`);
+      }
+      const data = await response.json();
+      console.log("Résultat du test API:", data);
+      return true;
+    } catch (error) {
+      console.error("Erreur lors du test de l'API:", error);
+      setErrorMessage(`Erreur de connexion à l'API. Veuillez vérifier la connexion internet ou contacter l'administrateur.`);
+      return false;
+    }
+  };
+
   // Fonction pour récupérer les produits
   const fetchProducts = async () => {
     try {
       setIsLoading(true);
       console.log("Récupération des produits...");
-      const response = await fetch('/api/products');
+      
+      // Ajouter un timeout pour éviter les requêtes qui restent en attente
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 secondes timeout
+      
+      const response = await fetch('/api/products', {
+        signal: controller.signal,
+        // Ajout du cache: 'no-store' pour éviter les problèmes de cache
+        cache: 'no-store'
+      });
+      
+      clearTimeout(timeoutId);
       
       if (!response.ok) {
-        throw new Error('Erreur lors de la récupération des produits');
+        const errorText = await response.text();
+        throw new Error(`Erreur ${response.status}: ${errorText}`);
       }
       
       const data = await response.json();
@@ -89,7 +125,9 @@ export default function AdminDashboard() {
       setProducts(data);
     } catch (error) {
       console.error("Erreur lors du chargement des produits:", error);
-      setErrorMessage('Erreur lors du chargement des produits');
+      setErrorMessage(`Erreur lors du chargement des produits: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
+      // Définir products comme un tableau vide pour éviter une boucle infinie d'erreurs
+      setProducts([]);
     } finally {
       setIsLoading(false);
     }
