@@ -50,15 +50,21 @@ export default function AdminDashboard() {
   // Vérifier l'authentification et charger les produits au chargement de la page
   useEffect(() => {
     const checkAuth = () => {
+      console.log("Vérification de l'authentification...");
       // Utiliser Firebase Auth pour vérifier l'authentification
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
+          console.log("Utilisateur authentifié:", user.email);
           setIsAuthenticated(true);
           // Charger les produits depuis l'API
           fetchProducts();
         } else {
+          console.log("Utilisateur non authentifié, redirection vers page de connexion");
           setIsAuthenticated(false);
-          router.push('/admin');
+          
+          // Rediriger vers la page de connexion en utilisant window.location
+          // pour garantir la compatibilité avec Vercel
+          window.location.href = '/admin';
         }
       });
       
@@ -67,12 +73,13 @@ export default function AdminDashboard() {
     };
     
     checkAuth();
-  }, [router]);
+  }, []);
 
   // Fonction pour récupérer les produits
   const fetchProducts = async () => {
     try {
       setIsLoading(true);
+      console.log("Récupération des produits...");
       const response = await fetch('/api/products');
       
       if (!response.ok) {
@@ -80,10 +87,11 @@ export default function AdminDashboard() {
       }
       
       const data = await response.json();
+      console.log(`${data.length} produits récupérés`);
       setProducts(data);
     } catch (error) {
+      console.error("Erreur lors du chargement des produits:", error);
       setErrorMessage('Erreur lors du chargement des produits');
-      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -116,9 +124,13 @@ export default function AdminDashboard() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      router.push('/admin');
+      console.log("Déconnexion réussie, redirection vers la page de connexion");
+      
+      // Rediriger vers la page de connexion
+      window.location.href = '/admin';
     } catch (error) {
-      console.error('Erreur lors de la déconnexion:', error);
+      console.error("Erreur lors de la déconnexion:", error);
+      setErrorMessage('Erreur lors de la déconnexion');
     }
   };
 
