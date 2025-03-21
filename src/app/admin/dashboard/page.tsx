@@ -47,18 +47,24 @@ export default function AdminDashboard() {
 
   // Vérifier l'authentification et charger les produits au chargement de la page
   useEffect(() => {
+    // Utiliser une référence pour suivre si la vérification a déjà été effectuée
+    const hasCheckedRef = { current: false };
+    
     const checkAuth = () => {
+      // Éviter les vérifications multiples
+      if (hasCheckedRef.current) return;
+      
       console.log("Vérification de l'authentification...");
       // Utiliser Firebase Auth pour vérifier l'authentification
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
           console.log("Utilisateur authentifié:", user.email);
           setIsAuthenticated(true);
+          hasCheckedRef.current = true;
           
-          // Tester d'abord l'API simple pour vérifier que les API fonctionnent
+          // Tester une seule fois l'API
           testApi().then(apiWorks => {
             if (apiWorks) {
-              // Si l'API de test fonctionne, charger les produits
               fetchProducts();
             }
           });
@@ -66,8 +72,7 @@ export default function AdminDashboard() {
           console.log("Utilisateur non authentifié, redirection vers page de connexion");
           setIsAuthenticated(false);
           
-          // Rediriger vers la page de connexion en utilisant window.location
-          // pour garantir la compatibilité avec Vercel
+          // Rediriger vers la page de connexion
           window.location.href = '/admin';
         }
       });
@@ -83,7 +88,14 @@ export default function AdminDashboard() {
   const testApi = async () => {
     try {
       console.log("Test de l'API...");
-      const response = await fetch('/api/check');
+      // Ajouter un timestamp pour éviter la mise en cache
+      const timestamp = new Date().getTime();
+      const response = await fetch(`/api/check?_=${timestamp}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate'
+        }
+      });
       if (!response.ok) {
         throw new Error(`Erreur ${response.status}`);
       }

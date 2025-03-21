@@ -6,6 +6,7 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       message: 'L\'API fonctionne correctement!',
+      timestamp: new Date().toISOString(), // Ajouter un timestamp pour éviter la mise en cache
       env: {
         nodeEnv: process.env.NODE_ENV,
         hasFirebaseConfig: !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
