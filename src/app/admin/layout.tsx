@@ -6,12 +6,10 @@ import { usePathname, useRouter } from 'next/navigation';
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Authentification désactivée temporairement
-    // Commenté pour permettre l'accès direct
-    /*
+    // Vérifier l'authentification seulement pour les pages du tableau de bord
     if (pathname !== '/admin') {
       const isAuthenticated = localStorage.getItem('adminAuthenticated') === 'true';
       
@@ -19,7 +17,6 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         router.push('/admin');
       }
     }
-    */
     
     setIsLoading(false);
   }, [pathname, router]);

@@ -6,6 +6,7 @@ import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
+import { onAuthStateChanged } from 'firebase/auth';
 
 // Type pour les produits
 interface Product {
@@ -48,22 +49,17 @@ export default function AdminDashboard() {
 
   // Vérifier l'authentification et charger les produits au chargement de la page
   useEffect(() => {
-    // Authentication bypass - accès direct au tableau de bord
-    setIsAuthenticated(true);
-    
-    // Charger les produits depuis l'API
-    fetchProducts();
-    
-    /* Commenté pour accès sans authentification
     const checkAuth = () => {
       // Utiliser Firebase Auth pour vérifier l'authentification
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
           setIsAuthenticated(true);
+          localStorage.setItem('adminAuthenticated', 'true');
           // Charger les produits depuis l'API
           fetchProducts();
         } else {
           setIsAuthenticated(false);
+          localStorage.removeItem('adminAuthenticated');
           router.push('/admin');
         }
       });
@@ -73,8 +69,7 @@ export default function AdminDashboard() {
     
     const unsubscribe = checkAuth();
     return () => unsubscribe();
-    */
-  }, []);
+  }, [router]);
 
   // Fonction pour récupérer les produits
   const fetchProducts = async () => {
@@ -123,6 +118,7 @@ export default function AdminDashboard() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
+      localStorage.removeItem('adminAuthenticated');
       router.push('/admin');
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
@@ -303,8 +299,18 @@ export default function AdminDashboard() {
     }
   };
 
-  // Modifier le rendu pour s'assurer qu'il affiche toujours le contenu
-  // Supprimer la vérification d'authentification dans le rendu
+  // Vérifier l'authentification avant d'afficher le contenu
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f8f5f0]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-600 mx-auto"></div>
+          <p className="mt-4 text-gray-700">Vérification de l'authentification...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`min-h-screen bg-[#f8f5f0] ${!isAuthenticated ? 'hidden' : ''}`}>
       {/* Header du tableau de bord */}
