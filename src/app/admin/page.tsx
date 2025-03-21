@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
-import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -21,19 +21,6 @@ export default function AdminLogin() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Vérifier si l'utilisateur est déjà connecté
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // Utilisateur déjà connecté, rediriger vers le tableau de bord
-        console.log("Utilisateur déjà connecté, redirection...");
-        window.location.href = '/admin/dashboard';
-      }
-    });
-    
-    return () => unsubscribe();
-  }, []);
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -49,13 +36,8 @@ export default function AdminLogin() {
       // Connexion avec Firebase Auth
       await signInWithEmailAndPassword(auth, email, password);
       
-      console.log("Connexion réussie, redirection...");
-      
-      // Rediriger vers le tableau de bord en utilisant deux méthodes
-      // pour assurer la compatibilité avec Vercel
-      window.location.href = '/admin/dashboard';
+      // Rediriger vers le tableau de bord
       router.push('/admin/dashboard');
-      
     } catch (err: unknown) {
       const firebaseError = err as FirebaseError;
       console.error('Erreur de connexion:', firebaseError);
@@ -66,7 +48,7 @@ export default function AdminLogin() {
       } else if (firebaseError.code === 'auth/too-many-requests') {
         setError('Trop de tentatives infructueuses. Veuillez réessayer plus tard.');
       } else {
-        setError(`Une erreur est survenue lors de la connexion: ${firebaseError.code}`);
+        setError('Une erreur est survenue lors de la connexion');
       }
     } finally {
       setIsLoading(false);

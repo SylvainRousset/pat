@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import Navbar from '@/components/Navbar';
@@ -25,6 +26,7 @@ interface Product {
 }
 
 export default function AdminDashboard() {
+  const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
@@ -47,33 +49,16 @@ export default function AdminDashboard() {
 
   // Vérifier l'authentification et charger les produits au chargement de la page
   useEffect(() => {
-    // Utiliser une référence pour suivre si la vérification a déjà été effectuée
-    const hasCheckedRef = { current: false };
-    
     const checkAuth = () => {
-      // Éviter les vérifications multiples
-      if (hasCheckedRef.current) return;
-      
-      console.log("Vérification de l'authentification...");
       // Utiliser Firebase Auth pour vérifier l'authentification
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
-          console.log("Utilisateur authentifié:", user.email);
           setIsAuthenticated(true);
-          hasCheckedRef.current = true;
-          
-          // Tester une seule fois l'API
-          testApi().then(apiWorks => {
-            if (apiWorks) {
-              fetchProducts();
-            }
-          });
+          // Charger les produits depuis l'API
+          fetchProducts();
         } else {
-          console.log("Utilisateur non authentifié, redirection vers page de connexion");
           setIsAuthenticated(false);
-          
-          // Rediriger vers la page de connexion
-          window.location.href = '/admin';
+          router.push('/admin');
         }
       });
       
@@ -82,64 +67,23 @@ export default function AdminDashboard() {
     };
     
     checkAuth();
-  }, []);
-
-  // Fonction pour tester l'API
-  const testApi = async () => {
-    try {
-      console.log("Test de l'API...");
-      // Ajouter un timestamp pour éviter la mise en cache
-      const timestamp = new Date().getTime();
-      const response = await fetch(`/api/check?_=${timestamp}`, {
-        cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate'
-        }
-      });
-      if (!response.ok) {
-        throw new Error(`Erreur ${response.status}`);
-      }
-      const data = await response.json();
-      console.log("Résultat du test API:", data);
-      return true;
-    } catch (error) {
-      console.error("Erreur lors du test de l'API:", error);
-      setErrorMessage(`Erreur de connexion à l'API. Veuillez vérifier la connexion internet ou contacter l'administrateur.`);
-      return false;
-    }
-  };
+  }, [router]);
 
   // Fonction pour récupérer les produits
   const fetchProducts = async () => {
     try {
       setIsLoading(true);
-      console.log("Récupération des produits...");
-      
-      // Ajouter un timeout pour éviter les requêtes qui restent en attente
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 secondes timeout
-      
-      const response = await fetch('/api/products', {
-        signal: controller.signal,
-        // Ajout du cache: 'no-store' pour éviter les problèmes de cache
-        cache: 'no-store'
-      });
-      
-      clearTimeout(timeoutId);
+      const response = await fetch('/api/products');
       
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Erreur ${response.status}: ${errorText}`);
+        throw new Error('Erreur lors de la récupération des produits');
       }
       
       const data = await response.json();
-      console.log(`${data.length} produits récupérés`);
       setProducts(data);
     } catch (error) {
-      console.error("Erreur lors du chargement des produits:", error);
-      setErrorMessage(`Erreur lors du chargement des produits: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
-      // Définir products comme un tableau vide pour éviter une boucle infinie d'erreurs
-      setProducts([]);
+      setErrorMessage('Erreur lors du chargement des produits');
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -172,13 +116,9 @@ export default function AdminDashboard() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      console.log("Déconnexion réussie, redirection vers la page de connexion");
-      
-      // Rediriger vers la page de connexion
-      window.location.href = '/admin';
+      router.push('/admin');
     } catch (error) {
-      console.error("Erreur lors de la déconnexion:", error);
-      setErrorMessage('Erreur lors de la déconnexion');
+      console.error('Erreur lors de la déconnexion:', error);
     }
   };
 
