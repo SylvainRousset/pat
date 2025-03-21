@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { signOut } from 'firebase/auth';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
@@ -27,7 +27,7 @@ interface Product {
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
   const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
     name: '',
@@ -307,7 +307,7 @@ export default function AdminDashboard() {
   // Modifier le rendu pour s'assurer qu'il affiche toujours le contenu
   // Supprimer la vérification d'authentification dans le rendu
   return (
-    <div className="min-h-screen bg-[#f8f5f0]">
+    <div className={`min-h-screen bg-[#f8f5f0] ${!isAuthenticated ? 'hidden' : ''}`}>
       {/* Header du tableau de bord */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
