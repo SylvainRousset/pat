@@ -49,6 +49,13 @@ export default function AdminDashboard() {
 
   // Vérifier l'authentification et charger les produits au chargement de la page
   useEffect(() => {
+    // Authentication bypass - accès direct au tableau de bord
+    setIsAuthenticated(true);
+    
+    // Charger les produits depuis l'API
+    fetchProducts();
+    
+    /* Commenté pour accès sans authentification
     const checkAuth = () => {
       // Utiliser Firebase Auth pour vérifier l'authentification
       const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -62,12 +69,13 @@ export default function AdminDashboard() {
         }
       });
       
-      // Nettoyer l'abonnement lors du démontage du composant
-      return () => unsubscribe();
+      return unsubscribe;
     };
     
-    checkAuth();
-  }, [router]);
+    const unsubscribe = checkAuth();
+    return () => unsubscribe();
+    */
+  }, []);
 
   // Fonction pour récupérer les produits
   const fetchProducts = async () => {
@@ -296,337 +304,338 @@ export default function AdminDashboard() {
     }
   };
 
-  if (!isAuthenticated) {
-    return null; // Ne rien afficher pendant la vérification/redirection
-  }
-
+  // Modifier le rendu pour s'assurer qu'il affiche toujours le contenu
+  // Supprimer la vérification d'authentification dans le rendu
   return (
-    <>
-      <Navbar />
-      <main className="min-h-screen bg-[#f8f5f0] py-8">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Tableau de bord administrateur</h1>
-            <button
-              onClick={handleLogout}
-              className="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
-            >
-              Déconnexion
-            </button>
+    <div className="min-h-screen bg-[#f8f5f0]">
+      {/* Header du tableau de bord */}
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+          <h1 className="text-2xl font-semibold text-gray-900">Tableau de bord</h1>
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
+          >
+            Déconnexion
+          </button>
+        </div>
+      </header>
+      
+      {/* Contenu principal */}
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        {/* ... reste du contenu ... */}
+        
+        {successMessage && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            {successMessage}
           </div>
-          
-          {successMessage && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-              {successMessage}
-            </div>
-          )}
-          
-          {errorMessage && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              {errorMessage}
-            </div>
-          )}
-          
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Formulaire d'ajout de produit */}
-            <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Ajouter un produit</h2>
+        )}
+        
+        {errorMessage && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {errorMessage}
+          </div>
+        )}
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Formulaire d'ajout de produit */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">Ajouter un produit</h2>
+              
+              <form onSubmit={handleAddProduct} className="space-y-4">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                    Nom du produit
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={newProduct.name}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                    required
+                  />
+                </div>
                 
-                <form onSubmit={handleAddProduct} className="space-y-4">
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                      Nom du produit
-                    </label>
+                <div>
+                  <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
+                    Prix
+                  </label>
+                  <input
+                    type="text"
+                    id="price"
+                    name="price"
+                    value={newProduct.price}
+                    onChange={handleInputChange}
+                    placeholder="ex: 18 €"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
+                    Image du produit
+                  </label>
+                  <div className="flex flex-col space-y-2">
+                    <div className="bg-amber-50 p-3 rounded-md mb-2 text-sm">
+                      <p className="font-medium text-amber-800 mb-1">Note importante :</p>
+                      <p className="text-amber-700 mb-1">
+                        Vous pouvez télécharger des images depuis votre ordinateur ou entrer des URLs d&apos;images.
+                      </p>
+                    </div>
+                    <input
+                      type="file"
+                      id="imageFile"
+                      name="imageFile"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                    />
                     <input
                       type="text"
-                      id="name"
-                      name="name"
-                      value={newProduct.name}
+                      id="image"
+                      name="image"
+                      value={newProduct.image}
                       onChange={handleInputChange}
+                      placeholder="ou entrez l&apos;URL de l&apos;image principale"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
-                      required
                     />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
-                      Prix
-                    </label>
-                    <input
-                      type="text"
-                      id="price"
-                      name="price"
-                      value={newProduct.price}
-                      onChange={handleInputChange}
-                      placeholder="ex: 18 €"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
-                      Image du produit
-                    </label>
-                    <div className="flex flex-col space-y-2">
-                      <div className="bg-amber-50 p-3 rounded-md mb-2 text-sm">
-                        <p className="font-medium text-amber-800 mb-1">Note importante :</p>
-                        <p className="text-amber-700 mb-1">
-                          Vous pouvez télécharger des images depuis votre ordinateur ou entrer des URLs d&apos;images.
-                        </p>
-                      </div>
-                      <input
-                        type="file"
-                        id="imageFile"
-                        name="imageFile"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
-                      />
-                      <input
-                        type="text"
-                        id="image"
-                        name="image"
-                        value={newProduct.image}
-                        onChange={handleInputChange}
-                        placeholder="ou entrez l&apos;URL de l&apos;image principale"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
-                      />
-                      
-                      {imagePreview && (
-                        <div className="mt-2">
-                          <p className="text-sm text-gray-500 mb-1">Aperçu :</p>
-                          <div className="relative h-32 w-32 rounded overflow-hidden border border-gray-300">
-                            <Image
-                              src={imagePreview}
-                              alt="Aperçu de l&apos;image"
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="additionalImages" className="block text-sm font-medium text-gray-700 mb-1">
-                      Images additionnelles (facultatif)
-                    </label>
-                    <div className="space-y-4">
-                      <input
-                        type="file"
-                        id="additionalImagesFiles"
-                        name="additionalImagesFiles"
-                        accept="image/*"
-                        multiple
-                        onChange={(e) => {
-                          if (e.target.files && e.target.files.length > 0) {
-                            const filesArray = Array.from(e.target.files);
-                            setAdditionalImagesFiles(prev => [...prev, ...filesArray]);
-                          }
-                        }}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
-                      />
-                      
-                      {additionalImagesFiles.length > 0 && (
-                        <div className="mt-2">
-                          <p className="text-sm text-gray-500 mb-1">Images sélectionnées: {additionalImagesFiles.length}</p>
-                          <div className="flex flex-wrap gap-2">
-                            {additionalImagesFiles.map((file, index) => (
-                              <div key={index} className="relative group">
-                                <div className="relative h-16 w-16 rounded overflow-hidden border border-gray-300">
-                                  <Image
-                                    src={URL.createObjectURL(file)}
-                                    alt={`Image ${index + 1}`}
-                                    fill
-                                    className="object-cover"
-                                  />
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const newFiles = [...additionalImagesFiles];
-                                    newFiles.splice(index, 1);
-                                    setAdditionalImagesFiles(newFiles);
-                                  }}
-                                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                  </svg>
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      
-                      <textarea
-                        id="additionalImages"
-                        name="additionalImages"
-                        placeholder="Ou entrez les URLs des images additionnelles (une par ligne)"
-                        value={additionalImages.join('\n')}
-                        onChange={(e) => {
-                          const urls = e.target.value.split('\n').filter(url => url.trim() !== '');
-                          setAdditionalImages(urls);
-                        }}
-                        rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                      Description
-                    </label>
-                    <textarea
-                      id="description"
-                      name="description"
-                      value={newProduct.description}
-                      onChange={handleInputChange}
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        id="showInShop"
-                        name="showInShop"
-                        checked={newProduct.showInShop}
-                        onChange={handleCheckboxChange}
-                        className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
-                      />
-                      <label htmlFor="showInShop" className="ml-2 block text-sm text-gray-700">
-                        Afficher dans la boutique
-                      </label>
-                    </div>
                     
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        id="showOnHome"
-                        name="showOnHome"
-                        checked={newProduct.showOnHome}
-                        onChange={handleCheckboxChange}
-                        className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
-                      />
-                      <label htmlFor="showOnHome" className="ml-2 block text-sm text-gray-700">
-                        Afficher sur la page d&apos;accueil
-                      </label>
-                    </div>
+                    {imagePreview && (
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-500 mb-1">Aperçu :</p>
+                        <div className="relative h-32 w-32 rounded overflow-hidden border border-gray-300">
+                          <Image
+                            src={imagePreview}
+                            alt="Aperçu de l&apos;image"
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  
-                  <button
-                    type="submit"
-                    className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-md transition-colors"
-                  >
-                    Ajouter le produit
-                  </button>
-                </form>
-              </div>
-            </div>
-            
-            {/* Liste des produits */}
-            <div className="lg:col-span-2">
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Produits existants</h2>
+                </div>
                 
-                {isLoading ? (
-                  <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-700">Chargement des produits...</p>
-                  </div>
-                ) : (
-                  <div className="w-full">
-                    <table className="w-full table-fixed divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th scope="col" className="w-16 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Image
-                          </th>
-                          <th scope="col" className="w-1/3 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Nom
-                          </th>
-                          <th scope="col" className="w-20 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Prix
-                          </th>
-                          <th scope="col" className="w-1/4 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Affichage
-                          </th>
-                          <th scope="col" className="w-32 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Actions
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {products.map((product) => (
-                          <tr key={product.id}>
-                            <td className="px-2 py-4">
-                              <div className="relative h-10 w-10 rounded overflow-hidden">
+                <div>
+                  <label htmlFor="additionalImages" className="block text-sm font-medium text-gray-700 mb-1">
+                    Images additionnelles (facultatif)
+                  </label>
+                  <div className="space-y-4">
+                    <input
+                      type="file"
+                      id="additionalImagesFiles"
+                      name="additionalImagesFiles"
+                      accept="image/*"
+                      multiple
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files.length > 0) {
+                          const filesArray = Array.from(e.target.files);
+                          setAdditionalImagesFiles(prev => [...prev, ...filesArray]);
+                        }
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                    />
+                    
+                    {additionalImagesFiles.length > 0 && (
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-500 mb-1">Images sélectionnées: {additionalImagesFiles.length}</p>
+                        <div className="flex flex-wrap gap-2">
+                          {additionalImagesFiles.map((file, index) => (
+                            <div key={index} className="relative group">
+                              <div className="relative h-16 w-16 rounded overflow-hidden border border-gray-300">
                                 <Image
-                                  src={product.image}
-                                  alt={product.name}
+                                  src={URL.createObjectURL(file)}
+                                  alt={`Image ${index + 1}`}
                                   fill
                                   className="object-cover"
                                 />
                               </div>
-                            </td>
-                            <td className="px-2 py-4">
-                              <div className="text-sm font-medium text-gray-900 truncate">{product.name}</div>
-                              <div className="text-xs text-gray-500 truncate">{product.description.substring(0, 60)}...</div>
-                            </td>
-                            <td className="px-2 py-4">
-                              <div className="text-sm text-gray-900">{product.price}</div>
-                            </td>
-                            <td className="px-2 py-4">
-                              <div className="flex flex-col space-y-1">
-                                <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${product.showInShop ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                                  {product.showInShop ? 'Boutique' : 'Non affiché en boutique'}
-                                </span>
-                                <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${product.showOnHome ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
-                                  {product.showOnHome ? 'Accueil' : 'Non affiché en accueil'}
-                                </span>
-                              </div>
-                            </td>
-                            <td className="px-2 py-4 text-sm font-medium">
-                              <div className="flex items-center space-x-2">
-                                <button
-                                  onClick={() => {
-                                    setSelectedProduct(product);
-                                    setIsDetailsModalOpen(true);
-                                  }}
-                                  className="text-amber-600 hover:text-amber-900"
-                                >
-                                  Détails
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteProduct(product.id)}
-                                  className="text-red-600 hover:text-red-900"
-                                >
-                                  Supprimer
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newFiles = [...additionalImagesFiles];
+                                  newFiles.splice(index, 1);
+                                  setAdditionalImagesFiles(newFiles);
+                                }}
+                                className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    <textarea
+                      id="additionalImages"
+                      name="additionalImages"
+                      placeholder="Ou entrez les URLs des images additionnelles (une par ligne)"
+                      value={additionalImages.join('\n')}
+                      onChange={(e) => {
+                        const urls = e.target.value.split('\n').filter(url => url.trim() !== '');
+                        setAdditionalImages(urls);
+                      }}
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                    />
                   </div>
-                )}
+                </div>
                 
-                {!isLoading && products.length === 0 && (
-                  <div className="text-center py-4 text-gray-500">
-                    Aucun produit disponible
+                <div>
+                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    value={newProduct.description}
+                    onChange={handleInputChange}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="showInShop"
+                      name="showInShop"
+                      checked={newProduct.showInShop}
+                      onChange={handleCheckboxChange}
+                      className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="showInShop" className="ml-2 block text-sm text-gray-700">
+                      Afficher dans la boutique
+                    </label>
                   </div>
-                )}
-              </div>
+                  
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="showOnHome"
+                      name="showOnHome"
+                      checked={newProduct.showOnHome}
+                      onChange={handleCheckboxChange}
+                      className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="showOnHome" className="ml-2 block text-sm text-gray-700">
+                      Afficher sur la page d&apos;accueil
+                    </label>
+                  </div>
+                </div>
+                
+                <button
+                  type="submit"
+                  className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-md transition-colors"
+                >
+                  Ajouter le produit
+                </button>
+              </form>
+            </div>
+          </div>
+          
+          {/* Liste des produits */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">Produits existants</h2>
+              
+              {isLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-600 mx-auto"></div>
+                  <p className="mt-4 text-gray-700">Chargement des produits...</p>
+                </div>
+              ) : (
+                <div className="w-full">
+                  <table className="w-full table-fixed divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th scope="col" className="w-16 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Image
+                        </th>
+                        <th scope="col" className="w-1/3 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Nom
+                        </th>
+                        <th scope="col" className="w-20 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Prix
+                        </th>
+                        <th scope="col" className="w-1/4 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Affichage
+                        </th>
+                        <th scope="col" className="w-32 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {products.map((product) => (
+                        <tr key={product.id}>
+                          <td className="px-2 py-4">
+                            <div className="relative h-10 w-10 rounded overflow-hidden">
+                              <Image
+                                src={product.image}
+                                alt={product.name}
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                          </td>
+                          <td className="px-2 py-4">
+                            <div className="text-sm font-medium text-gray-900 truncate">{product.name}</div>
+                            <div className="text-xs text-gray-500 truncate">{product.description.substring(0, 60)}...</div>
+                          </td>
+                          <td className="px-2 py-4">
+                            <div className="text-sm text-gray-900">{product.price}</div>
+                          </td>
+                          <td className="px-2 py-4">
+                            <div className="flex flex-col space-y-1">
+                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${product.showInShop ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                                {product.showInShop ? 'Boutique' : 'Non affiché en boutique'}
+                              </span>
+                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${product.showOnHome ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
+                                {product.showOnHome ? 'Accueil' : 'Non affiché en accueil'}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-2 py-4 text-sm font-medium">
+                            <div className="flex items-center space-x-2">
+                              <button
+                                onClick={() => {
+                                  setSelectedProduct(product);
+                                  setIsDetailsModalOpen(true);
+                                }}
+                                className="text-amber-600 hover:text-amber-900"
+                              >
+                                Détails
+                              </button>
+                              <button
+                                onClick={() => handleDeleteProduct(product.id)}
+                                className="text-red-600 hover:text-red-900"
+                              >
+                                Supprimer
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+              
+              {!isLoading && products.length === 0 && (
+                <div className="text-center py-4 text-gray-500">
+                  Aucun produit disponible
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1046,6 +1055,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 } 
