@@ -1,10 +1,24 @@
 import { v2 as cloudinary } from 'cloudinary';
 
+// Variables d'environnement Cloudinary
+const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+const apiKey = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY;
+const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+// Vérifier que les variables sont définies
+if (!cloudName || !apiKey || !apiSecret) {
+  console.error('Variables d\'environnement Cloudinary manquantes dans cloudinary.ts!', {
+    cloudName: !!cloudName,
+    apiKey: !!apiKey,
+    apiSecret: !!apiSecret
+  });
+}
+
 // Configuration de Cloudinary
 cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: cloudName,
+  api_key: apiKey,
+  api_secret: apiSecret,
   secure: true,
 });
 

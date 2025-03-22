@@ -2,10 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import { v2 as cloudinary } from 'cloudinary';
 
 // Configuration de Cloudinary
+const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+const apiKey = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY;
+const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+// Vérifier que les variables sont définies
+if (!cloudName || !apiKey || !apiSecret) {
+  console.error('Variables d\'environnement Cloudinary manquantes!', {
+    cloudName: !!cloudName,
+    apiKey: !!apiKey,
+    apiSecret: !!apiSecret
+  });
+}
+
 cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'votre-cloud-name',
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || 'votre-api-key',
-  api_secret: process.env.CLOUDINARY_API_SECRET || 'votre-api-secret',
+  cloud_name: cloudName,
+  api_key: apiKey,
+  api_secret: apiSecret,
   secure: true
 });
 
@@ -13,10 +26,18 @@ export async function POST(request: NextRequest) {
   try {
     console.log('Début de la requête d\'upload d\'image');
     console.log('Configuration Cloudinary:', {
-      cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY?.substring(0, 5) + '...',
-      api_secret: process.env.CLOUDINARY_API_SECRET ? 'défini' : 'non défini'
+      cloud_name: cloudName,
+      api_key: apiKey?.substring(0, 5) + '...',
+      api_secret: apiSecret ? 'défini' : 'non défini'
     });
+    
+    // Vérification des credentials avant de continuer
+    if (!cloudName || !apiKey || !apiSecret) {
+      return NextResponse.json(
+        { error: 'Configuration Cloudinary incomplète. Vérifiez les variables d\'environnement.' },
+        { status: 500 }
+      );
+    }
     
     const formData = await request.formData();
     const file = formData.get('file') as File;
