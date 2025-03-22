@@ -12,6 +12,11 @@ cloudinary.config({
 export async function POST(request: NextRequest) {
   try {
     console.log('Début de la requête d\'upload d\'image');
+    console.log('Configuration Cloudinary:', {
+      cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY?.substring(0, 5) + '...',
+      api_secret: process.env.CLOUDINARY_API_SECRET ? 'défini' : 'non défini'
+    });
     
     const formData = await request.formData();
     const file = formData.get('file') as File;
@@ -40,18 +45,35 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(arrayBuffer);
     const base64 = `data:${file.type};base64,${buffer.toString('base64')}`;
     
-    // Télécharger l'image vers Cloudinary
-    const uploadResult = await cloudinary.uploader.upload(base64, {
-      folder: 'patisserie',
-      resource_type: 'image',
-      public_id: `product_${Date.now()}`,
-    });
+    console.log('Image convertie en base64, taille:', base64.length, 'caractères');
     
-    console.log('Image téléchargée avec succès. URL:', uploadResult.secure_url);
-    
-    return NextResponse.json({ imageUrl: uploadResult.secure_url });
+    try {
+      // Télécharger l'image vers Cloudinary
+      console.log('Tentative d\'upload vers Cloudinary...');
+      const uploadResult = await cloudinary.uploader.upload(base64, {
+        folder: 'patisserie',
+        resource_type: 'image',
+        public_id: `product_${Date.now()}`,
+      });
+      
+      console.log('Image téléchargée avec succès. URL:', uploadResult.secure_url);
+      
+      return NextResponse.json({ imageUrl: uploadResult.secure_url });
+    } catch (cloudinaryError) {
+      console.error('Erreur Cloudinary spécifique:', cloudinaryError);
+      
+      // Extraire des informations plus détaillées de l'erreur Cloudinary
+      const errorDetails = cloudinaryError instanceof Error 
+        ? cloudinaryError.message
+        : JSON.stringify(cloudinaryError);
+        
+      return NextResponse.json(
+        { error: `Erreur Cloudinary: ${errorDetails}` },
+        { status: 500 }
+      );
+    }
   } catch (error) {
-    console.error('Erreur lors du téléchargement de l\'image:', error);
+    console.error('Erreur générale lors du téléchargement de l\'image:', error);
     
     // Extraire le message d'erreur
     const errorMessage = error instanceof Error 
