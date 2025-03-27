@@ -257,7 +257,7 @@ export default function Contact() {
 
             {/* Horaires d'ouverture */}
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Horaires d'ouverture</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Horaires d&apos;ouverture</h3>
               <div className="space-y-4">
                 <div className="flex items-start">
                   <svg className="h-6 w-6 text-amber-600 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
