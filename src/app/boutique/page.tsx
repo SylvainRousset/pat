@@ -151,7 +151,7 @@ export default function BoutiquePage() {
                   <div className="p-3 md:p-6">
                     <div className="flex justify-between items-start mb-1 md:mb-2">
                       <h2 className="text-lg md:text-xl font-bold text-gray-900">{product.name}</h2>
-                      <span className="text-amber-600 font-semibold">{product.price}</span>
+                      <span className="text-amber-600 font-semibold">{Number(product.price).toFixed(2)} €</span>
                     </div>
                     
                     <p className="text-gray-600 text-sm md:text-base mb-3 md:mb-4">{product.description}</p>
