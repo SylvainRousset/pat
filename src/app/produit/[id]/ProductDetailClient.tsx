@@ -190,13 +190,14 @@ export default function ProductDetailClient({ params }: { params: { id: string }
               
               {/* Colonne droite - Informations produit */}
               <div className="space-y-6">
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
-                  {product.portions && (
-                    <p className="text-lg text-gray-600 mt-1">en portions de {product.portions}</p>
-                  )}
-                  <p className="text-2xl font-bold text-amber-600 mt-4">{product.price}</p>
+                <div className="mt-4 flex justify-between">
+                  <h3 className="text-lg font-medium text-gray-900">{product.name}</h3>
+                  <p className="text-lg font-medium text-gray-900">{Number(product.price).toFixed(2)} €</p>
                 </div>
+                
+                {product.portions && (
+                  <p className="text-lg text-gray-600 mt-1">en portions de {product.portions}</p>
+                )}
                 
                 {product.address && (
                   <div className="py-3 border-t border-b border-gray-200">
