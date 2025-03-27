@@ -106,46 +106,73 @@ export async function PUT(request: NextRequest) {
 // DELETE - Supprimer un produit
 export async function DELETE(request: NextRequest) {
   try {
+    console.log('DELETE: Début de la requête de suppression de produit');
+    
+    // Récupérer l'ID du produit dans l'URL
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     
     if (!id) {
+      console.error('DELETE: Aucun ID de produit fourni');
       return NextResponse.json(
-        { error: 'ID du produit manquant' },
+        { error: 'L\'ID du produit est requis' },
         { status: 400 }
       );
     }
     
-    // Récupérer le produit pour obtenir l'URL de l'image
+    console.log('DELETE: Tentative de suppression du produit avec ID:', id);
+    
+    // Récupérer le produit avant de le supprimer pour obtenir l'URL de l'image
     const product = await getProductById(id);
     
     if (!product) {
+      console.error('DELETE: Produit non trouvé avec ID:', id);
       return NextResponse.json(
         { error: 'Produit non trouvé' },
         { status: 404 }
       );
     }
     
+    console.log('DELETE: Produit trouvé, détails:', {
+      id: product.id,
+      name: product.name,
+      hasImage: !!product.image
+    });
+    
     // Supprimer le produit de Firebase
-    await deleteProduct(id);
+    const deleteResult = await deleteProduct(id);
+    console.log('DELETE: Résultat de la suppression du produit:', deleteResult);
+    
+    if (!deleteResult) {
+      console.error('DELETE: Échec de la suppression du produit dans Firebase');
+      return NextResponse.json(
+        { error: 'Échec de la suppression du produit dans la base de données' },
+        { status: 500 }
+      );
+    }
     
     // Si le produit a une image et qu'elle est hébergée sur Cloudinary, la supprimer
     if (product.image && product.image.includes('cloudinary.com')) {
       try {
-        console.log('Suppression de l&apos;image Cloudinary:', product.image);
+        console.log('DELETE: Tentative de suppression de l\'image Cloudinary:', product.image);
         const imageDeleted = await deleteImage(product.image);
-        console.log('Image supprimée de Cloudinary:', imageDeleted);
+        console.log('DELETE: Image supprimée de Cloudinary:', imageDeleted);
       } catch (imageError) {
-        console.error('Erreur lors de la suppression de l&apos;image:', imageError);
+        console.error('DELETE: Erreur lors de la suppression de l\'image:', imageError);
         // On continue même si la suppression de l'image échoue
       }
     }
     
-    return NextResponse.json({ success: true });
+    console.log('DELETE: Suppression du produit terminée avec succès');
+    return NextResponse.json({ 
+      success: true,
+      message: 'Produit supprimé avec succès',
+      productId: id 
+    });
   } catch (error) {
-    console.error('Erreur lors de la suppression du produit:', error);
+    console.error('DELETE: Erreur lors de la suppression du produit:', error);
     return NextResponse.json(
-      { error: 'Erreur lors de la suppression du produit' },
+      { error: error instanceof Error ? error.message : 'Erreur inconnue lors de la suppression du produit' },
       { status: 500 }
     );
   }

@@ -227,6 +227,59 @@ export default function Contact() {
               ></iframe>
             </div>
           </div>
+
+          <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2">
+            {/* Informations de contact */}
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Informations de contact</h3>
+              <div className="space-y-4">
+                <div className="flex items-start">
+                  <svg className="h-6 w-6 text-amber-600 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  <div className="ml-3">
+                    <p className="text-gray-600">Email</p>
+                    <p className="text-gray-900">contact@patisserie-delice.fr</p>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <svg className="h-6 w-6 text-amber-600 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <div className="ml-3">
+                    <p className="text-gray-600">Adresse</p>
+                    <p className="text-gray-900">123 Rue des Délices<br />75001 Paris</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Horaires d'ouverture */}
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Horaires d'ouverture</h3>
+              <div className="space-y-4">
+                <div className="flex items-start">
+                  <svg className="h-6 w-6 text-amber-600 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div className="ml-3">
+                    <p className="text-gray-600">Mardi-Samedi</p>
+                    <p className="text-gray-900">10h30-15h45-17h-19h</p>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <svg className="h-6 w-6 text-amber-600 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div className="ml-3">
+                    <p className="text-gray-600">Dimanche</p>
+                    <p className="text-gray-900">10h30-14h30</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
       <Footer />

@@ -274,28 +274,40 @@ export default function AdminDashboard() {
     }
     
     try {
+      // Afficher un message en cours...
+      setSuccessMessage('Suppression en cours...');
+      setErrorMessage('');
+      
+      console.log('Tentative de suppression du produit avec ID:', id);
+      
       const response = await fetch(`/api/products?id=${id}`, {
         method: 'DELETE',
       });
       
+      // Vérifier le statut de la réponse
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Erreur lors de la suppression du produit');
+        console.error('Erreur de suppression:', errorData);
+        throw new Error(errorData.error || `Erreur lors de la suppression du produit (${response.status})`);
       }
       
-      // Mettre à jour la liste des produits
-      setProducts(prev => prev.filter(product => product.id !== id));
+      // Récupérer la réponse JSON
+      const data = await response.json();
+      console.log('Réponse de suppression:', data);
       
-      // Afficher un message de succès
+      // Mettre à jour la liste des produits
+      setProducts(products.filter(product => product.id !== id));
       setSuccessMessage('Produit supprimé avec succès !');
       
-      // Effacer le message après 3 secondes
-      setTimeout(() => {
-        setSuccessMessage('');
-      }, 3000);
+      // Fermer la modal si elle est ouverte
+      if (selectedProduct?.id === id) {
+        setIsDetailsModalOpen(false);
+        setSelectedProduct(null);
+      }
     } catch (error) {
+      console.error('Erreur complète lors de la suppression:', error);
       setErrorMessage((error as Error).message || 'Erreur lors de la suppression du produit');
-      console.error(error);
+      setSuccessMessage('');
     }
   };
 

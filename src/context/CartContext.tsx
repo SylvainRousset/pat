@@ -91,7 +91,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   // Supprimer un produit du panier
   const removeFromCart = (id: number) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== id));
+    // Assurer que l'ID est un nombre
+    const numericId = Number(id);
+    setCart(prevCart => prevCart.filter(item => Number(item.id) !== numericId));
   };
 
   // Mettre à jour la quantité d'un produit
@@ -101,9 +103,11 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       return;
     }
     
+    // Assurer que l'ID est un nombre pour la comparaison
+    const numericId = Number(id);
     setCart(prevCart => 
       prevCart.map(item => 
-        item.id === id ? { ...item, quantity } : item
+        Number(item.id) === numericId ? { ...item, quantity } : item
       )
     );
   };

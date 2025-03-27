@@ -6,7 +6,7 @@ export default async function ProductPage({ params }: {
 }) {
   // Résoudre la promesse si params est une Promise
   const resolvedParams = params ? await params : { id: '' };
-  
+
   return (
     <Suspense fallback={<div>Chargement...</div>}>
       <ProductDetailClient params={{ id: resolvedParams.id }} />

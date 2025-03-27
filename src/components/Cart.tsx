@@ -92,14 +92,14 @@ const Cart = () => {
                             {/* Contrôle de quantité */}
                             <div className="flex items-center border rounded-md">
                               <button
-                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                onClick={() => updateQuantity(Number(item.id), item.quantity - 1)}
                                 className="px-2 py-1 text-gray-600 hover:text-amber-600"
                               >
                                 -
                               </button>
                               <span className="px-2 py-1 text-gray-900">{item.quantity}</span>
                               <button
-                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                onClick={() => updateQuantity(Number(item.id), item.quantity + 1)}
                                 className="px-2 py-1 text-gray-600 hover:text-amber-600"
                               >
                                 +
@@ -109,7 +109,10 @@ const Cart = () => {
                             {/* Bouton de suppression */}
                             <button
                               type="button"
-                              onClick={() => removeFromCart(item.id)}
+                              onClick={() => {
+                                console.log('Suppression article ID:', item.id, 'Type:', typeof item.id);
+                                removeFromCart(Number(item.id));
+                              }}
                               className="font-medium text-amber-600 hover:text-amber-800"
                             >
                               Supprimer
