@@ -145,7 +145,7 @@ export default function SaveursDeSaison() {
           </div>
 
           {/* Section des produits */}
-          <div className="bg-white rounded-xl shadow-xl p-6 md:p-10 border-2 border-[#a75120]/20">
+          <div className="bg-[#F7F5EF] rounded-xl shadow-xl p-6 md:p-10 border-2 border-[#a75120]/20">
             <h2 className="text-2xl md:text-3xl font-bold text-center text-[#421500] mb-8">
               Nos Créations de Saison
             </h2>

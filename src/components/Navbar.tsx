@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
@@ -8,9 +9,17 @@ import { useCart } from '@/context/CartContext';
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { totalItems, toggleCart } = useCart();
+  const pathname = usePathname();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const getLinkClass = (path: string) => {
+    const isActive = pathname === path;
+    return `hover:text-amber-700 block py-2 md:py-0 ${
+      isActive ? 'text-[#a75120] font-bold' : 'text-gray-800 font-medium'
+    }`;
   };
 
   return (
@@ -141,7 +150,7 @@ const Navbar = () => {
                 <li className="w-full md:w-auto text-center">
                   <Link
                     href="/"
-                    className="text-gray-800 hover:text-amber-700 font-medium block py-2 md:py-0"
+                    className={getLinkClass('/')}
                   >
                     Accueil
                   </Link>
@@ -149,7 +158,7 @@ const Navbar = () => {
                 <li className="w-full md:w-auto text-center">
                   <Link
                     href="/boutique"
-                    className="text-gray-800 hover:text-amber-700 font-medium block py-2 md:py-0"
+                    className={getLinkClass('/boutique')}
                   >
                     La Boutique
                   </Link>
@@ -157,7 +166,7 @@ const Navbar = () => {
                 <li className="w-full md:w-auto text-center">
                   <Link
                     href="/saveurs-de-saison"
-                    className="text-gray-800 hover:text-amber-700 font-medium block py-2 md:py-0"
+                    className={getLinkClass('/saveurs-de-saison')}
                   >
                     Saveurs de Saison
                   </Link>
@@ -165,7 +174,7 @@ const Navbar = () => {
                 <li className="w-full md:w-auto text-center">
                   <Link
                     href="/evenementiel"
-                    className="text-gray-800 hover:text-amber-700 font-medium block py-2 md:py-0"
+                    className={getLinkClass('/evenementiel')}
                   >
                     L&apos;Événementiel
                   </Link>
@@ -173,7 +182,7 @@ const Navbar = () => {
                 <li className="w-full md:w-auto text-center">
                   <Link
                     href="/creations"
-                    className="text-gray-800 hover:text-amber-700 font-medium block py-2 md:py-0"
+                    className={getLinkClass('/creations')}
                   >
                     Créations
                   </Link>
@@ -181,7 +190,7 @@ const Navbar = () => {
                 <li className="w-full md:w-auto text-center">
                   <Link
                     href="/a-propos"
-                    className="text-gray-800 hover:text-amber-700 font-medium block py-2 md:py-0"
+                    className={getLinkClass('/a-propos')}
                   >
                     À propos
                   </Link>
@@ -189,7 +198,7 @@ const Navbar = () => {
                 <li className="w-full md:w-auto text-center">
                   <Link
                     href="/contact"
-                    className="text-gray-800 hover:text-amber-700 font-medium block py-2 md:py-0"
+                    className={getLinkClass('/contact')}
                   >
                     Contact
                   </Link>
