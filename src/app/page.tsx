@@ -1,8 +1,8 @@
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
-import FeaturedProducts from '@/components/FeaturedProducts';
 import AboutSection from '@/components/AboutSection';
 import Footer from '@/components/Footer';
+import ScrollToTop from '@/components/ScrollToTop';
 
 export default function Home() {
   return (
@@ -10,10 +10,10 @@ export default function Home() {
       <Navbar />
       <main className="flex-grow">
         <Hero />
-        <FeaturedProducts />
         <AboutSection />
       </main>
       <Footer />
+      <ScrollToTop />
     </div>
   );
 }

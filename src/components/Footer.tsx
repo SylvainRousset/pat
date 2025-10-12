@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 const Footer = () => {
   return (
-    <footer className="bg-[#2d2013] text-white">
+    <footer className="bg-[#421502] text-white">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo et description */}
@@ -87,15 +87,15 @@ const Footer = () => {
                 <svg className="w-5 h-5 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                   <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                 </svg>
-                <span>123 Rue de la Pâtisserie, 75001 Paris</span>
+                <span>3 rue les près du roy, 64800 NAY</span>
               </li>
               <li className="flex items-start">
                 <svg className="w-5 h-5 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                   <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                   <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                 </svg>
-                <a href="mailto:contact@patisserie.fr" className="hover:text-amber-300 transition-colors">
-                  contact@patisserie.fr
+                <a href="mailto:coquelicot.traiteursucre@gmail.com" className="hover:text-amber-300 transition-colors">
+                  coquelicot.traiteursucre@gmail.com
                 </a>
               </li>
               <li className="flex items-start">
@@ -103,10 +103,10 @@ const Footer = () => {
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                 </svg>
                 <a 
-                  href="tel:+33123456789" 
+                  href="tel:+33608021622" 
                   className="hover:text-amber-300 transition-colors text-lg font-medium"
                 >
-                  01 23 45 67 89
+                  06 08 02 16 22
                 </a>
               </li>
 

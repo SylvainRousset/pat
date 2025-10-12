@@ -1,99 +1,166 @@
+'use client';
+
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 const AboutSection = () => {
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   return (
-    <section className="py-16 bg-[#f8f5f0]">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-          <div className="order-2 md:order-1 space-y-6">
-            <div className="text-center md:text-left">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Bienvenue chez Coquelicot</h2>
-              <p className="text-xl md:text-2xl text-amber-700 italic mb-6">
-                L&apos;atelier sucré qui sublime vos envies !
-              </p>
-            </div>
+    <section className="py-16 bg-[#f1e9dc]">
+      <div className="container mx-auto px-4 max-w-6xl">
+        {/* Section principale de bienvenue */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#421500]">
+            Bienvenue dans l&apos;univers fleuri de Coquelicot
+          </h2>
+          <p className="text-lg text-[#421500]/90 leading-relaxed mb-4">
+            Chez Coquelicot, la nature inspire chaque création, entre délicatesse florale, notes végétales et touches audacieuses.
+          </p>
+        </div>
 
-            <p className="text-gray-700 leading-relaxed">
-              Chez Coquelicot, je créé des douceurs artisanales pensées pour tous vos plaisirs sucrés, qu&apos;ils soient du quotidien ou des grands moments à célébrer.
-            </p>
-
-            <p className="text-gray-700 leading-relaxed font-medium">
-              Voici ce que je propose :
-            </p>
-
-            <div>
-              <h3 className="text-xl font-semibold mb-3 flex items-center gap-3">
-                Les boîtes de saison :
-                <span className="text-sm font-normal text-amber-700">(Délai 48h)</span>
-              </h3>
-              <div className="space-y-4">
-                <p className="text-gray-700 leading-relaxed">
-                  Boîte à choux, boîte à macarons et boîte à flowercakes, composées de 12 pièces aux 4 saveurs de saison. Non modifiables, elles sont idéales pour un plaisir instantané.
-                </p>
-                <p className="text-gray-700 leading-relaxed">
-                  Boîte à revisites : chaque mois, une pâtisserie classique revisitée en 4 déclinaisons, dont une fidèle à l&apos;originale, avec une touche créative et un soupçon d&apos;inspiration gastronomique. Ces boîtes peuvent également se transformer en éditions spéciales, adaptées aux événements de l&apos;année tels que la Chandeleur, la Saint-Valentin, Mardi Gras, Pâques ou la Fête des Mères.....etc, pour une expérience gourmande encore plus festive.
-                </p>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-xl font-semibold mb-3">
-                Le sur-mesure :
-              </h3>
-              <div className="space-y-4">
-                <p className="text-amber-700 font-medium text-sm mb-2">(Délai minimum 2 semaines)</p>
-                <p className="text-gray-700 leading-relaxed">
-                  Mariages, anniversaires, baby showers, gender reveal, événements d&apos;entreprise… Tout peut être personnalisé ! Wedding Cake, Layer Cake, pyramides de choux, plateaux gourmands, et buffet sucré : je réalise vos idées avec style et passion.
-                </p>
-                <p className="text-amber-700 font-medium text-sm mb-2">(Délai 72h)</p>
-                <p className="text-gray-700 leading-relaxed">
-                  Je propose également un service de pâtisseries sur commande avec un délai plus court de 72h, selon mon agenda. Vous pouvez demander des tartes, charlottes, gros macarons, gros choux ou gros flowercakes. Les tarifs varient en fonction des saveurs et du produits et commencent à partir de 3,50€ la part ou la portion.
-                </p>
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-amber-200">
-              <p className="text-gray-700 leading-relaxed">
-                Tout est disponible en ligne, prêt à être dégusté ou commandé pour vos moments précieux. Chez Coquelicot, chaque création raconte une histoire… la vôtre !
-              </p>
-              <div className="mt-6 text-center md:text-left">
-                <Link href="/contact" className="inline-block bg-amber-600 hover:bg-amber-700 text-white font-medium py-3 px-6 rounded-md transition-colors">
-                  Envoyez-nous votre demande
-                </Link>
-              </div>
-            </div>
-
+        {/* Description des produits */}
+        <div className="space-y-6 text-[#421500]/85 leading-relaxed mb-12">
+          <p>
+            Les <span className="font-semibold text-[#a75120]">Mignardises fleuries</span> ouvrent la danse : une carte de saison, composée de quatre saveurs audacieuses, qui se réinvente au rythme du printemps, de l&apos;été, de l&apos;automne et de l&apos;hiver.
+            Pour les plaisirs du quotidien, dans l&apos;esprit tendre d&apos;un goûter, retrouvez mes cookies mini ou maxi et de gourmandes chouquettes garnies.
+          </p>
           
-          </div>
+          <p>
+            Chaque mois, une <span className="font-semibold text-[#a75120]">Boîte à Création</span> vous propose une pâtisserie individuelle inédite, née de l&apos;inspiration et des saisons.
+            Viennent ensuite les gâteaux à partager : tartes, entremets, pavlovas, Paris-Brest, Charlottes… des créations originales et audacieuses, toujours portées par les saveurs du moment.
+          </p>
+          
+          <p>
+            Et pour vos instants uniques, je vous accompagne avec un <span className="font-semibold text-[#a75120]">service événementiel sur mesure</span>, élégant et raffiné.
+          </p>
+          
+          <p className="text-sm italic text-[#a75120]">
+            Les cartes boutique et événementielle se trouvent juste en dessous : pour les détails des saveurs, compositions ou allergènes, rendez-vous directement sur chaque fiche produit.
+            Pour l&apos;événementiel, vous pouvez me contacter par mail (coquelicot.traiteursucre@gmail.com), via le formulaire ou par téléphone (06 08 02 16 22).
+          </p>
+        </div>
 
-          <div className="order-1 md:order-2">
-            <div className="relative h-[300px] md:h-[400px] rounded-lg overflow-hidden shadow-xl mb-4">
-              <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
-                <span className="text-gray-400">Image de pâtisserie</span>
-              </div>
-             
+        {/* Section Les Cartes Coquelicot */}
+        <div className="mb-16">
+          <h3 className="text-2xl md:text-3xl font-bold text-center mb-4 text-[#421500]">
+            Les Cartes Coquelicot
+          </h3>
+          <p className="text-center text-[#421500]/85 mb-8">
+            Retrouvez ici mes deux cartes Coquelicot :<br />
+            La carte <span className="font-semibold text-[#a75120]">Boutique</span> pour vos douceurs à emporter, et la carte <span className="font-semibold text-[#a75120]">Évènementielle</span> pour vos moments à célébrer
+          </p>
+          
+          {/* Images des cartes */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <div 
+              className="relative rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+              onClick={() => setZoomedImage('/images/carteacc1.avif')}
+            >
               <Image
-                src="/images/profil.avif"
-                alt="Nos créations pâtissières"
-                fill
-                style={{ objectFit: 'cover' }}
-                sizes="(max-width: 640px) 90vw, (max-width: 768px) 45vw, 40vw"
-              /> 
+                src="/images/carteacc1.avif"
+                alt="Carte Boutique Coquelicot"
+                width={800}
+                height={1000}
+                className="w-full h-auto group-hover:scale-105 transition-transform duration-300"
+              />
+              <div className="absolute top-2 right-2 bg-[#a75120] text-white p-2 rounded-full shadow-lg md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                </svg>
+              </div>
+              <div className="absolute bottom-2 left-2 bg-[#a75120]/90 text-white px-3 py-1 rounded-full text-xs md:hidden">
+                Cliquez pour agrandir
+              </div>
             </div>
-            
-            <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-amber-500 ml-auto max-w-[90%]">
-              <div className="text-gray-700 font-normal text-sm space-y-2">
-                <p className="font-semibold text-amber-700 text-base">Bonjour, je m&apos;appelle Marie Laurent</p>
-                <p>Pâtissière spécialisée dans la restauration gastronomique depuis 15 ans, j&apos;ai eu le privilège de travailler dans des établissements prestigieux de la gastronomie française et de côtoyer de grands chefs étoilés.</p>
-                <p>Aujourd&apos;hui, je souhaite partager mon univers avec vous en proposant des créations originales qui éveilleront vos papilles. Chaque dessert que je prépare est le fruit de mes années d&apos;expérience et de ma passion pour la pâtisserie.</p>
-                <p>Mon objectif est de vous offrir des saveurs uniques qui reflètent mon savoir-faire et ma vision de la gourmandise.</p>
-                <p>Rejoignez-moi dans cette aventure culinaire où l&apos;innovation rencontre la tradition !</p>
+            <div 
+              className="relative rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+              onClick={() => setZoomedImage('/images/carteacc2.avif')}
+            >
+              <Image
+                src="/images/carteacc2.avif"
+                alt="Carte Évènementielle Coquelicot"
+                width={800}
+                height={1000}
+                className="w-full h-auto group-hover:scale-105 transition-transform duration-300"
+              />
+              <div className="absolute top-2 right-2 bg-[#a75120] text-white p-2 rounded-full shadow-lg md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                </svg>
+              </div>
+              <div className="absolute bottom-2 left-2 bg-[#a75120]/90 text-white px-3 py-1 rounded-full text-xs md:hidden">
+                Cliquez pour agrandir
               </div>
             </div>
           </div>
         </div>
+
+        {/* Section Réservez Votre Gâteau */}
+        <div className="bg-[#f8f3eb] rounded-xl shadow-xl p-8 md:p-12 border-2 border-[#a75120]/20">
+          <h3 className="text-2xl md:text-3xl font-bold text-center mb-8 text-[#421500]">
+            Réservez Votre Gâteau
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Première carte - Boutique */}
+            <div className="bg-white p-6 rounded-lg border-2 border-[#a75120]/30 hover:border-[#a75120] transition-all duration-300 shadow-md hover:shadow-lg">
+              <p className="text-[#421500]/85 leading-relaxed mb-6">
+                Choisissez votre date et heure de retrait pour vos créations sucrées sur la boutique en ligne. Commandez 48h à l&apos;avance.
+              </p>
+              <Link 
+                href="/boutique" 
+                className="block w-full text-center bg-[#a75120] hover:bg-[#8a421a] text-white font-medium py-3 px-6 rounded-md transition-all duration-300 shadow-md hover:shadow-lg"
+              >
+                Réserver
+              </Link>
+            </div>
+            
+            {/* Deuxième carte - Contact */}
+            <div className="bg-white p-6 rounded-lg border-2 border-[#a75120]/30 hover:border-[#a75120] transition-all duration-300 shadow-md hover:shadow-lg">
+              <p className="text-[#421500]/85 leading-relaxed mb-6">
+                Contactez-moi pour sublimer vos plus beaux moments. Pensez à le faire minimum 15 jours avant la date de l&apos;événement.
+              </p>
+              <Link 
+                href="/contact" 
+                className="block w-full text-center bg-[#a75120] hover:bg-[#8a421a] text-white font-medium py-3 px-6 rounded-md transition-all duration-300 shadow-md hover:shadow-lg"
+              >
+                Réserver
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Modal Zoom Image */}
+      {zoomedImage && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+          onClick={() => setZoomedImage(null)}
+        >
+          <div className="relative w-full h-full max-w-6xl max-h-[90vh]">
+            <button
+              onClick={() => setZoomedImage(null)}
+              className="absolute top-4 right-4 z-10 bg-[#a75120] hover:bg-[#8a421a] text-white p-3 rounded-full shadow-lg transition-colors"
+              aria-label="Fermer"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            <div className="relative w-full h-full">
+              <Image
+                src={zoomedImage}
+                alt="Image agrandie"
+                fill
+                className="object-contain"
+                sizes="100vw"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
