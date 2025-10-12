@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
@@ -169,16 +168,18 @@ export default function Evenementiel() {
                 </h3>
                 
                 <div 
-                  className="relative h-[350px] md:h-[450px] rounded-lg overflow-hidden shadow-xl bg-white cursor-pointer group"
+                  className="relative h-[600px] md:h-[700px] rounded-lg overflow-hidden shadow-xl bg-[#f8f3eb] cursor-pointer group pt-0 pb-1 px-2"
                   onClick={() => setZoomedImage('/images/cardevenementiel.avif')}
                 >
-                  <Image
-                    src="/images/cardevenementiel.avif"
-                    alt="Carte Évènementielle"
-                    fill
-                    className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
+                  <div className="relative w-full h-full">
+                    <Image
+                      src="/images/cardevenementiel.avif"
+                      alt="Carte Évènementielle"
+                      fill
+                      className="object-contain group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                  </div>
                   <div className="absolute top-2 right-2 bg-[#a75120] text-white p-2 rounded-full shadow-lg md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
@@ -201,16 +202,18 @@ export default function Evenementiel() {
                 </h3>
                 
                 <div 
-                  className="relative h-[350px] md:h-[450px] rounded-lg overflow-hidden shadow-xl bg-white cursor-pointer group"
+                  className="relative h-[600px] md:h-[700px] rounded-lg overflow-hidden shadow-xl bg-[#f8f3eb] cursor-pointer group pt-0 pb-1 px-2"
                   onClick={() => setZoomedImage('/images/cardevenementiel2.avif')}
                 >
-                  <Image
-                    src="/images/cardevenementiel2.avif"
-                    alt="Carte des Saveurs de saison"
-                    fill
-                    className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
+                  <div className="relative w-full h-full">
+                    <Image
+                      src="/images/cardevenementiel2.avif"
+                      alt="Carte des Saveurs de saison"
+                      fill
+                      className="object-contain group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                  </div>
                   <div className="absolute top-2 right-2 bg-[#a75120] text-white p-2 rounded-full shadow-lg md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />

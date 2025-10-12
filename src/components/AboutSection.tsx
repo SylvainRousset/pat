@@ -54,16 +54,18 @@ const AboutSection = () => {
           {/* Images des cartes */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
             <div 
-              className="relative rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+              className="relative h-[600px] md:h-[700px] rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#f8f3eb] p-2"
               onClick={() => setZoomedImage('/images/carteacc1.avif')}
             >
-              <Image
-                src="/images/carteacc1.avif"
-                alt="Carte Boutique Coquelicot"
-                width={800}
-                height={1000}
-                className="w-full h-auto group-hover:scale-105 transition-transform duration-300"
-              />
+              <div className="relative w-full h-full">
+                <Image
+                  src="/images/carteacc1.avif"
+                  alt="Carte Boutique Coquelicot"
+                  fill
+                  className="object-contain group-hover:scale-105 transition-transform duration-300"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
               <div className="absolute top-2 right-2 bg-[#a75120] text-white p-2 rounded-full shadow-lg md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
@@ -74,16 +76,18 @@ const AboutSection = () => {
               </div>
             </div>
             <div 
-              className="relative rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+              className="relative h-[600px] md:h-[700px] rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#f8f3eb] p-2"
               onClick={() => setZoomedImage('/images/carteacc2.avif')}
             >
-              <Image
-                src="/images/carteacc2.avif"
-                alt="Carte Évènementielle Coquelicot"
-                width={800}
-                height={1000}
-                className="w-full h-auto group-hover:scale-105 transition-transform duration-300"
-              />
+              <div className="relative w-full h-full">
+                <Image
+                  src="/images/carteacc2.avif"
+                  alt="Carte Évènementielle Coquelicot"
+                  fill
+                  className="object-contain group-hover:scale-105 transition-transform duration-300"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
               <div className="absolute top-2 right-2 bg-[#a75120] text-white p-2 rounded-full shadow-lg md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
