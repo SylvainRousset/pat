@@ -14,8 +14,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-montserrat);
+  --font-lora: var(--font-lora);
   --font-display: var(--font-playfair);
+  --font-accent: var(--font-cormorant);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -28,7 +29,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), sans-serif;
+  font-family: var(--font-lora), serif;
 }
 
 h1, h2, h3, h4, h5, h6 {

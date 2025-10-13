@@ -29,7 +29,7 @@ export interface Product {
   price: string;
   image: string;
   description: string;
-  showInShop: boolean;
+  showInCreations: boolean;
   showOnHome: boolean;
   createdAt?: FirebaseTimestamp;
   updatedAt?: FirebaseTimestamp;
@@ -39,6 +39,8 @@ export interface Product {
   descriptionArray?: string[];
   allergens?: string[];
   notice?: string;
+  flavors?: string[];
+  sizes?: { name: string; price: string }[];
   [key: string]: unknown;
 }
 
@@ -55,14 +57,14 @@ export const getAllProducts = async () => {
 };
 
 // Récupérer les produits filtrés
-export const getFilteredProducts = async (filters: { showInShop?: boolean, showOnHome?: boolean }) => {
+export const getFilteredProducts = async (filters: { showInCreations?: boolean, showOnHome?: boolean }) => {
   let q: Query<DocumentData, DocumentData> = productsCollection;
   
-  if (filters.showInShop !== undefined || filters.showOnHome !== undefined) {
+  if (filters.showInCreations !== undefined || filters.showOnHome !== undefined) {
     const conditions = [];
     
-    if (filters.showInShop !== undefined) {
-      conditions.push(where('showInShop', '==', filters.showInShop));
+    if (filters.showInCreations !== undefined) {
+      conditions.push(where('showInCreations', '==', filters.showInCreations));
     }
     
     if (filters.showOnHome !== undefined) {

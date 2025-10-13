@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Montserrat } from "next/font/google";
+import { Playfair_Display, Lora, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import Cart from "@/components/Cart";
@@ -11,9 +11,16 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
-const montserrat = Montserrat({
+const lora = Lora({
   subsets: ["latin"],
-  variable: "--font-montserrat",
+  variable: "--font-lora",
+  display: "swap",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-cormorant",
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -30,7 +37,7 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body
-        className={`${playfair.variable} ${montserrat.variable} font-sans antialiased`}
+        className={`${playfair.variable} ${lora.variable} ${cormorant.variable} font-lora antialiased`}
       >
         <CartProvider>
           {children}

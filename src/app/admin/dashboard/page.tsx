@@ -15,7 +15,7 @@ interface Product {
   price: string;
   image: string;
   description: string;
-  showInShop: boolean;
+  showInCreations: boolean;
   showOnHome: boolean;
   portions?: string;
   address?: string;
@@ -23,6 +23,8 @@ interface Product {
   descriptionArray?: string[];
   allergens?: string[];
   notice?: string;
+  flavors?: string[];
+  sizes?: { name: string; price: string }[];
 }
 
 export default function AdminDashboard() {
@@ -34,7 +36,7 @@ export default function AdminDashboard() {
     price: '',
     image: '',
     description: '',
-    showInShop: true,
+    showInCreations: true,
     showOnHome: true
   });
   const [successMessage, setSuccessMessage] = useState('');
@@ -46,6 +48,41 @@ export default function AdminDashboard() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
   const [additionalImagesFiles, setAdditionalImagesFiles] = useState<File[]>([]);
+  
+  // États pour les images des cartes d'accueil
+  const [carte1File, setCarte1File] = useState<File | null>(null);
+  const [carte2File, setCarte2File] = useState<File | null>(null);
+  const [carte1Preview, setCarte1Preview] = useState<string>('/images/carteacc1.avif');
+  const [carte2Preview, setCarte2Preview] = useState<string>('/images/carteacc2.avif');
+  const [isUploadingCartes, setIsUploadingCartes] = useState(false);
+
+  // États pour les saveurs, tailles et allergènes
+  const [flavors, setFlavors] = useState<string[]>([]);
+  const [currentFlavor, setCurrentFlavor] = useState('');
+  const [sizes, setSizes] = useState<{ name: string; price: string }[]>([]);
+  const [selectedAllergens, setSelectedAllergens] = useState<string[]>([]);
+  const [customAllergen, setCustomAllergen] = useState('');
+
+  // Portions disponibles
+  const availableSizes = ['2', '4', '6', '10', '12'];
+
+  // Liste des allergènes disponibles
+  const availableAllergens = [
+    'Gluten',
+    'Œufs',
+    '🥛 Lactose',
+    'Fruits à coque',
+    'Arachides',
+    'Soja',
+    'Sésame',
+    'Sulfites',
+    'Céleri',
+    'Moutarde',
+    'Lupin',
+    'Mollusques',
+    'Crustacés',
+    'Poisson'
+  ];
 
   // Vérifier l'authentification et charger les produits au chargement de la page
   useEffect(() => {
@@ -110,9 +147,153 @@ export default function AdminDashboard() {
     }
   };
 
+  // Gestion des images des cartes d'accueil
+  const handleCarte1Change = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setCarte1File(file);
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCarte1Preview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCarte2Change = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setCarte2File(file);
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCarte2Preview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUploadCartes = async () => {
+    if (!carte1File && !carte2File) {
+      setErrorMessage('Veuillez sélectionner au moins une image à modifier');
+      return;
+    }
+
+    try {
+      setIsUploadingCartes(true);
+      setErrorMessage('');
+      setSuccessMessage('');
+
+      // Upload carte 1 si sélectionnée
+      if (carte1File) {
+        const formData1 = new FormData();
+        formData1.append('file', carte1File);
+        formData1.append('fileName', 'carteacc1.avif');
+        
+        const response1 = await fetch('/api/upload-carte', {
+          method: 'POST',
+          body: formData1,
+        });
+
+        if (!response1.ok) {
+          throw new Error('Erreur lors de l\'upload de la carte 1');
+        }
+      }
+
+      // Upload carte 2 si sélectionnée
+      if (carte2File) {
+        const formData2 = new FormData();
+        formData2.append('file', carte2File);
+        formData2.append('fileName', 'carteacc2.avif');
+        
+        const response2 = await fetch('/api/upload-carte', {
+          method: 'POST',
+          body: formData2,
+        });
+
+        if (!response2.ok) {
+          throw new Error('Erreur lors de l\'upload de la carte 2');
+        }
+      }
+
+      setSuccessMessage('Images des cartes mises à jour avec succès !');
+      setCarte1File(null);
+      setCarte2File(null);
+      
+      // Recharger la page après 2 secondes
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+
+    } catch (error) {
+      console.error('Erreur:', error);
+      setErrorMessage('Erreur lors de la mise à jour des images');
+    } finally {
+      setIsUploadingCartes(false);
+    }
+  };
+
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
     setNewProduct(prev => ({ ...prev, [name]: checked }));
+  };
+
+  // Gestion des saveurs
+  const addFlavor = () => {
+    if (currentFlavor.trim()) {
+      setFlavors([...flavors, currentFlavor.trim()]);
+      setCurrentFlavor('');
+    }
+  };
+
+  const removeFlavor = (index: number) => {
+    setFlavors(flavors.filter((_, i) => i !== index));
+  };
+
+  // Gestion des tailles
+  const addOrUpdateSize = (sizeName: string, price: string) => {
+    const existingIndex = sizes.findIndex(s => s.name === sizeName);
+    
+    if (price.trim() === '') {
+      // Si le prix est vide, on supprime cette taille
+      if (existingIndex !== -1) {
+        setSizes(sizes.filter((_, i) => i !== existingIndex));
+      }
+    } else {
+      // Sinon on ajoute ou met à jour
+      if (existingIndex !== -1) {
+        const newSizes = [...sizes];
+        newSizes[existingIndex] = { name: sizeName, price: price.trim() };
+        setSizes(newSizes);
+      } else {
+        setSizes([...sizes, { name: sizeName, price: price.trim() }]);
+      }
+    }
+  };
+
+  const removeSize = (sizeName: string) => {
+    setSizes(sizes.filter(s => s.name !== sizeName));
+  };
+
+  // Gestion des allergènes
+  const toggleAllergen = (allergen: string) => {
+    if (selectedAllergens.includes(allergen)) {
+      setSelectedAllergens(selectedAllergens.filter(a => a !== allergen));
+    } else {
+      setSelectedAllergens([...selectedAllergens, allergen]);
+    }
+  };
+
+  const addCustomAllergen = () => {
+    if (customAllergen.trim() && !selectedAllergens.includes(customAllergen.trim())) {
+      setSelectedAllergens([...selectedAllergens, customAllergen.trim()]);
+      setCustomAllergen('');
+    }
+  };
+
+  const removeAllergen = (allergen: string) => {
+    setSelectedAllergens(selectedAllergens.filter(a => a !== allergen));
   };
 
   const handleLogout = async () => {
@@ -135,7 +316,7 @@ export default function AdminDashboard() {
     }
     
     // Vérifier si une image a été sélectionnée
-    if (!imageFile && !newProduct.image) {
+    if (!imageFile) {
       setErrorMessage('Veuillez sélectionner une image');
       return;
     }
@@ -144,12 +325,11 @@ export default function AdminDashboard() {
       setErrorMessage('');
       setSuccessMessage('Traitement en cours...');
       
-      // Si nous avons un fichier image, nous le téléchargeons d'abord
-      let imagePath = newProduct.image;
+      // Télécharger l'image principale
+      let imagePath = '';
       const additionalImagePaths: string[] = [...additionalImages];
       
-      if (imageFile) {
-        setSuccessMessage('Téléchargement de l&apos;image principale en cours...');
+      setSuccessMessage('Téléchargement de l&apos;image principale en cours...');
         
         // Créer un FormData pour l'upload
         const formData = new FormData();
@@ -180,7 +360,6 @@ export default function AdminDashboard() {
           setErrorMessage(`Erreur lors du téléchargement de l&apos;image: ${uploadError instanceof Error ? uploadError.message : 'Erreur inconnue'}`);
           return; // Arrêter l'exécution si l'upload échoue
         }
-      }
       
       // Télécharger les images additionnelles
       if (additionalImagesFiles.length > 0) {
@@ -217,7 +396,10 @@ export default function AdminDashboard() {
       const productToAdd = {
         ...newProduct,
         image: imagePath,
-        images: [imagePath, ...additionalImagePaths]
+        images: [imagePath, ...additionalImagePaths],
+        flavors: flavors.length > 0 ? flavors : undefined,
+        sizes: sizes.length > 0 ? sizes : undefined,
+        allergens: selectedAllergens.length > 0 ? selectedAllergens : undefined
       };
       
       setSuccessMessage('Ajout du produit en cours...');
@@ -247,13 +429,17 @@ export default function AdminDashboard() {
         price: '',
         image: '',
         description: '',
-        showInShop: true,
+        showInCreations: true,
         showOnHome: true
       });
       setImageFile(null);
       setImagePreview('');
       setAdditionalImages([]);
       setAdditionalImagesFiles([]);
+      setFlavors([]);
+      setSizes([]);
+      setSelectedAllergens([]);
+      setCustomAllergen('');
       
       // Afficher un message de succès
       setSuccessMessage('Produit ajouté avec succès !');
@@ -353,6 +539,68 @@ export default function AdminDashboard() {
             {errorMessage}
           </div>
         )}
+
+        {/* Section Gestion des Images Cartes Accueil */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Images des Cartes - Page d&apos;Accueil</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Carte 1 */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-[#a75120]">Carte Boutique (carteacc1.avif)</h3>
+              <div className="relative h-64 rounded-lg overflow-hidden bg-gray-100">
+                <Image
+                  src={carte1Preview}
+                  alt="Carte Boutique Preview"
+                  fill
+                  className="object-contain"
+                  key={carte1Preview}
+                />
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleCarte1Change}
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-[#a75120] file:text-white hover:file:bg-[#8a421a]"
+              />
+            </div>
+
+            {/* Carte 2 */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-[#a75120]">Carte Événementielle (carteacc2.avif)</h3>
+              <div className="relative h-64 rounded-lg overflow-hidden bg-gray-100">
+                <Image
+                  src={carte2Preview}
+                  alt="Carte Événementielle Preview"
+                  fill
+                  className="object-contain"
+                  key={carte2Preview}
+                />
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleCarte2Change}
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-[#a75120] file:text-white hover:file:bg-[#8a421a]"
+              />
+            </div>
+          </div>
+
+          {/* Bouton de sauvegarde */}
+          <div className="mt-6 text-center">
+            <button
+              onClick={handleUploadCartes}
+              disabled={isUploadingCartes || (!carte1File && !carte2File)}
+              className={`px-6 py-3 text-white rounded-md font-semibold ${
+                isUploadingCartes || (!carte1File && !carte2File)
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-[#a75120] hover:bg-[#8a421a]'
+              }`}
+            >
+              {isUploadingCartes ? 'Mise à jour en cours...' : 'Mettre à jour les cartes'}
+            </button>
+          </div>
+        </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Formulaire d'ajout de produit */}
@@ -397,12 +645,6 @@ export default function AdminDashboard() {
                     Image du produit
                   </label>
                   <div className="flex flex-col space-y-2">
-                    <div className="bg-amber-50 p-3 rounded-md mb-2 text-sm">
-                      <p className="font-medium text-amber-800 mb-1">Note importante :</p>
-                      <p className="text-amber-700 mb-1">
-                        Vous pouvez télécharger des images depuis votre ordinateur ou entrer des URLs d&apos;images.
-                      </p>
-                    </div>
                     <input
                       type="file"
                       id="imageFile"
@@ -410,15 +652,7 @@ export default function AdminDashboard() {
                       accept="image/*"
                       onChange={handleImageChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
-                    />
-                    <input
-                      type="text"
-                      id="image"
-                      name="image"
-                      value={newProduct.image}
-                      onChange={handleInputChange}
-                      placeholder="ou entrez l&apos;URL de l&apos;image principale"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                      required
                     />
                     
                     {imagePreview && (
@@ -520,18 +754,179 @@ export default function AdminDashboard() {
                   />
                 </div>
                 
+                {/* Saveurs */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Saveurs (optionnel)
+                  </label>
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={currentFlavor}
+                      onChange={(e) => setCurrentFlavor(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addFlavor())}
+                      placeholder="Ex: Chocolat Passion"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120]"
+                    />
+                    <button
+                      type="button"
+                      onClick={addFlavor}
+                      className="px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a]"
+                    >
+                      Ajouter
+                    </button>
+                  </div>
+                  {flavors.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {flavors.map((flavor, index) => (
+                        <span key={index} className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-[#f8f3eb] text-[#421500] border border-[#a75120]/30">
+                          {flavor}
+                          <button
+                            type="button"
+                            onClick={() => removeFlavor(index)}
+                            className="ml-2 text-red-600 hover:text-red-800"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Tailles et prix */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nombre de parts (optionnel)
+                  </label>
+                  <p className="text-xs text-gray-500 mb-3">Cochez les portions disponibles et leurs prix (le client choisira UNE portion)</p>
+                  <div className="space-y-2 bg-gray-50 p-3 rounded-md">
+                    {availableSizes.map((sizeNum) => {
+                      const existingSize = sizes.find(s => s.name === `${sizeNum} parts`);
+                      return (
+                        <div key={sizeNum} className="flex items-center gap-3">
+                          <input
+                            type="checkbox"
+                            id={`size-${sizeNum}`}
+                            checked={!!existingSize}
+                            onChange={(e) => {
+                              if (!e.target.checked) {
+                                removeSize(`${sizeNum} parts`);
+                              } else {
+                                setSizes([...sizes, { name: `${sizeNum} parts`, price: '' }]);
+                              }
+                            }}
+                            className="h-4 w-4 text-[#a75120] focus:ring-[#a75120] border-gray-300 rounded"
+                          />
+                          <label htmlFor={`size-${sizeNum}`} className="text-sm text-gray-700 w-16 cursor-pointer">
+                            {sizeNum} parts
+                          </label>
+                          {existingSize && (
+                            <div className="flex items-center gap-2 flex-1">
+                              <input
+                                type="number"
+                                step="0.01"
+                                value={existingSize.price}
+                                onChange={(e) => addOrUpdateSize(`${sizeNum} parts`, e.target.value)}
+                                placeholder="Prix"
+                                className="w-24 px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] text-sm"
+                              />
+                              <span className="text-sm text-gray-600">€</span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {sizes.length > 0 && (
+                    <div className="mt-3 p-2 bg-[#f8f3eb] rounded-md border border-[#a75120]/30">
+                      <p className="text-xs font-semibold text-[#421500] mb-1">Portions proposées :</p>
+                      {sizes.map((size) => (
+                        <div key={size.name} className="text-xs text-[#421500]">
+                          • {size.name} : {size.price || '(prix manquant)'}€
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Allergènes */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Allergènes (optionnel)
+                  </label>
+                  <p className="text-xs text-gray-500 mb-3 italic">
+                    Il est essentiel de prendre en compte les allergènes lors de la consommation alimentaire.
+                  </p>
+                  
+                  {/* Allergènes prédéfinis */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-3 bg-gray-50 rounded-md mb-3">
+                    {availableAllergens.map((allergen) => (
+                      <div key={allergen} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id={`allergen-${allergen}`}
+                          checked={selectedAllergens.includes(allergen)}
+                          onChange={() => toggleAllergen(allergen)}
+                          className="h-4 w-4 text-[#a75120] focus:ring-[#a75120] border-gray-300 rounded"
+                        />
+                        <label htmlFor={`allergen-${allergen}`} className="ml-2 block text-sm text-gray-700">
+                          {allergen}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Ajouter un allergène personnalisé */}
+                  <div className="flex gap-2 mb-3">
+                    <input
+                      type="text"
+                      value={customAllergen}
+                      onChange={(e) => setCustomAllergen(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomAllergen())}
+                      placeholder="Ajouter un allergène personnalisé"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] text-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={addCustomAllergen}
+                      className="px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a] font-bold"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  {/* Liste des allergènes sélectionnés */}
+                  {selectedAllergens.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {selectedAllergens.map((allergen) => (
+                        <span key={allergen} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-red-100 text-red-800">
+                          {allergen}
+                          <button
+                            type="button"
+                            onClick={() => removeAllergen(allergen)}
+                            className="ml-1 text-red-600 hover:text-red-900 font-bold"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 <div className="space-y-2">
                   <div className="flex items-center">
                     <input
                       type="checkbox"
-                      id="showInShop"
-                      name="showInShop"
-                      checked={newProduct.showInShop}
+                      id="showInCreations"
+                      name="showInCreations"
+                      checked={newProduct.showInCreations}
                       onChange={handleCheckboxChange}
                       className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
                     />
-                    <label htmlFor="showInShop" className="ml-2 block text-sm text-gray-700">
-                      Afficher dans la boutique
+                    <label htmlFor="showInCreations" className="ml-2 block text-sm text-gray-700">
+                      Afficher dans la galerie Créations
                     </label>
                   </div>
                   
@@ -614,8 +1009,8 @@ export default function AdminDashboard() {
                           </td>
                           <td className="px-2 py-4">
                             <div className="flex flex-col space-y-1">
-                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${product.showInShop ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                                {product.showInShop ? 'Boutique' : 'Non affiché en boutique'}
+                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${product.showInCreations ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                                {product.showInCreations ? 'Créations' : 'Non affiché'}
                               </span>
                               <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${product.showOnHome ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
                                 {product.showOnHome ? 'Accueil' : 'Non affiché en accueil'}
@@ -682,14 +1077,14 @@ export default function AdminDashboard() {
                     onClick={() => {
                       setSelectedProduct({
                         ...selectedProduct,
-                        showInShop: !selectedProduct.showInShop
+                        showInCreations: !selectedProduct.showInCreations
                       });
                     }}
                     className={`text-sm font-medium ${
-                      selectedProduct.showInShop ? 'text-red-600 hover:text-red-800' : 'text-green-600 hover:text-green-800'
+                      selectedProduct.showInCreations ? 'text-red-600 hover:text-red-800' : 'text-green-600 hover:text-green-800'
                     }`}
                   >
-                    {selectedProduct.showInShop ? 'Cacher de la boutique' : 'Afficher dans la boutique'}
+                    {selectedProduct.showInCreations ? 'Cacher des créations' : 'Afficher dans créations'}
                   </button>
                   <button
                     onClick={() => setIsDetailsModalOpen(false)}
@@ -774,13 +1169,13 @@ export default function AdminDashboard() {
                       <div className="flex items-center">
                         <input
                           type="checkbox"
-                          checked={selectedProduct.showInShop}
-                          onChange={(e) => setSelectedProduct({ ...selectedProduct, showInShop: e.target.checked })}
+                          checked={selectedProduct.showInCreations}
+                          onChange={(e) => setSelectedProduct({ ...selectedProduct, showInCreations: e.target.checked })}
                           className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
-                          id="detail-show-in-shop"
+                          id="detail-show-in-creations"
                         />
-                        <label htmlFor="detail-show-in-shop" className="ml-2 block text-sm text-gray-700">
-                          Afficher dans la boutique
+                        <label htmlFor="detail-show-in-creations" className="ml-2 block text-sm text-gray-700">
+                          Afficher dans créations
                         </label>
                       </div>
 
@@ -849,7 +1244,7 @@ export default function AdminDashboard() {
                       <div className="space-y-4">
                         <div className="bg-amber-50 p-3 rounded-md text-sm">
                           <p className="text-amber-700 mb-1">
-                            Vous pouvez ajouter des images supplémentaires en téléchargeant des fichiers ou en entrant des URLs.
+                            Téléchargez des images supplémentaires depuis votre ordinateur.
                           </p>
                         </div>
                         

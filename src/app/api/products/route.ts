@@ -13,13 +13,13 @@ import { deleteImage } from '@/lib/cloudinary';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const showInShop = searchParams.get('showInShop');
+    const showInCreations = searchParams.get('showInCreations');
     const showOnHome = searchParams.get('showOnHome');
     
-    const filters: { showInShop?: boolean; showOnHome?: boolean } = {};
+    const filters: { showInCreations?: boolean; showOnHome?: boolean } = {};
     
-    if (showInShop === 'true') {
-      filters.showInShop = true;
+    if (showInCreations === 'true') {
+      filters.showInCreations = true;
     }
     
     if (showOnHome === 'true') {
@@ -55,12 +55,12 @@ export async function POST(request: NextRequest) {
     }
     
     // S'assurer que les champs booléens sont définis
-    const showInShop = newProduct.showInShop !== undefined ? newProduct.showInShop : true;
+    const showInCreations = newProduct.showInCreations !== undefined ? newProduct.showInCreations : true;
     const showOnHome = newProduct.showOnHome !== undefined ? newProduct.showOnHome : true;
     
     const productToAdd = { 
       ...newProduct, 
-      showInShop,
+      showInCreations,
       showOnHome
     };
     

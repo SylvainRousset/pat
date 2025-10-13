@@ -1,34 +1,52 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
 
-interface Creation {
+interface Product {
+  id: string;
+  name: string;
   image: string;
-  title: string;
+  description?: string;
+  showInCreations?: boolean;
 }
 
 export default function Creations() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [creations, setCreations] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const creations: Creation[] = [
-    { image: "/images/creation1.avif", title: "Flowercake Floral" },
-    { image: "/images/creation2.avif", title: "Macaron Passion" },
-    { image: "/images/creation3.avif", title: "Éclair Vanille" },
-    { image: "/images/creation4.avif", title: "Chou Praline" },
-    { image: "/images/dess1.avif", title: "Tarte aux Fruits" },
-    { image: "/images/dess2.avif", title: "Layer Cake Chocolat" },
-    { image: "/images/dess3.avif", title: "Entremet Citron" },
-    { image: "/images/dess4.avif", title: "Pavlova Fruits Rouges" },
-    { image: "/images/dess5.avif", title: "Charlotte Framboise" },
-    { image: "/images/dess6.avif", title: "Paris-Brest" },
-    { image: "/images/dess7.avif", title: "Tartelette Citron" },
-    { image: "/images/dess8.avif", title: "Gâteau Personnalisé" },
-    { image: "/images/dess9.avif", title: "Création Florale" }
-  ];
+  // Charger les produits depuis Firebase
+  useEffect(() => {
+    const fetchCreations = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/products');
+        
+        if (!response.ok) {
+          throw new Error('Erreur lors de la récupération des produits');
+        }
+        
+        const data = await response.json();
+        
+        // Filtrer uniquement les produits à afficher dans créations
+        const creationsProducts = data.filter((product: Product) => 
+          product.showInCreations !== false
+        );
+        
+        setCreations(creationsProducts);
+      } catch (error) {
+        console.error('Erreur:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchCreations();
+  }, []);
 
   return (
     <>
@@ -44,8 +62,18 @@ export default function Creations() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-              {creations.map((creation, index) => (
+            {isLoading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#a75120] mx-auto"></div>
+                <p className="mt-4 text-[#421500]/80">Chargement des créations...</p>
+              </div>
+            ) : creations.length === 0 ? (
+              <div className="text-center py-12 text-[#421500]/70">
+                Aucune création à afficher pour le moment.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                {creations.map((creation, index) => (
                 <div 
                   key={index} 
                   className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer transform transition-all hover:scale-105 hover:shadow-xl border-2 border-transparent hover:border-[#a75120]/30"
@@ -54,18 +82,19 @@ export default function Creations() {
                   <div className="relative h-[250px]">
                     <Image
                       src={creation.image}
-                      alt={creation.title}
+                      alt={creation.name}
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     />
                   </div>
                   <div className="p-4">
-                    <h3 className="text-lg font-semibold text-[#421500] text-center">{creation.title}</h3>
+                    <h3 className="text-lg font-semibold text-[#421500] text-center">{creation.name}</h3>
                   </div>
                 </div>
               ))}
-            </div>
+              </div>
+            )}
           </section>
         </div>
       </main>
