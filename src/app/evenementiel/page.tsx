@@ -159,16 +159,16 @@ export default function Evenementiel() {
           </div>
 
           {/* Cartes Événementielles */}
-          <div className="bg-[#E8DED0] rounded-xl shadow-xl py-6 px-0 md:p-10 border-2 border-[#E8A870]/40 mb-16">
+          <div className="bg-[#E8DED0] rounded-xl shadow-xl p-6 md:p-10 border-2 border-[#E8A870]/40 mb-16">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Carte Évènementielle */}
-              <div className="space-y-4">
+              <div className="space-y-4 -mx-6 md:mx-0">
                 <h3 className="text-xl md:text-2xl font-bold text-center text-[#421500]">
                   Carte Évènementielle
                 </h3>
                 
                 <div 
-                  className="relative h-[450px] md:h-[700px] rounded-lg overflow-hidden shadow-xl bg-[#FAF0E6] cursor-pointer group pt-2 pb-10 px-0 md:p-2"
+                  className="relative h-[450px] md:h-[700px] rounded-none md:rounded-lg overflow-hidden shadow-xl bg-[#FAF0E6] cursor-pointer group pt-2 pb-10 px-0 md:p-2"
                   onClick={() => setZoomedImage('/images/cardevenementiel.avif')}
                 >
                   <div className="relative w-full h-full">
@@ -190,19 +190,21 @@ export default function Evenementiel() {
                   </div>
                 </div>
                 
-                <p className="text-sm md:text-base text-[#421500]/85 leading-relaxed">
-                  Pour garantir une organisation optimale, les commandes pour les événements de <span className="font-semibold text-[#D9844A]">plus de 20 personnes</span> doivent être passées <span className="font-semibold text-[#D9844A]">15 jours à l&apos;avance</span>. Contactez-moi via le formulaire, par mail ou téléphone : nous convenons ensemble d&apos;un rendez-vous pour définir vos envies, puis un devis personnalisé vous est transmis.
-                </p>
+                <div className="px-6 md:px-0">
+                  <p className="text-sm md:text-base text-[#421500]/85 leading-relaxed">
+                    Pour garantir une organisation optimale, les commandes pour les événements de <span className="font-semibold text-[#D9844A]">plus de 20 personnes</span> doivent être passées <span className="font-semibold text-[#D9844A]">15 jours à l&apos;avance</span>. Contactez-moi via le formulaire, par mail ou téléphone : nous convenons ensemble d&apos;un rendez-vous pour définir vos envies, puis un devis personnalisé vous est transmis.
+                  </p>
+                </div>
               </div>
 
               {/* Carte des Saveurs de saison */}
-              <div className="space-y-4">
+              <div className="space-y-4 -mx-6 md:mx-0">
                 <h3 className="text-xl md:text-2xl font-bold text-center text-[#421500]">
                   Carte des Saveurs de saison
                 </h3>
                 
                 <div 
-                  className="relative h-[450px] md:h-[700px] rounded-lg overflow-hidden shadow-xl bg-[#FAF0E6] cursor-pointer group pt-2 pb-10 px-0 md:p-2"
+                  className="relative h-[450px] md:h-[700px] rounded-none md:rounded-lg overflow-hidden shadow-xl bg-[#FAF0E6] cursor-pointer group pt-2 pb-10 px-0 md:p-2"
                   onClick={() => setZoomedImage('/images/cardevenementiel2.avif')}
                 >
                   <div className="relative w-full h-full">
@@ -224,9 +226,11 @@ export default function Evenementiel() {
                   </div>
                 </div>
                 
-                <p className="text-sm md:text-base text-[#421500]/85 leading-relaxed">
-                  Ce sont les saveurs que je propose pour vos événements. <span className="font-semibold text-[#D9844A]">Allergies, goûts particuliers ou envies spéciales ?</span> Chaque création peut être adaptée, remplacée ou même entièrement personnalisée selon vos souhaits. N&apos;hésitez pas à me partager vos envies pour rendre votre événement unique.
-                </p>
+                <div className="px-6 md:px-0">
+                  <p className="text-sm md:text-base text-[#421500]/85 leading-relaxed">
+                    Ce sont les saveurs que je propose pour vos événements. <span className="font-semibold text-[#D9844A]">Allergies, goûts particuliers ou envies spéciales ?</span> Chaque création peut être adaptée, remplacée ou même entièrement personnalisée selon vos souhaits. N&apos;hésitez pas à me partager vos envies pour rendre votre événement unique.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
