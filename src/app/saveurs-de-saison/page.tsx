@@ -182,7 +182,7 @@ export default function SaveursDeSaison() {
                 {/* Image à gauche */}
                 <div className="order-2 md:order-1">
                   <div 
-                    className="relative h-[400px] md:h-[600px] rounded-lg overflow-hidden shadow-xl bg-[#f8f3eb] cursor-pointer group px-2 py-2 md:p-2"
+                    className="relative h-[380px] md:h-[600px] rounded-lg overflow-hidden shadow-xl bg-[#E8DED0] cursor-pointer group px-3 pt-2 pb-8 md:p-2"
                     onClick={() => setZoomedImage('/images/saveursaisoncartel.avif')}
                   >
                     <div className="relative w-full h-full">

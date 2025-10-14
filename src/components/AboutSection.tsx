@@ -54,7 +54,7 @@ const AboutSection = () => {
           {/* Images des cartes */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12">
             <div 
-              className="relative h-[450px] md:h-[700px] rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] px-2 pt-2 pb-10 md:p-2"
+              className="relative h-[380px] md:h-[700px] rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] px-3 pt-2 pb-8 md:p-2"
               onClick={() => setZoomedImage('/images/carteacc1.avif')}
             >
               <div className="relative w-full h-full">
@@ -76,7 +76,7 @@ const AboutSection = () => {
               </div>
             </div>
             <div 
-              className="relative h-[450px] md:h-[700px] rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] px-2 pt-2 pb-10 md:p-2"
+              className="relative h-[380px] md:h-[700px] rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] px-3 pt-2 pb-8 md:p-2"
               onClick={() => setZoomedImage('/images/carteacc2.avif')}
             >
               <div className="relative w-full h-full">

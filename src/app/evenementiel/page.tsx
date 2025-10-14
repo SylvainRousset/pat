@@ -162,15 +162,15 @@ export default function Evenementiel() {
           <div className="bg-[#E8DED0] rounded-xl shadow-xl p-6 md:p-10 border-2 border-[#E8A870]/40 mb-16">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Carte Évènementielle */}
-              <div className="space-y-4 -mx-6 md:mx-0">
+              <div className="space-y-4">
                 <h3 className="text-xl md:text-2xl font-bold text-center text-[#421500]">
                   Carte Évènementielle
                 </h3>
                 
-                <div 
-                  className="relative h-[450px] md:h-[700px] rounded-none md:rounded-lg overflow-hidden shadow-xl bg-[#FAF0E6] cursor-pointer group pt-2 pb-10 px-0 md:p-2"
-                  onClick={() => setZoomedImage('/images/cardevenementiel.avif')}
-                >
+            <div 
+              className="relative h-[380px] md:h-[700px] rounded-lg overflow-hidden shadow-xl bg-[#FAF0E6] cursor-pointer group pt-2 pb-8 px-3 md:p-2"
+              onClick={() => setZoomedImage('/images/cardevenementiel.avif')}
+            >
                   <div className="relative w-full h-full">
                     <Image
                       src="/images/cardevenementiel.avif"
@@ -198,15 +198,15 @@ export default function Evenementiel() {
               </div>
 
               {/* Carte des Saveurs de saison */}
-              <div className="space-y-4 -mx-6 md:mx-0">
+              <div className="space-y-4">
                 <h3 className="text-xl md:text-2xl font-bold text-center text-[#421500]">
                   Carte des Saveurs de saison
                 </h3>
                 
-                <div 
-                  className="relative h-[450px] md:h-[700px] rounded-none md:rounded-lg overflow-hidden shadow-xl bg-[#FAF0E6] cursor-pointer group pt-2 pb-10 px-0 md:p-2"
-                  onClick={() => setZoomedImage('/images/cardevenementiel2.avif')}
-                >
+            <div 
+              className="relative h-[380px] md:h-[700px] rounded-lg overflow-hidden shadow-xl bg-[#FAF0E6] cursor-pointer group pt-2 pb-8 px-3 md:p-2"
+              onClick={() => setZoomedImage('/images/cardevenementiel2.avif')}
+            >
                   <div className="relative w-full h-full">
                     <Image
                       src="/images/cardevenementiel2.avif"
