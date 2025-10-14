@@ -52,9 +52,9 @@ const AboutSection = () => {
           </p>
           
           {/* Images des cartes */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12">
             <div 
-              className="relative h-[600px] md:h-[700px] rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] p-2"
+              className="relative h-[450px] md:h-[700px] rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] px-2 pt-2 pb-10 md:p-2"
               onClick={() => setZoomedImage('/images/carteacc1.avif')}
             >
               <div className="relative w-full h-full">
@@ -62,7 +62,7 @@ const AboutSection = () => {
                   src="/images/carteacc1.avif"
                   alt="Carte Boutique Coquelicot"
                   fill
-                  className="object-contain group-hover:scale-105 transition-transform duration-300"
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
@@ -76,7 +76,7 @@ const AboutSection = () => {
               </div>
             </div>
             <div 
-              className="relative h-[600px] md:h-[700px] rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] p-2"
+              className="relative h-[450px] md:h-[700px] rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] px-2 pt-2 pb-10 md:p-2"
               onClick={() => setZoomedImage('/images/carteacc2.avif')}
             >
               <div className="relative w-full h-full">
@@ -84,7 +84,7 @@ const AboutSection = () => {
                   src="/images/carteacc2.avif"
                   alt="Carte Évènementielle Coquelicot"
                   fill
-                  className="object-contain group-hover:scale-105 transition-transform duration-300"
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>

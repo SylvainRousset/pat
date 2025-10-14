@@ -125,7 +125,7 @@ export default function Evenementiel() {
                 <p className="mb-4">Merci de me contacter au moins <span className="font-bold text-[#E8A870]">15 jours à l&apos;avance</span>, et <span className="font-bold text-[#E8A870]">3 mois avant</span> pour les mariages.</p>
                 <div className="space-y-2">
                   <p className="text-lg">📞 <a href="tel:0608021622" className="hover:text-[#D9844A] transition-colors">06 08 02 16 22</a></p>
-                  <p className="text-lg">📩 <a href="mailto:coquelicot.traiteursucre@gmail.com" className="hover:text-[#D9844A] transition-colors">coquelicot.traiteursucre@gmail.com</a></p>
+                  <p className="text-sm md:text-lg">📩 <a href="mailto:coquelicot.traiteursucre@gmail.com" className="hover:text-[#D9844A] transition-colors">coquelicot.traiteursucre@gmail.com</a></p>
                 </div>
               </div>
             </div>
@@ -159,7 +159,7 @@ export default function Evenementiel() {
           </div>
 
           {/* Cartes Événementielles */}
-          <div className="bg-[#E8DED0] rounded-xl shadow-xl p-6 md:p-10 border-2 border-[#E8A870]/40 mb-16">
+          <div className="bg-[#E8DED0] rounded-xl shadow-xl py-6 px-0 md:p-10 border-2 border-[#E8A870]/40 mb-16">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Carte Évènementielle */}
               <div className="space-y-4">
@@ -168,7 +168,7 @@ export default function Evenementiel() {
                 </h3>
                 
                 <div 
-                  className="relative h-[600px] md:h-[700px] rounded-lg overflow-hidden shadow-xl bg-[#FAF0E6] cursor-pointer group pt-0 pb-1 px-2"
+                  className="relative h-[450px] md:h-[700px] rounded-lg overflow-hidden shadow-xl bg-[#FAF0E6] cursor-pointer group pt-2 pb-10 px-0 md:p-2"
                   onClick={() => setZoomedImage('/images/cardevenementiel.avif')}
                 >
                   <div className="relative w-full h-full">
@@ -176,7 +176,7 @@ export default function Evenementiel() {
                       src="/images/cardevenementiel.avif"
                       alt="Carte Évènementielle"
                       fill
-                      className="object-contain group-hover:scale-105 transition-transform duration-300"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
                   </div>
@@ -202,7 +202,7 @@ export default function Evenementiel() {
                 </h3>
                 
                 <div 
-                  className="relative h-[600px] md:h-[700px] rounded-lg overflow-hidden shadow-xl bg-[#FAF0E6] cursor-pointer group pt-0 pb-1 px-2"
+                  className="relative h-[450px] md:h-[700px] rounded-lg overflow-hidden shadow-xl bg-[#FAF0E6] cursor-pointer group pt-2 pb-10 px-0 md:p-2"
                   onClick={() => setZoomedImage('/images/cardevenementiel2.avif')}
                 >
                   <div className="relative w-full h-full">
@@ -210,7 +210,7 @@ export default function Evenementiel() {
                       src="/images/cardevenementiel2.avif"
                       alt="Carte des Saveurs de saison"
                       fill
-                      className="object-contain group-hover:scale-105 transition-transform duration-300"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
                   </div>

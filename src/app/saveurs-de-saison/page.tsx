@@ -189,7 +189,7 @@ export default function SaveursDeSaison() {
                       src="/images/saveursaisoncartel.avif"
                       alt="Saveurs de saison"
                       fill
-                      className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                      className="object-contain object-center group-hover:scale-105 transition-transform duration-300"
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
                     <div className="absolute top-2 right-2 bg-[#D9844A] text-white p-2 rounded-full shadow-lg md:opacity-0 md:group-hover:opacity-100 transition-opacity">
