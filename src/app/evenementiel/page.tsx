@@ -168,7 +168,7 @@ export default function Evenementiel() {
                 </h3>
                 
             <div 
-              className="relative h-[380px] md:h-[700px] rounded-lg overflow-hidden shadow-xl bg-[#FAF0E6] cursor-pointer group pt-2 pb-8 px-3 md:p-2"
+              className="relative h-[380px] md:h-[700px] rounded-lg overflow-hidden shadow-xl bg-[#E8DED0] cursor-pointer group pt-2 pb-10 px-3 md:p-2"
               onClick={() => setZoomedImage('/images/cardevenementiel.avif')}
             >
                   <div className="relative w-full h-full">
@@ -204,7 +204,7 @@ export default function Evenementiel() {
                 </h3>
                 
             <div 
-              className="relative h-[380px] md:h-[700px] rounded-lg overflow-hidden shadow-xl bg-[#FAF0E6] cursor-pointer group pt-2 pb-8 px-3 md:p-2"
+              className="relative h-[380px] md:h-[700px] rounded-lg overflow-hidden shadow-xl bg-[#E8DED0] cursor-pointer group pt-2 pb-10 px-3 md:p-2"
               onClick={() => setZoomedImage('/images/cardevenementiel2.avif')}
             >
                   <div className="relative w-full h-full">
