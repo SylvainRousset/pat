@@ -188,18 +188,18 @@ export default function BoutiquePage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-[#E8DED0] py-6 md:py-8">
-        <div className="container mx-auto px-4">
-          <h1 className="text-2xl md:text-4xl font-bold text-center text-[#421500] mb-6 md:mb-8">La Boutique Coquelicot</h1>
+      <main className="min-h-screen bg-[#E8DED0] py-4 sm:py-6 md:py-8">
+        <div className="container mx-auto px-2 sm:px-3 md:px-4">
+          <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-center text-[#421500] mb-4 sm:mb-6 md:mb-8">La Boutique Coquelicot</h1>
           
           {/* Filtres par catégorie */}
-          <div className="mb-8">
-            <div className="flex flex-wrap justify-center gap-2 md:gap-4">
+          <div className="mb-4 sm:mb-6 md:mb-8">
+            <div className="flex flex-wrap justify-center gap-1 sm:gap-2 md:gap-3 lg:gap-4">
               {categories.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
-                  className={`px-4 md:px-6 py-2 md:py-3 rounded-full font-medium text-sm md:text-base transition-all duration-300 ${
+                  className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-full font-medium text-xs sm:text-sm md:text-base transition-all duration-300 ${
                     selectedCategory === category.id
                       ? 'bg-[#a75120] text-white shadow-lg transform scale-105'
                       : 'bg-[#FAF0E6] text-[#421500] hover:bg-[#f1e9dc] shadow-md hover:shadow-lg'
@@ -212,8 +212,8 @@ export default function BoutiquePage() {
           </div>
 
           {/* Compteur de produits */}
-          <div className="text-center mb-6">
-            <p className="text-[#421500] text-sm md:text-base">
+          <div className="text-center mb-4 sm:mb-6">
+            <p className="text-[#421500] text-xs sm:text-sm md:text-base">
               {filteredProducts.length} {filteredProducts.length > 1 ? 'produits' : 'produit'} {selectedCategory !== 'tous' ? `dans cette catégorie` : 'au total'}
             </p>
           </div>
@@ -228,45 +228,45 @@ export default function BoutiquePage() {
               {error}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
               {filteredProducts.map((product) => (
                 <div key={product.id} className="bg-[#FAF0E6] rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
                   {/* Notification d'ajout au panier */}
                   {addedToCart[product.id] && (
-                    <div className="absolute top-2 right-2 z-10 bg-green-500 text-white text-xs md:text-sm py-1 px-2 md:px-3 rounded-full animate-bounce">
+                    <div className="absolute top-1 sm:top-2 right-1 sm:right-2 z-10 bg-green-500 text-white text-xs py-1 px-1 sm:px-2 rounded-full animate-bounce">
                       Ajouté !
                     </div>
                   )}
-                  
+
                   <Link href={`/produit/${product.id}`} className="block relative aspect-[4/3] w-full">
                     <Image
                       src={product.image}
                       alt={product.name}
                       fill
-                      className="object-cover hover:scale-110 transition-transform duration-300"
-                      sizes="(max-width: 640px) 90vw, (max-width: 768px) 45vw, (max-width: 1024px) 30vw, 25vw"
+                      className="object-contain hover:scale-110 transition-transform duration-300 w-full h-full"
+                      sizes="(max-width: 475px) 90vw, (max-width: 640px) 45vw, (max-width: 768px) 45vw, (max-width: 1024px) 30vw, 25vw"
                     />
                   </Link>
-                  
-                  <div className="p-3 md:p-6">
-                    <div className="flex justify-between items-start mb-3 md:mb-4">
-                      <h2 className="text-lg md:text-xl font-bold text-gray-900">{product.name}</h2>
-                      <span className="text-[#D9844A] font-semibold">{Number(product.price).toFixed(2)} €</span>
+
+                  <div className="p-2 sm:p-3 md:p-4 lg:p-6">
+                    <div className="flex justify-between items-start mb-2 sm:mb-3 md:mb-4">
+                      <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 leading-tight">{product.name}</h2>
+                      <span className="text-[#D9844A] font-semibold text-sm sm:text-base">{Number(product.price).toFixed(2)} €</span>
                     </div>
                     
                     <div className="flex justify-between items-center">
-                      <Link 
+                      <Link
                         href={`/produit/${product.id}`}
-                        className="text-[#D9844A] hover:text-[#C27340] font-medium text-sm md:text-base"
+                        className="text-[#D9844A] hover:text-[#C27340] font-medium text-xs sm:text-sm"
                       >
                         Détails
                       </Link>
-                      
+
                       <button
                         onClick={() => handleAddToCart(product)}
-                        className="bg-[#D9844A] hover:bg-[#C27340] text-white text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 rounded-md transition-colors flex items-center"
+                        className="bg-[#D9844A] hover:bg-[#C27340] text-white text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-md transition-colors flex items-center"
                       >
-                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                         Ajouter

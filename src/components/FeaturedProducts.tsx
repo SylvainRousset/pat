@@ -107,7 +107,7 @@ const ProductCard = ({ product }: { product: Product }) => {
             src={product.image}
             alt={product.name}
             fill
-            className="object-cover hover:scale-110 transition-transform duration-300"
+            className="object-contain hover:scale-110 transition-transform duration-300 w-full h-full"
             sizes="(max-width: 640px) 80vw, (max-width: 768px) 40vw, (max-width: 1024px) 30vw, 25vw"
             quality={90}
             priority={true}

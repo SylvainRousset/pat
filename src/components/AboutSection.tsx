@@ -7,14 +7,14 @@ import Link from 'next/link';
 const AboutSection = () => {
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   return (
-    <section className="py-16 bg-[#8B6F47]">
-      <div className="container mx-auto px-4 max-w-6xl">
+    <section className="py-8 sm:py-12 md:py-16 bg-[#8B6F47]">
+      <div className="container mx-auto px-2 sm:px-3 md:px-4 max-w-6xl">
         {/* Section principale de bienvenue */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#FAF0E6]">
+        <div className="text-center mb-8 sm:mb-10 md:mb-12">
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-[#FAF0E6]">
             Bienvenue dans l&apos;univers fleuri de Coquelicot
           </h2>
-          <p className="text-lg text-[#E8DED0] leading-relaxed mb-4">
+          <p className="text-sm sm:text-base md:text-lg text-[#E8DED0] leading-relaxed mb-4">
             Chez <span className="font-semibold text-[#E8A870]">Coquelicot</span>, la nature inspire chaque création, entre délicatesse florale, notes végétales et touches audacieuses.
           </p>
         </div>
@@ -42,58 +42,58 @@ const AboutSection = () => {
         </div>
 
         {/* Section Les Cartes Coquelicot */}
-        <div className="mb-16">
-          <h3 className="text-2xl md:text-3xl font-bold text-center mb-4 text-[#f1e9dc]">
+        <div className="mb-10 sm:mb-12 md:mb-16">
+          <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-center mb-3 sm:mb-4 text-[#f1e9dc]">
             Les Cartes Coquelicot
           </h3>
-          <p className="text-center text-[#E8DED0] mb-8">
+          <p className="text-center text-sm sm:text-base text-[#E8DED0] mb-6 sm:mb-8">
             Retrouvez ici mes deux cartes Coquelicot :<br />
             La carte <span className="font-semibold text-[#E8A870]">Boutique</span> pour vos douceurs à emporter, et la carte <span className="font-semibold text-[#E8A870]">Évènementielle</span> pour vos moments à célébrer
           </p>
           
           {/* Images des cartes */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12">
-            <div 
-              className="rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] p-0 md:p-2"
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-12">
+            <div
+              className="rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] p-1 sm:p-2"
               onClick={() => setZoomedImage('/images/carteacc1.avif')}
             >
-              <div className="relative h-[380px] md:h-[700px] overflow-hidden">
+              <div className="relative h-[280px] xs:h-[320px] sm:h-[380px] md:h-[450px] lg:h-[500px] xl:h-[550px] overflow-hidden w-full">
                 <Image
                   src="/images/carteacc1.avif"
                   alt="Carte Boutique Coquelicot"
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-contain group-hover:scale-105 transition-transform duration-300 w-full h-full"
+                  sizes="(max-width: 1023px) 100vw, 50vw"
                 />
-                <div className="absolute top-2 right-2 bg-[#a75120] text-white p-2 rounded-full shadow-lg md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-2 right-2 bg-[#a75120] text-white p-2 rounded-full shadow-lg opacity-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
                   </svg>
                 </div>
               </div>
-              <div className="bg-[#a75120]/90 text-white px-1 py-0.5 rounded-full text-xs md:hidden text-center mt-2 w-fit mx-auto">
+              <div className="bg-[#a75120]/90 text-white px-2 py-1 rounded-full text-xs text-center mt-2 w-fit mx-auto">
                 Cliquez pour agrandir
               </div>
             </div>
-            <div 
-              className="rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] p-0 md:p-2"
+            <div
+              className="rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] p-1 sm:p-2"
               onClick={() => setZoomedImage('/images/carteacc2.avif')}
             >
-              <div className="relative h-[380px] md:h-[700px] overflow-hidden">
+              <div className="relative h-[280px] xs:h-[320px] sm:h-[380px] md:h-[450px] lg:h-[500px] xl:h-[550px] overflow-hidden w-full">
                 <Image
                   src="/images/carteacc2.avif"
                   alt="Carte Évènementielle Coquelicot"
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-contain group-hover:scale-105 transition-transform duration-300 w-full h-full"
+                  sizes="(max-width: 1023px) 100vw, 50vw"
                 />
-                <div className="absolute top-2 right-2 bg-[#a75120] text-white p-2 rounded-full shadow-lg md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-2 right-2 bg-[#a75120] text-white p-2 rounded-full shadow-lg opacity-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
                   </svg>
                 </div>
               </div>
-              <div className="bg-[#a75120]/90 text-white px-1 py-0.5 rounded-full text-xs md:hidden text-center mt-2 w-fit mx-auto">
+              <div className="bg-[#a75120]/90 text-white px-2 py-1 rounded-full text-xs text-center mt-2 w-fit mx-auto">
                 Cliquez pour agrandir
               </div>
             </div>

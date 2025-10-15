@@ -5,7 +5,7 @@ const Footer = () => {
   return (
     <footer className="bg-[#421502] text-white">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {/* Logo et description */}
           <div className="col-span-1">
           <Link href="/">
@@ -14,7 +14,7 @@ const Footer = () => {
                   alt="Pâtisserie Logo"
                   width={150}
                   height={150}
-                  className="object-contain"
+                  className="object-contain w-[100px] h-[100px] sm:w-[120px] sm:h-[120px] md:w-[150px] md:h-[150px]"
                 />
               </Link>
             <p className="text-gray-300 text-sm">
