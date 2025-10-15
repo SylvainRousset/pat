@@ -72,14 +72,14 @@ export default function Creations() {
                 Aucune création à afficher pour le moment.
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 md:gap-8 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-8 mb-6">
                 {creations.map((creation, index) => (
                 <div 
                   key={index} 
                   className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer transform transition-all hover:scale-105 hover:shadow-xl border-2 border-transparent hover:border-[#a75120]/30"
                   onClick={() => setSelectedImage(creation.image)}
                 >
-                  <div className="relative w-[200px] h-[200px] sm:w-[220px] sm:h-[220px] md:w-[240px] md:h-[240px] lg:w-[260px] lg:h-[260px] xl:w-[280px] xl:h-[280px] overflow-hidden mx-auto">
+                  <div className="relative w-[200px] h-[200px] sm:w-[220px] sm:h-[220px] lg:w-[240px] lg:h-[240px] xl:w-[260px] xl:h-[260px] 2xl:w-[280px] 2xl:h-[280px] overflow-hidden mx-auto">
                     <Image
                       src={creation.image}
                       alt={creation.name}

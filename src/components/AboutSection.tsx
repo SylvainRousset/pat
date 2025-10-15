@@ -101,33 +101,33 @@ const AboutSection = () => {
         </div>
 
         {/* Section Réservez Votre Gâteau */}
-        <div className="bg-[#5C3A1E] rounded-xl shadow-xl p-8 md:p-12 border-2 border-[#a75120]/40">
-          <h3 className="text-2xl md:text-3xl font-bold text-center mb-8 text-[#f1e9dc]">
+        <div className="bg-[#5C3A1E] rounded-xl shadow-xl p-6 sm:p-8 md:p-12 border-2 border-[#a75120]/40">
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-6 sm:mb-8 text-[#f1e9dc]">
             Réservez Votre Gâteau
           </h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             {/* Première carte - Boutique */}
-            <div className="bg-[#6B4E31] p-6 rounded-lg border-2 border-[#a75120]/40 hover:border-[#a75120] transition-all duration-300 shadow-md hover:shadow-lg">
+            <div className="bg-[#6B4E31] p-4 sm:p-6 md:p-8 rounded-lg border-2 border-[#a75120]/40 hover:border-[#a75120] transition-all duration-300 shadow-md hover:shadow-lg">
               <p className="text-[#f1e9dc] leading-relaxed mb-6">
                 Choisissez votre date et heure de retrait pour vos créations sucrées sur la boutique en ligne. Commandez 48h à l&apos;avance.
               </p>
               <Link 
                 href="/boutique" 
-                className="block w-full text-center bg-[#a75120] hover:bg-[#8a421a] text-white font-medium py-3 px-6 rounded-md transition-all duration-300 shadow-md hover:shadow-lg"
+                className="block w-full text-center bg-[#a75120] hover:bg-[#8a421a] text-white font-medium py-2 sm:py-3 md:py-4 px-4 sm:px-6 rounded-md transition-all duration-300 shadow-md hover:shadow-lg text-sm sm:text-base"
               >
                 Réserver
               </Link>
             </div>
             
             {/* Deuxième carte - Contact */}
-            <div className="bg-[#6B4E31] p-6 rounded-lg border-2 border-[#a75120]/40 hover:border-[#a75120] transition-all duration-300 shadow-md hover:shadow-lg">
+            <div className="bg-[#6B4E31] p-4 sm:p-6 md:p-8 rounded-lg border-2 border-[#a75120]/40 hover:border-[#a75120] transition-all duration-300 shadow-md hover:shadow-lg">
               <p className="text-[#f1e9dc] leading-relaxed mb-6">
                 Contactez-moi pour sublimer vos plus beaux moments. Pensez à le faire minimum 15 jours avant la date de l&apos;événement.
               </p>
               <Link 
                 href="/contact" 
-                className="block w-full text-center bg-[#a75120] hover:bg-[#8a421a] text-white font-medium py-3 px-6 rounded-md transition-all duration-300 shadow-md hover:shadow-lg"
+                className="block w-full text-center bg-[#a75120] hover:bg-[#8a421a] text-white font-medium py-2 sm:py-3 md:py-4 px-4 sm:px-6 rounded-md transition-all duration-300 shadow-md hover:shadow-lg text-sm sm:text-base"
               >
                 Réserver
               </Link>

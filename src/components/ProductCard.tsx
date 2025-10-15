@@ -9,7 +9,7 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="group relative">
-      <div className="w-[200px] h-[200px] sm:w-[220px] sm:h-[220px] md:w-[240px] md:h-[240px] lg:w-[260px] lg:h-[260px] xl:w-[280px] xl:h-[280px] overflow-hidden rounded-lg bg-gray-200 group-hover:opacity-75 mx-auto">
+      <div className="w-[200px] h-[200px] sm:w-[220px] sm:h-[220px] lg:w-[240px] lg:h-[240px] xl:w-[260px] xl:h-[260px] 2xl:w-[280px] 2xl:h-[280px] overflow-hidden rounded-lg bg-gray-200 group-hover:opacity-75 mx-auto">
         <Image
           src={product.image}
           alt={product.name}
