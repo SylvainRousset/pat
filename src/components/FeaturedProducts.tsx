@@ -57,7 +57,7 @@ const FeaturedProducts = () => {
         ) : error ? (
           <p className="text-center text-red-500">{error}</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 md:gap-8">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -93,21 +93,22 @@ const ProductCard = ({ product }: { product: Product }) => {
   };
 
   return (
-    <div className="bg-white overflow-hidden transition-transform hover:scale-105 max-w-sm mx-auto w-full relative shadow-sm rounded-lg">
+    <div className="bg-white overflow-hidden transition-transform hover:scale-105 w-full relative shadow-sm rounded-lg">
       {/* Notification d'ajout au panier */}
       {notifications.some(n => n.productId === parseInt(product.id)) && (
         <div className="absolute top-2 right-2 z-10 bg-green-500 text-white px-3 py-1 rounded-full text-xs animate-bounce">
           Ajouté !
         </div>
       )}
-      
-      <div className="relative aspect-[4/3] overflow-hidden rounded-md mb-4">
+
+      <div className="relative w-[200px] h-[200px] sm:w-[220px] sm:h-[220px] md:w-[240px] md:h-[240px] lg:w-[260px] lg:h-[260px] xl:w-[280px] xl:h-[280px] overflow-hidden rounded-md mb-4 mx-auto">
         <Link href={`/produit/${product.id}`}>
           <Image
             src={product.image}
             alt={product.name}
-            fill
-            className="object-contain hover:scale-110 transition-transform duration-300 w-full h-full"
+            width={280}
+            height={280}
+            className="object-cover hover:scale-110 transition-transform duration-300 w-full h-full"
             sizes="(max-width: 640px) 80vw, (max-width: 768px) 40vw, (max-width: 1024px) 30vw, 25vw"
             quality={90}
             priority={true}

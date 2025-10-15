@@ -57,7 +57,7 @@ const AboutSection = () => {
               className="rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] p-1 sm:p-2"
               onClick={() => setZoomedImage('/images/carteacc1.avif')}
             >
-              <div className="relative h-[280px] xs:h-[320px] sm:h-[380px] md:h-[450px] lg:h-[500px] xl:h-[550px] overflow-hidden w-full">
+              <div className="relative h-[240px] sm:h-[260px] md:h-[280px] lg:h-[300px] xl:h-[320px] overflow-hidden w-full">
                 <Image
                   src="/images/carteacc1.avif"
                   alt="Carte Boutique Coquelicot"
@@ -79,7 +79,7 @@ const AboutSection = () => {
               className="rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] p-1 sm:p-2"
               onClick={() => setZoomedImage('/images/carteacc2.avif')}
             >
-              <div className="relative h-[280px] xs:h-[320px] sm:h-[380px] md:h-[450px] lg:h-[500px] xl:h-[550px] overflow-hidden w-full">
+              <div className="relative h-[240px] sm:h-[260px] md:h-[280px] lg:h-[300px] xl:h-[320px] overflow-hidden w-full">
                 <Image
                   src="/images/carteacc2.avif"
                   alt="Carte Évènementielle Coquelicot"

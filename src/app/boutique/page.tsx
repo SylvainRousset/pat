@@ -228,7 +228,7 @@ export default function BoutiquePage() {
               {error}
             </div>
           ) : (
-            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 md:gap-8">
               {filteredProducts.map((product) => (
                 <div key={product.id} className="bg-[#FAF0E6] rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
                   {/* Notification d'ajout au panier */}
@@ -238,14 +238,17 @@ export default function BoutiquePage() {
                     </div>
                   )}
 
-                  <Link href={`/produit/${product.id}`} className="block relative aspect-[4/3] w-full">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      className="object-contain hover:scale-110 transition-transform duration-300 w-full h-full"
-                      sizes="(max-width: 475px) 90vw, (max-width: 640px) 45vw, (max-width: 768px) 45vw, (max-width: 1024px) 30vw, 25vw"
-                    />
+                  <Link href={`/produit/${product.id}`} className="block relative">
+                    <div className="relative w-[200px] h-[200px] sm:w-[220px] sm:h-[220px] md:w-[240px] md:h-[240px] lg:w-[260px] lg:h-[260px] xl:w-[280px] xl:h-[280px] overflow-hidden mx-auto">
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        width={280}
+                        height={280}
+                        className="object-cover hover:scale-110 transition-transform duration-300 w-full h-full"
+                        sizes="(max-width: 475px) 90vw, (max-width: 640px) 45vw, (max-width: 768px) 45vw, (max-width: 1024px) 30vw, 25vw"
+                      />
+                    </div>
                   </Link>
 
                   <div className="p-2 sm:p-3 md:p-4 lg:p-6">

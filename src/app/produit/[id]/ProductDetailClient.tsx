@@ -137,13 +137,14 @@ export default function ProductDetailClient({ params }: { params: { id: string }
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
               {/* Colonne gauche - Images */}
               <div className="space-y-6">
-                <div className="relative h-[400px] w-full rounded-lg overflow-hidden border border-gray-200">
+                <div className="relative w-[400px] h-[400px] sm:w-[450px] sm:h-[450px] md:w-[500px] md:h-[500px] lg:w-[550px] lg:h-[550px] xl:w-[600px] xl:h-[600px] rounded-lg overflow-hidden border border-gray-200 mx-auto">
                   {productImages.length > 0 ? (
                     <Image
                       src={productImages[selectedImage]}
                       alt={product.name}
-                      fill
-                      className="object-cover"
+                      width={600}
+                      height={600}
+                      className="object-cover w-full h-full"
                       quality={90}
                       sizes="(max-width: 768px) 100vw, 50vw"
                       priority
@@ -162,15 +163,16 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                       <button
                         key={index}
                         onClick={() => setSelectedImage(index)}
-                        className={`relative h-20 rounded-md overflow-hidden border-2 transition-all ${
+                        className={`relative w-20 h-20 rounded-md overflow-hidden border-2 transition-all ${
                           selectedImage === index ? 'border-amber-500 shadow-md' : 'border-gray-200 hover:border-amber-300'
                         }`}
                       >
                         <Image
                           src={image}
                           alt={`Miniature ${index + 1}`}
-                          fill
-                          className="object-cover"
+                          width={80}
+                          height={80}
+                          className="object-cover w-full h-full"
                           sizes="80px"
                         />
                       </button>

@@ -9,13 +9,13 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="group relative">
-      <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
+      <div className="w-[200px] h-[200px] sm:w-[220px] sm:h-[220px] md:w-[240px] md:h-[240px] lg:w-[260px] lg:h-[260px] xl:w-[280px] xl:h-[280px] overflow-hidden rounded-lg bg-gray-200 group-hover:opacity-75 mx-auto">
         <Image
           src={product.image}
           alt={product.name}
-          width={500}
-          height={500}
-          className="h-full w-full object-contain object-center lg:h-full lg:w-full"
+          width={280}
+          height={280}
+          className="h-full w-full object-cover object-center lg:h-full lg:w-full"
         />
       </div>
       <div className="mt-4 flex justify-between">
