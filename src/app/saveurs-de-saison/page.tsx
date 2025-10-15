@@ -173,7 +173,7 @@ export default function SaveursDeSaison() {
               Les racines du concept
             </h2>
             
-            <div className="bg-[#6B4E31] rounded-xl shadow-xl p-6 md:p-10 border-2 border-[#E8A870]/40">
+            <div className="bg-[#6B4E31] rounded-xl shadow-xl p-0 md:p-10 border-2 border-[#E8A870]/40">
               <h3 className="text-xl md:text-2xl font-semibold text-[#E8A870] mb-6 text-center">
                 Comment ça marche ?
               </h3>
@@ -182,26 +182,26 @@ export default function SaveursDeSaison() {
                 {/* Image à gauche */}
                 <div className="order-2 md:order-1">
                   <div 
-                    className="relative h-[380px] md:h-[600px] rounded-lg overflow-hidden shadow-xl bg-[#E8DED0] cursor-pointer group px-3 pt-2 pb-8 md:p-2"
+                    className="rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#E8DED0] p-0 md:p-2"
                     onClick={() => setZoomedImage('/images/saveursaisoncartel.avif')}
                   >
-                    <div className="relative w-full h-full">
+                    <div className="relative h-[380px] md:h-[600px] overflow-hidden">
                       <Image
                         src="/images/saveursaisoncartel.avif"
                         alt="Saveurs de saison"
                         fill
-                        className="object-contain group-hover:scale-105 transition-transform duration-300"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
                         sizes="(max-width: 768px) 100vw, 50vw"
                       />
+                      <div className="absolute top-2 right-2 bg-[#D9844A] text-white p-2 rounded-full shadow-lg md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                        </svg>
+                      </div>
                     </div>
-                    <div className="absolute top-2 right-2 bg-[#D9844A] text-white p-2 rounded-full shadow-lg md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                      </svg>
-                    </div>
-                    <div className="absolute bottom-2 left-2 bg-[#D9844A]/90 text-white px-3 py-1 rounded-full text-xs md:hidden">
-                      Cliquez pour agrandir
-                    </div>
+                  </div>
+                  <div className="bg-[#D9844A]/90 text-white px-1 py-0.5 rounded-full text-xs md:hidden text-center mt-2 w-fit mx-auto">
+                    Cliquez pour agrandir
                   </div>
                 </div>
 

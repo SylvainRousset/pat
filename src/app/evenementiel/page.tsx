@@ -159,7 +159,7 @@ export default function Evenementiel() {
           </div>
 
           {/* Cartes Événementielles */}
-          <div className="bg-[#E8DED0] rounded-xl shadow-xl p-6 md:p-10 border-2 border-[#E8A870]/40 mb-16">
+          <div className="bg-[#E8DED0] rounded-xl shadow-xl p-0 md:p-10 border-2 border-[#E8A870]/40 mb-16">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Carte Évènementielle */}
               <div className="space-y-4">
@@ -167,25 +167,25 @@ export default function Evenementiel() {
                   Carte Évènementielle
                 </h3>
                 
-            <div 
-              className="relative h-[380px] md:h-[700px] rounded-lg overflow-hidden shadow-xl bg-[#E8DED0] cursor-pointer group pt-2 pb-10 px-3 md:p-2"
-              onClick={() => setZoomedImage('/images/cardevenementiel.avif')}
-            >
-                  <div className="relative w-full h-full">
+                <div 
+                  className="rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] p-0 md:p-2"
+                  onClick={() => setZoomedImage('/images/cardevenementiel.avif')}
+                >
+                  <div className="relative h-[380px] md:h-[700px] overflow-hidden">
                     <Image
                       src="/images/cardevenementiel.avif"
                       alt="Carte Évènementielle"
                       fill
-                      className="object-contain group-hover:scale-105 transition-transform duration-300"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
+                    <div className="absolute top-2 right-2 bg-[#D9844A] text-white p-2 rounded-full shadow-lg md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                      </svg>
+                    </div>
                   </div>
-                  <div className="absolute top-2 right-2 bg-[#D9844A] text-white p-2 rounded-full shadow-lg md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                    </svg>
-                  </div>
-                  <div className="absolute bottom-2 left-2 bg-[#D9844A]/90 text-white px-3 py-1 rounded-full text-xs md:hidden">
+                  <div className="bg-[#D9844A]/90 text-white px-1 py-0.5 rounded-full text-xs md:hidden text-center mt-2 w-fit mx-auto">
                     Cliquez pour agrandir
                   </div>
                 </div>
@@ -203,25 +203,25 @@ export default function Evenementiel() {
                   Carte des Saveurs de saison
                 </h3>
                 
-            <div 
-              className="relative h-[380px] md:h-[700px] rounded-lg overflow-hidden shadow-xl bg-[#E8DED0] cursor-pointer group pt-2 pb-10 px-3 md:p-2"
-              onClick={() => setZoomedImage('/images/cardevenementiel2.avif')}
-            >
-                  <div className="relative w-full h-full">
+                <div 
+                  className="rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] p-0 md:p-2"
+                  onClick={() => setZoomedImage('/images/cardevenementiel2.avif')}
+                >
+                  <div className="relative h-[380px] md:h-[700px] overflow-hidden">
                     <Image
                       src="/images/cardevenementiel2.avif"
                       alt="Carte des Saveurs de saison"
                       fill
-                      className="object-contain group-hover:scale-105 transition-transform duration-300"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
+                    <div className="absolute top-2 right-2 bg-[#D9844A] text-white p-2 rounded-full shadow-lg md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                      </svg>
+                    </div>
                   </div>
-                  <div className="absolute top-2 right-2 bg-[#D9844A] text-white p-2 rounded-full shadow-lg md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                    </svg>
-                  </div>
-                  <div className="absolute bottom-2 left-2 bg-[#D9844A]/90 text-white px-3 py-1 rounded-full text-xs md:hidden">
+                  <div className="bg-[#D9844A]/90 text-white px-1 py-0.5 rounded-full text-xs md:hidden text-center mt-2 w-fit mx-auto">
                     Cliquez pour agrandir
                   </div>
                 </div>
