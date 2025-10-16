@@ -66,43 +66,43 @@ export default function Contact() {
   return (
     <>
       <Navbar />
-      <main className="bg-[#f8f5f0] py-4 sm:py-6 md:py-8">
+      <main className="bg-[#8B6F47] py-4 sm:py-6 md:py-8 lg:py-12">
         <div className="container mx-auto px-2 sm:px-3 md:px-4">
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-center text-gray-900 mb-4 sm:mb-6 md:mb-8">Contactez-moi</h1>
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-center text-[#FAF0E6] mb-4 sm:mb-6 md:mb-8 lg:mb-12">Contactez-moi</h1>
 
-          <div className="bg-white rounded-lg shadow-lg p-3 sm:p-4 md:p-6 mb-6 sm:mb-8">
+          <div className="bg-[#6B4E31] rounded-xl shadow-lg p-3 sm:p-4 md:p-6 lg:p-10 mb-6 sm:mb-8 border-2 border-[#E8A870]/40">
             <div className="prose max-w-none text-center mb-4 sm:mb-6">
-              <p className="text-sm sm:text-base md:text-lg">
-                Bonjour, je m&apos;appelle Marie Laurent. Pour toute demande de devis ou commande spéciale, n&apos;hésitez pas à me contacter.
-                Je suis là pour vous aider avec vos événements sucrés.
+              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-[#f1e9dc] mb-4">Contactez-moi</h2>
+              <p className="text-sm sm:text-base md:text-lg text-[#E8DED0]">
+                Pour toute demande de devis ou commande spéciale, n&apos;hésitez pas à me contacter. Je suis là pour vous aider avec vos événements sucrés.
               </p>
             </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8">
             {/* Informations de contact */}
-            <div className="bg-white rounded-lg shadow-lg p-3 sm:p-4 md:p-6">
-              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 mb-4 sm:mb-6">Contact</h2>
+            <div className="bg-[#6B4E31] rounded-lg shadow-lg p-3 sm:p-4 md:p-6 lg:p-8 border-2 border-[#E8A870]/40">
+              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-[#f1e9dc] mb-4 sm:mb-6">Contact</h2>
 
               <div className="flex items-center mb-3 sm:mb-4">
-                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-[#E8A870]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
-                <span className="text-sm sm:text-base md:text-lg">06 08 02 16 22</span>
+                <span className="text-sm sm:text-base md:text-lg text-[#E8DED0]">06 08 02 16 22</span>
               </div>
 
-              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 mt-6 sm:mt-8 mb-4 sm:mb-6">Devis</h2>
+              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-[#f1e9dc] mt-6 sm:mt-8 mb-4 sm:mb-6">Devis</h2>
 
               <div className="flex items-center mb-3 sm:mb-4">
-                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-[#E8A870]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                <span className="text-sm sm:text-base md:text-lg">coquelicot.traiteursucre@gmail.com</span>
+                <span className="text-sm sm:text-base md:text-lg text-[#E8DED0]">coquelicot.traiteursucre@gmail.com</span>
               </div>
 
-              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 mt-6 sm:mt-8 mb-4 sm:mb-6">Mon Local</h2>
+              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-[#f1e9dc] mt-6 sm:mt-8 mb-4 sm:mb-6">Mon Local</h2>
 
-              <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 leading-relaxed">
+              <p className="text-sm sm:text-base text-[#E8DED0] mb-4 sm:mb-6 leading-relaxed">
                 Venez me rencontrer dans mon charmant local, où chaque douceur est confectionnée avec soin et passion.
                 Ici, vous serez accueillis avec un grand sourire et une bienveillance sans pareille.
                 Que ce soit pour retirer vos pâtisseries préférées ou découvrir de nouvelles créations gourmandes,
@@ -110,33 +110,33 @@ export default function Contact() {
                 J&apos;ai hâte de vous voir et de faire de votre expérience un moment mémorable et délicieux.
               </p>
 
-              <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Adresse</h3>
+              <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-[#E8A870] mb-3 sm:mb-4">Adresse</h3>
               <div className="flex items-start mb-4 sm:mb-6">
-                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 mt-1 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 mt-1 text-[#E8A870]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <span className="text-sm sm:text-base md:text-lg">3 rue les près du roy<br />64800 NAY</span>
+                <span className="text-sm sm:text-base md:text-lg text-[#E8DED0]">3 rue les près du roy<br />64800 NAY</span>
               </div>
 
-              <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Horaires</h3>
+              <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-[#E8A870] mb-3 sm:mb-4">Horaires</h3>
               <div className="flex items-start mb-2">
-                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 mt-1 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 mt-1 text-[#E8A870]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="text-sm sm:text-base md:text-lg">Mardi-Samedi 10h30-15h45-17h-19h</span>
+                <span className="text-sm sm:text-base md:text-lg text-[#E8DED0]">Mardi-Samedi 10h30-15h45-17h-19h</span>
               </div>
               <div className="flex items-start mb-4 sm:mb-6">
-                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 mt-1 text-amber-600 opacity-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 mt-1 text-[#E8A870] opacity-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="text-sm sm:text-base md:text-lg">Dimanche 10h30-14h30</span>
+                <span className="text-sm sm:text-base md:text-lg text-[#E8DED0]">Dimanche 10h30-14h30</span>
               </div>
             </div>
             
             {/* Formulaire de contact */}
-            <div className="bg-white rounded-lg shadow-lg p-3 sm:p-4 md:p-6">
-              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 mb-4 sm:mb-6">Envoyez-moi un message</h2>
+            <div className="bg-[#6B4E31] rounded-lg shadow-lg p-3 sm:p-4 md:p-6 lg:p-8 border-2 border-[#E8A870]/40">
+              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-[#f1e9dc] mb-4 sm:mb-6">Envoyez-moi un message</h2>
 
               {submitSuccess ? (
                 <div className="bg-green-100 border border-green-400 text-green-700 px-3 py-2 sm:px-4 sm:py-3 rounded mb-4 sm:mb-6 text-sm sm:text-base">
@@ -145,7 +145,7 @@ export default function Contact() {
               ) : (
                 <form onSubmit={handleSubmit}>
                   <div className="mb-3 sm:mb-4">
-                    <label htmlFor="name" className="block text-gray-700 font-medium mb-1 sm:mb-2 text-sm sm:text-base">Nom</label>
+                    <label htmlFor="name" className="block text-[#E8DED0] font-medium mb-1 sm:mb-2 text-sm sm:text-base">Nom</label>
                     <input
                       type="text"
                       id="name"
@@ -153,12 +153,12 @@ export default function Contact() {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm sm:text-base"
+                      className="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E8A870] text-sm sm:text-base bg-white"
                     />
                   </div>
 
                   <div className="mb-3 sm:mb-4">
-                    <label htmlFor="email" className="block text-gray-700 font-medium mb-1 sm:mb-2 text-sm sm:text-base">Email</label>
+                    <label htmlFor="email" className="block text-[#E8DED0] font-medium mb-1 sm:mb-2 text-sm sm:text-base">Email</label>
                     <input
                       type="email"
                       id="email"
@@ -166,24 +166,24 @@ export default function Contact() {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm sm:text-base"
+                      className="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E8A870] text-sm sm:text-base bg-white"
                     />
                   </div>
 
                   <div className="mb-3 sm:mb-4">
-                    <label htmlFor="phone" className="block text-gray-700 font-medium mb-1 sm:mb-2 text-sm sm:text-base">Téléphone</label>
+                    <label htmlFor="phone" className="block text-[#E8DED0] font-medium mb-1 sm:mb-2 text-sm sm:text-base">Téléphone</label>
                     <input
                       type="tel"
                       id="phone"
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm sm:text-base"
+                      className="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E8A870] text-sm sm:text-base bg-white"
                     />
                   </div>
 
                   <div className="mb-4 sm:mb-6">
-                    <label htmlFor="message" className="block text-gray-700 font-medium mb-1 sm:mb-2 text-sm sm:text-base">Message</label>
+                    <label htmlFor="message" className="block text-[#E8DED0] font-medium mb-1 sm:mb-2 text-sm sm:text-base">Message</label>
                     <textarea
                       id="message"
                       name="message"
@@ -191,7 +191,7 @@ export default function Contact() {
                       onChange={handleChange}
                       required
                       rows={4}
-                      className="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm sm:text-base"
+                      className="w-full px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E8A870] text-sm sm:text-base bg-white"
                     ></textarea>
                   </div>
 
@@ -204,7 +204,7 @@ export default function Contact() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-md transition-colors flex items-center justify-center text-sm sm:text-base"
+                    className="w-full bg-[#E8A870] hover:bg-[#d4844a] text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-md transition-colors flex items-center justify-center text-sm sm:text-base disabled:opacity-50"
                   >
                     {isSubmitting ? 'Envoi en cours...' : 'Envoyer le message'}
                   </button>
