@@ -8,16 +8,23 @@ import Footer from '@/components/Footer';
 import Image from 'next/image';
 import { onAuthStateChanged } from 'firebase/auth';
 
+// Type pour les catégories
+interface Category {
+  id: string;
+  name: string;
+  description?: string;
+}
+
 // Type pour les produits
 interface Product {
   id: string;
   name: string;
-  title?: string;
   price: string;
   image: string;
   description: string;
   showInCreations: boolean;
   showOnHome: boolean;
+  category?: string; // ID de la catégorie
   portions?: string;
   address?: string;
   images?: string[];
@@ -43,13 +50,15 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({
     name: '',
     price: '',
     image: '',
     description: '',
     showInCreations: true,
-    showOnHome: true
+    showOnHome: true,
+    category: ''
   });
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -98,8 +107,13 @@ export default function AdminDashboard() {
   const [customSizePrice, setCustomSizePrice] = useState('');
   const [selectedAllergens, setSelectedAllergens] = useState<string[]>([]);
   const [customAllergen, setCustomAllergen] = useState('');
-  const [isAllergensExpanded, setIsAllergensExpanded] = useState(false);
+  const [isAllergensExpanded, setIsAllergensExpanded] = useState(true);
   const [customFlavor, setCustomFlavor] = useState('');
+  
+  // États pour les catégories
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [isCreatingNewCategory, setIsCreatingNewCategory] = useState(false);
 
   // Portions disponibles
   const availableSizes = ['2', '4', '6', '8', '10', '12'];
@@ -123,6 +137,8 @@ export default function AdminDashboard() {
           localStorage.setItem('adminAuthenticated', 'true');
           // Charger les produits depuis l'API
           fetchProducts();
+          // Charger les catégories
+          fetchCategories();
           // Charger la configuration du contenu
           fetchContentConfig();
         } else {
@@ -156,6 +172,22 @@ export default function AdminDashboard() {
       console.error(error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Fonction pour récupérer les catégories
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/categories');
+      
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération des catégories');
+      }
+      
+      const data = await response.json();
+      setCategories(data);
+    } catch (error) {
+      console.error('Erreur lors du chargement des catégories:', error);
     }
   };
 
@@ -597,6 +629,46 @@ export default function AdminDashboard() {
     }
   };
 
+  // Gestion des catégories
+  const createNewCategory = async () => {
+    if (!newCategoryName.trim()) {
+      setErrorMessage('Veuillez saisir un nom de catégorie');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/categories', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: newCategoryName.trim(),
+          createIfNotExists: true
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la création de la catégorie');
+      }
+
+      const newCategory = await response.json();
+      setCategories([...categories, newCategory]);
+      setSelectedCategory(newCategory.id);
+      setNewCategoryName('');
+      setIsCreatingNewCategory(false);
+      setSuccessMessage(`Catégorie "${newCategory.name}" créée avec succès`);
+    } catch (error) {
+      setErrorMessage('Erreur lors de la création de la catégorie');
+      console.error(error);
+    }
+  };
+
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    setNewProduct({ ...newProduct, category: categoryId });
+  };
+
   // Gestion des allergènes
   const toggleAllergen = (allergen: string) => {
     if (selectedAllergens.includes(allergen)) {
@@ -618,6 +690,13 @@ export default function AdminDashboard() {
   };
 
   const addCustomFlavor = () => {
+    if (customFlavor.trim() && !flavors.includes(customFlavor.trim())) {
+      setFlavors([...flavors, customFlavor.trim()]);
+      setCustomFlavor('');
+    }
+  };
+
+  const addCustomFlavorForEdit = () => {
     if (customFlavor.trim() && selectedProduct && !(selectedProduct.flavors || []).includes(customFlavor.trim())) {
       setSelectedProduct({ 
         ...selectedProduct, 
@@ -1152,6 +1231,66 @@ export default function AdminDashboard() {
                     required
                   />
                 </div>
+
+                {/* Section Catégorie */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Catégorie
+                  </label>
+                  
+                  {!isCreatingNewCategory ? (
+                    <div className="space-y-3">
+                      <select
+                        value={selectedCategory}
+                        onChange={(e) => handleCategoryChange(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                      >
+                        <option value="">Sélectionner une catégorie</option>
+                        {categories.map((category) => (
+                          <option key={category.id} value={category.id}>
+                            {category.name}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => setIsCreatingNewCategory(true)}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 w-fit"
+                      >
+                        Nouvelle catégorie
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <input
+                        type="text"
+                        value={newCategoryName}
+                        onChange={(e) => setNewCategoryName(e.target.value)}
+                        placeholder="Nom de la nouvelle catégorie"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={createNewCategory}
+                          className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                        >
+                          Créer
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsCreatingNewCategory(false);
+                            setNewCategoryName('');
+                          }}
+                          className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                        >
+                          Annuler
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
                 
                 <div>
                   <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
@@ -1256,21 +1395,6 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 
-                <div>
-                  <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-                    Titre du produit
-                  </label>
-                  <input
-                    type="text"
-                    id="title"
-                    name="title"
-                    value={newProduct.title || ''}
-                    onChange={handleInputChange}
-                    placeholder="ex: Tarte aux Fruits de Saison"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
-                    required
-                  />
-                </div>
                 
                 <div>
                   <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
@@ -1347,26 +1471,28 @@ export default function AdminDashboard() {
                   {/* Ajout de catégorie personnalisée */}
                   <div className="mt-4 p-3 bg-amber-50 rounded-md border border-amber-200">
                     <p className="text-sm font-medium text-amber-700 mb-2">Ajouter une catégorie personnalisée</p>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={customSizeName}
-                        onChange={(e) => setCustomSizeName(e.target.value)}
-                        placeholder="ex: 12 pièces mignardises"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120]"
-                      />
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={customSizePrice}
-                        onChange={(e) => setCustomSizePrice(e.target.value)}
-                        placeholder="Prix (€)"
-                        className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120]"
-                      />
+                    <div className="space-y-3">
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={customSizeName}
+                          onChange={(e) => setCustomSizeName(e.target.value)}
+                          placeholder="ex: 12 pièces mignardises"
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120]"
+                        />
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={customSizePrice}
+                          onChange={(e) => setCustomSizePrice(e.target.value)}
+                          placeholder="Prix (€)"
+                          className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120]"
+                        />
+                      </div>
                       <button
                         type="button"
                         onClick={addCustomSize}
-                        className="px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a]"
+                        className="px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a] w-fit"
                       >
                         Ajouter
                       </button>
@@ -1394,79 +1520,62 @@ export default function AdminDashboard() {
 
                 {/* Allergènes */}
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Allergènes (optionnel)
-                    </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Allergènes (optionnel)
+                  </label>
+                  
+                  <div>
+                    <>
+                  <p className="text-xs text-gray-500 mb-3 italic">
+                    Il est essentiel de prendre en compte les allergènes lors de la consommation alimentaire.
+                  </p>
+                  
+                  {/* Allergènes prédéfinis */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-3 bg-gray-50 rounded-md mb-3">
+                    {availableAllergens.map((allergen) => (
+                      <div key={allergen} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id={`allergen-${allergen}`}
+                          checked={selectedAllergens.includes(allergen)}
+                          onChange={() => toggleAllergen(allergen)}
+                          className="h-4 w-4 text-[#a75120] focus:ring-[#a75120] border-gray-300 rounded"
+                        />
+                        <label htmlFor={`allergen-${allergen}`} className="ml-2 block text-sm text-gray-700">
+                          {allergen}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Ajouter un allergène personnalisé */}
+                  <div className="flex gap-2 mb-3">
+                    <input
+                      type="text"
+                      value={customAllergen}
+                      onChange={(e) => setCustomAllergen(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomAllergen())}
+                      placeholder="Ajouter un allergène personnalisé"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] text-sm"
+                    />
                     <button
                       type="button"
-                      onClick={() => setIsAllergensExpanded(!isAllergensExpanded)}
-                      className="flex items-center text-[#a75120] hover:text-[#8a421a] transition-colors"
+                      onClick={addCustomAllergen}
+                      className="px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a] font-bold"
                     >
-                      {isAllergensExpanded ? (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      ) : (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      )}
+                      +
                     </button>
                   </div>
-                  
-                  {isAllergensExpanded && (
-                    <>
-                      <p className="text-xs text-gray-500 mb-3 italic">
-                        Il est essentiel de prendre en compte les allergènes lors de la consommation alimentaire.
-                      </p>
-                      
-                      {/* Allergènes prédéfinis */}
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-3 bg-gray-50 rounded-md mb-3">
-                        {availableAllergens.map((allergen) => (
-                          <div key={allergen} className="flex items-center">
-                            <input
-                              type="checkbox"
-                              id={`allergen-${allergen}`}
-                              checked={selectedAllergens.includes(allergen)}
-                              onChange={() => toggleAllergen(allergen)}
-                              className="h-4 w-4 text-[#a75120] focus:ring-[#a75120] border-gray-300 rounded"
-                            />
-                            <label htmlFor={`allergen-${allergen}`} className="ml-2 block text-sm text-gray-700">
-                              {allergen}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                      
-                      {/* Ajouter un allergène personnalisé */}
-                      <div className="flex gap-2 mb-3">
-                        <input
-                          type="text"
-                          value={customAllergen}
-                          onChange={(e) => setCustomAllergen(e.target.value)}
-                          onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomAllergen())}
-                          placeholder="Ajouter un allergène personnalisé"
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] text-sm"
-                        />
-                        <button
-                          type="button"
-                          onClick={addCustomAllergen}
-                          className="px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a] font-bold"
-                        >
-                          +
-                        </button>
-                      </div>
 
-                      {/* Liste des allergènes sélectionnés */}
-                      {selectedAllergens.length > 0 && (
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {selectedAllergens.map((allergen) => (
-                            <span key={allergen} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-red-100 text-red-800">
-                              {allergen}
-                              <button
-                                type="button"
-                                onClick={() => removeAllergen(allergen)}
+                  {/* Liste des allergènes sélectionnés */}
+                  {selectedAllergens.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {selectedAllergens.map((allergen) => (
+                        <span key={allergen} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-red-100 text-red-800">
+                          {allergen}
+                          <button
+                            type="button"
+                            onClick={() => removeAllergen(allergen)}
                                 className="ml-1 text-red-600 hover:text-red-900 font-bold"
                               >
                                 ×
@@ -1476,6 +1585,50 @@ export default function AdminDashboard() {
                         </div>
                       )}
                     </>
+                  </div>
+                </div>
+
+                {/* Saveurs */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Saveurs (optionnel)
+                  </label>
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={customFlavor}
+                      onChange={(e) => setCustomFlavor(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomFlavor())}
+                      placeholder="Ex: Chocolat Passion"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={addCustomFlavor}
+                      className="px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a]"
+                    >
+                      Ajouter
+                    </button>
+                  </div>
+                  
+                  {flavors.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {flavors.map((flavor, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-[#a75120]/10 text-[#a75120] border border-[#a75120]/20"
+                        >
+                          {flavor}
+                          <button
+                            type="button"
+                            onClick={() => setFlavors(flavors.filter((_, i) => i !== index))}
+                            className="ml-1 text-red-600 hover:text-red-900 font-bold"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
                   )}
                 </div>
 
@@ -1665,18 +1818,25 @@ export default function AdminDashboard() {
                       />
                     </div>
 
+                    {/* Section Catégorie dans le modal d'édition */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Titre du produit
+                        Catégorie
                       </label>
-                      <input
-                        type="text"
-                        value={selectedProduct.title || ''}
-                        onChange={(e) => setSelectedProduct({ ...selectedProduct, title: e.target.value })}
-                        placeholder="ex: Tarte aux Fruits de Saison"
+                      <select
+                        value={selectedProduct.category || ''}
+                        onChange={(e) => setSelectedProduct({ ...selectedProduct, category: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
-                      />
+                      >
+                        <option value="">Aucune catégorie</option>
+                        {categories.map((category) => (
+                          <option key={category.id} value={category.id}>
+                            {category.name}
+                          </option>
+                        ))}
+                      </select>
                     </div>
+
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1688,7 +1848,7 @@ export default function AdminDashboard() {
                         onChange={(e) => setSelectedProduct({ ...selectedProduct, price: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
                       />
-                    </div>
+                  </div>
 
                     {/* Tailles et prix */}
                     <div>
@@ -1698,8 +1858,8 @@ export default function AdminDashboard() {
                       <div className="space-y-3">
                         {(selectedProduct.sizes || []).map((size, index) => (
                           <div key={index} className="flex items-center space-x-3">
-                            <input
-                              type="text"
+                      <input
+                        type="text"
                               value={size.name}
                               onChange={(e) => {
                                 const newSizes = [...(selectedProduct.sizes || [])];
@@ -1709,8 +1869,8 @@ export default function AdminDashboard() {
                               placeholder="ex: 12 mignardises"
                               className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
                             />
-                            <input
-                              type="text"
+                      <input
+                        type="text"
                               value={size.price}
                               onChange={(e) => {
                                 const newSizes = [...(selectedProduct.sizes || [])];
@@ -1731,7 +1891,7 @@ export default function AdminDashboard() {
                             >
                               ×
                             </button>
-                          </div>
+                    </div>
                         ))}
                         
                         <button
@@ -1792,7 +1952,7 @@ export default function AdminDashboard() {
                   
                   {/* Formulaire d'upload d'image principale */}
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                    <input
+                      <input
                       type="file"
                       accept="image/*"
                       onChange={async (e) => {
@@ -1830,7 +1990,7 @@ export default function AdminDashboard() {
                       </svg>
                       <span className="text-sm text-gray-600">Cliquez pour télécharger l&apos;image principale</span>
                     </label>
-                  </div>
+                    </div>
                   
                   {/* Aperçu de l'image principale */}
                   {selectedProduct.image && (
@@ -1849,21 +2009,21 @@ export default function AdminDashboard() {
 
                 
                 {/* Images additionnelles */}
-                <div>
+                    <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Images additionnelles
-                  </label>
+                        Images additionnelles
+                      </label>
                   <div className="bg-amber-50 p-3 rounded-md text-sm mb-3">
-                    <p className="text-amber-700 mb-1">
-                      Téléchargez des images supplémentaires depuis votre ordinateur.
-                    </p>
-                  </div>
-                  
-                  {/* Formulaire d'upload d'image additionnelle */}
+                          <p className="text-amber-700 mb-1">
+                            Téléchargez des images supplémentaires depuis votre ordinateur.
+                          </p>
+                        </div>
+                        
+                        {/* Formulaire d'upload d'image additionnelle */}
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                    <input
-                      type="file"
-                      accept="image/*"
+                            <input
+                              type="file"
+                              accept="image/*"
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
@@ -1900,70 +2060,70 @@ export default function AdminDashboard() {
                     >
                       <svg className="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
+                                        </svg>
                       <span className="text-sm text-gray-600">Cliquez pour ajouter une image supplémentaire</span>
                     </label>
-                  </div>
-                  
+                        </div>
+                        
                   {/* Affichage des images additionnelles */}
                   {(selectedProduct.images || []).length > 0 && (
                     <div className="mt-4">
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                         {(selectedProduct.images || []).map((imageUrl, index) => (
-                          <div key={index} className="relative group">
-                            <div className="relative h-24 rounded overflow-hidden border border-gray-300">
-                              <Image
-                                src={imageUrl}
-                                alt={`Image ${index + 1}`}
-                                fill
-                                className="object-cover"
-                              />
-                            </div>
-                            <button
+                              <div key={index} className="relative group">
+                                <div className="relative h-24 rounded overflow-hidden border border-gray-300">
+                                  <Image
+                                    src={imageUrl}
+                                    alt={`Image ${index + 1}`}
+                                    fill
+                                    className="object-cover"
+                                  />
+                                </div>
+                                  <button
                               type="button"
-                              onClick={() => {
-                                const updatedImages = [...(selectedProduct.images || [])];
-                                updatedImages.splice(index, 1);
-                                setSelectedProduct({
-                                  ...selectedProduct,
+                                    onClick={() => {
+                                      const updatedImages = [...(selectedProduct.images || [])];
+                                      updatedImages.splice(index, 1);
+                                      setSelectedProduct({
+                                        ...selectedProduct,
                                   images: updatedImages
-                                });
-                              }}
+                                      });
+                                    }}
                               className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
+                                  >
                               ×
-                            </button>
+                                  </button>
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
-                    </div>
+                        </div>
                   )}
-                </div>
+                        </div>
                 {/* Description détaillée */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description détaillée (un paragraphe par ligne)
-                  </label>
-                  <textarea
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Description détaillée (un paragraphe par ligne)
+                      </label>
+                      <textarea
                     value={selectedProduct.descriptionArray ? selectedProduct.descriptionArray.join('\n') : ''}
-                    onChange={(e) => {
+                        onChange={(e) => {
                       const lines = e.target.value.split('\n');
                       setSelectedProduct({ ...selectedProduct, descriptionArray: lines });
                     }}
                     rows={8}
                     placeholder="Collez votre texte ici...&#10;&#10;Exemple :&#10;Une délicieuse tarte aux fruits de saison, préparée avec des ingrédients frais et locaux.&#10;&#10;• Fruits de saison sélectionnés&#10;• Pâte brisée maison&#10;• Crème pâtissière vanille&#10;&#10;Parfait pour accompagner vos moments de gourmandise."
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500 font-mono text-sm"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Séparez les paragraphes par une ligne vide pour une meilleure présentation.
-                  </p>
-                </div>
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Séparez les paragraphes par une ligne vide pour une meilleure présentation.
+                      </p>
+                    </div>
 
                 {/* Allergènes */}
-                <div>
+                    <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Allergènes
-                  </label>
+                      </label>
                   <div className="grid grid-cols-1 gap-2 mb-3">
                     {availableAllergens.map((allergen) => (
                       <div key={allergen} className="flex items-center">
@@ -1990,7 +2150,7 @@ export default function AdminDashboard() {
                         <label htmlFor={`edit-allergen-${allergen}`} className="ml-2 block text-sm text-gray-700">
                           {allergen}
                         </label>
-                      </div>
+                    </div>
                     ))}
                   </div>
                   
@@ -2011,8 +2171,8 @@ export default function AdminDashboard() {
                     >
                       Ajouter
                     </button>
-                  </div>
-                  
+                </div>
+
                   {/* Allergènes sélectionnés */}
                   {(selectedProduct.allergens || []).length > 0 && (
                     <div className="mt-3">
@@ -2021,7 +2181,7 @@ export default function AdminDashboard() {
                         {(selectedProduct.allergens || []).map((allergen) => (
                           <span key={allergen} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-red-100 text-red-800">
                             {allergen}
-                            <button
+                  <button
                               type="button"
                               onClick={() => {
                                 const currentAllergens = selectedProduct.allergens || [];
@@ -2051,13 +2211,13 @@ export default function AdminDashboard() {
                       type="text"
                       value={customFlavor}
                       onChange={(e) => setCustomFlavor(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomFlavor())}
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomFlavorForEdit())}
                       placeholder="Ex: Chocolat Passion"
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
                     />
                     <button
                       type="button"
-                      onClick={addCustomFlavor}
+                      onClick={addCustomFlavorForEdit}
                       className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700"
                     >
                       Ajouter
@@ -2091,32 +2251,32 @@ export default function AdminDashboard() {
               <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
                 <button
                   type="button"
-                  onClick={() => setIsDetailsModalOpen(false)}
+                    onClick={() => setIsDetailsModalOpen(false)}
                   className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-                >
-                  Annuler
-                </button>
-                <button
+                  >
+                    Annuler
+                  </button>
+                  <button
                   type="button"
-                  onClick={async () => {
-                    try {
-                      const productToUpdate = {
-                        ...selectedProduct,
-                        portions: selectedProduct.portions || '',
-                        images: selectedProduct.images || [selectedProduct.image],
-                        descriptionArray: selectedProduct.descriptionArray || [selectedProduct.description],
-                        allergens: selectedProduct.allergens || [],
+                    onClick={async () => {
+                      try {
+                        const productToUpdate = {
+                          ...selectedProduct,
+                          portions: selectedProduct.portions || '',
+                          images: selectedProduct.images || [selectedProduct.image],
+                          descriptionArray: selectedProduct.descriptionArray || [selectedProduct.description],
+                          allergens: selectedProduct.allergens || [],
                         flavors: selectedProduct.flavors || [],
                         sizes: selectedProduct.sizes || []
-                      };
+                        };
 
-                      const response = await fetch(`/api/products?id=${selectedProduct.id}`, {
-                        method: 'PUT',
-                        headers: {
-                          'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(productToUpdate),
-                      });
+                        const response = await fetch(`/api/products?id=${selectedProduct.id}`, {
+                          method: 'PUT',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify(productToUpdate),
+                        });
 
                       if (response.ok) {
                         // Rafraîchir la liste des produits
@@ -2128,12 +2288,12 @@ export default function AdminDashboard() {
                       }
                     } catch (error) {
                       console.error('Erreur:', error);
-                    }
-                  }}
-                  className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700"
-                >
-                  Enregistrer
-                </button>
+                      }
+                    }}
+                    className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700"
+                  >
+                    Enregistrer
+                  </button>
               </div>
             </div>
           </div>
@@ -2141,4 +2301,4 @@ export default function AdminDashboard() {
       )}
     </div>
   );
-}
+} 

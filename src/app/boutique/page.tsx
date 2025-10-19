@@ -15,24 +15,23 @@ interface Product {
   price: string;
   image: string;
   description: string;
+  category?: string; // ID de la catégorie
   flavors?: string[];
   sizes?: { name: string; price: string }[];
 }
 
-// Catégories disponibles
-const categories = [
-  { id: 'tous', name: 'Tous les produits' },
-  { id: 'boites', name: 'Boîtes de Saison' },
-  { id: 'cookies', name: 'Cookies' },
-  { id: 'creation', name: 'Boîte à Création' },
-  { id: 'gateaux', name: 'Gâteaux à Partager' },
-  { id: 'surmesure', name: 'Sur Mesure' },
-];
+// Interface pour les catégories
+interface Category {
+  id: string;
+  name: string;
+  description?: string;
+}
 
 export default function BoutiquePage() {
   const { addToCart } = useCart();
   const [addedToCart, setAddedToCart] = useState<Record<string, boolean>>({});
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('tous');
@@ -43,29 +42,42 @@ export default function BoutiquePage() {
   const [selectedFlavors, setSelectedFlavors] = useState<string[]>([]);
   const [selectedSize, setSelectedSize] = useState<{ name: string; price: string } | null>(null);
 
-  // Charger les produits au chargement de la page
+  // Charger les produits et catégories au chargement de la page
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
         setIsLoading(true);
-        // Récupérer TOUS les produits
-        const response = await fetch('/api/products');
         
-        if (!response.ok) {
+        // Récupérer les produits et catégories en parallèle
+        const [productsResponse, categoriesResponse] = await Promise.all([
+          fetch('/api/products'),
+          fetch('/api/categories')
+        ]);
+        
+        if (!productsResponse.ok) {
           throw new Error('Erreur lors de la récupération des produits');
         }
         
-        const data = await response.json();
-        setProducts(data);
+        if (!categoriesResponse.ok) {
+          throw new Error('Erreur lors de la récupération des catégories');
+        }
+        
+        const [productsData, categoriesData] = await Promise.all([
+          productsResponse.json(),
+          categoriesResponse.json()
+        ]);
+        
+        setProducts(productsData);
+        setCategories(categoriesData);
       } catch (error) {
-        setError('Impossible de charger les produits. Veuillez réessayer plus tard.');
+        setError('Impossible de charger les données. Veuillez réessayer plus tard.');
         console.error(error);
       } finally {
         setIsLoading(false);
       }
     };
     
-    fetchProducts();
+    fetchData();
   }, []);
 
   // Filtrer les produits par catégorie
@@ -75,29 +87,8 @@ export default function BoutiquePage() {
     }
     
     return products.filter(product => {
-      const name = product.name.toLowerCase();
-      const description = product.description.toLowerCase();
-      
-      switch (selectedCategory) {
-        case 'boites':
-          return name.includes('boîte à choux') || name.includes('boîte à macarons') || 
-                 name.includes('boîte à flowercakes') || name.includes('flower cake') ||
-                 name.includes('choux') || name.includes('macaron');
-        case 'cookies':
-          return name.includes('cookie') || name.includes('chouquette');
-        case 'creation':
-          return name.includes('boîte à création') || name.includes('revisite') ||
-                 description.includes('création du mois');
-        case 'gateaux':
-          return name.includes('tarte') || name.includes('entremet') || 
-                 name.includes('pavlova') || name.includes('paris-brest') ||
-                 name.includes('charlotte');
-        case 'surmesure':
-          return name.includes('sur mesure') || name.includes('personnalisé') ||
-                 description.includes('sur mesure') || description.includes('personnalisé');
-        default:
-          return true;
-      }
+      // Utiliser le champ category du produit pour filtrer
+      return product.category === selectedCategory;
     });
   };
 
@@ -195,6 +186,19 @@ export default function BoutiquePage() {
           {/* Filtres par catégorie */}
           <div className="mb-4 sm:mb-6 md:mb-8">
             <div className="flex flex-wrap justify-center gap-1 sm:gap-2 md:gap-3 lg:gap-4">
+              {/* Bouton "Tous les produits" */}
+              <button
+                onClick={() => setSelectedCategory('tous')}
+                className={`px-3 sm:px-4 md:px-6 py-2 md:py-3 rounded-full font-medium text-xs sm:text-sm md:text-base transition-all duration-300 ${
+                  selectedCategory === 'tous'
+                    ? 'bg-[#a75120] text-white shadow-lg transform scale-105'
+                    : 'bg-[#FAF0E6] text-[#421500] hover:bg-[#f1e9dc] shadow-md hover:shadow-lg'
+                }`}
+              >
+                Tous les produits
+              </button>
+              
+              {/* Catégories dynamiques */}
               {categories.map((category) => (
                 <button
                   key={category.id}
@@ -228,48 +232,70 @@ export default function BoutiquePage() {
               {error}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
               {filteredProducts.map((product) => (
-                <div key={product.id} className="bg-[#FAF0E6] rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
+                <div key={product.id} className="bg-[#FAF0E6] rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105 h-full flex flex-col">
                   {/* Notification d'ajout au panier */}
                   {addedToCart[product.id] && (
-                    <div className="absolute top-1 sm:top-2 right-1 sm:right-2 z-10 bg-green-500 text-white text-xs py-1 px-1 sm:px-2 rounded-full animate-bounce">
+                    <div className="absolute top-2 right-2 z-10 bg-green-500 text-white text-xs py-1 px-2 rounded-full animate-bounce">
                       Ajouté !
                     </div>
                   )}
 
-                  <Link href={`/produit/${product.id}`} className="block relative">
-                    <div className="relative w-[200px] h-[200px] sm:w-[220px] sm:h-[220px] lg:w-[240px] lg:h-[240px] xl:w-[260px] xl:h-[260px] 2xl:w-[280px] 2xl:h-[280px] overflow-hidden mx-auto">
+                  {/* Image du produit */}
+                  <Link href={`/produit/${product.id}`} className="block relative flex-shrink-0">
+                    <div className="relative w-full h-48 overflow-hidden">
                       <Image
                         src={product.image}
                         alt={product.name}
-                        width={280}
-                        height={280}
+                        width={300}
+                        height={300}
                         className="object-cover hover:scale-110 transition-transform duration-300 w-full h-full"
-                        sizes="(max-width: 475px) 90vw, (max-width: 640px) 45vw, (max-width: 768px) 45vw, (max-width: 1024px) 30vw, 25vw"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                       />
                     </div>
                   </Link>
 
-                  <div className="p-2 sm:p-3 md:p-4 lg:p-6">
-                    <div className="flex justify-between items-start mb-2 sm:mb-3 md:mb-4">
-                      <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 leading-tight">{product.name}</h2>
-                      <span className="text-[#D9844A] font-semibold text-sm sm:text-base">{Number(product.price).toFixed(2)} €</span>
+                  {/* Contenu de la carte */}
+                  <div className="p-4 flex flex-col flex-grow">
+                    {/* Nom et prix */}
+                    <div className="mb-3">
+                      <h2 className="text-base font-bold text-gray-900 leading-tight mb-2 line-clamp-2 min-h-[2.5rem]">
+                        {product.name}
+                      </h2>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[#D9844A] font-bold text-lg">
+                          {Number(product.price).toFixed(2)} €
+                        </span>
+                        {(product.flavors && product.flavors.length > 0) || (product.sizes && product.sizes.length > 0) ? (
+                          <span className="text-xs bg-[#D9844A]/10 text-[#D9844A] px-2 py-1 rounded-full">
+                            Options
+                          </span>
+                        ) : null}
+                      </div>
                     </div>
-                    
-                    <div className="flex justify-between items-center">
+
+                    {/* Description tronquée */}
+                    <div className="mb-4 flex-grow">
+                      <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                        {product.description}
+                      </p>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex justify-between items-center mt-auto">
                       <Link
                         href={`/produit/${product.id}`}
-                        className="text-[#D9844A] hover:text-[#C27340] font-medium text-xs sm:text-sm"
+                        className="text-[#D9844A] hover:text-[#C27340] font-medium text-sm transition-colors"
                       >
-                        Détails
+                        Voir détails
                       </Link>
 
                       <button
                         onClick={() => handleAddToCart(product)}
-                        className="bg-[#D9844A] hover:bg-[#C27340] text-white text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-md transition-colors flex items-center"
+                        className="bg-[#D9844A] hover:bg-[#C27340] text-white text-sm px-4 py-2 rounded-md transition-colors flex items-center font-medium"
                       >
-                        <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                         Ajouter

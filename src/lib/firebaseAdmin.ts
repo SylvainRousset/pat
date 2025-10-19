@@ -23,6 +23,15 @@ interface FirebaseTimestamp {
   nanoseconds: number;
 }
 
+// Interface pour les catégories
+export interface Category {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt?: FirebaseTimestamp;
+  updatedAt?: FirebaseTimestamp;
+}
+
 // Interface pour les produits
 export interface Product {
   id: string;
@@ -32,6 +41,7 @@ export interface Product {
   description: string;
   showInCreations: boolean;
   showOnHome: boolean;
+  category?: string; // ID de la catégorie
   createdAt?: FirebaseTimestamp;
   updatedAt?: FirebaseTimestamp;
   portions?: string;
@@ -45,8 +55,9 @@ export interface Product {
   [key: string]: unknown;
 }
 
-// Collection de produits
+// Collections
 const productsCollection = collection(db, 'products');
+const categoriesCollection = collection(db, 'categories');
 
 // Récupérer tous les produits
 export const getAllProducts = async () => {
@@ -138,6 +149,114 @@ export const deleteProduct = async (productId: string): Promise<boolean> => {
     return true;
   } catch (error) {
     console.error('Erreur lors de la suppression du produit:', error);
+    return false;
+  }
+};
+
+// ===== FONCTIONS POUR LES CATÉGORIES =====
+
+// Récupérer toutes les catégories
+export const getAllCategories = async (): Promise<Category[]> => {
+  try {
+    const snapshot = await getDocs(categoriesCollection);
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as Category[];
+  } catch (error) {
+    console.error('Erreur lors de la récupération des catégories:', error);
+    return [];
+  }
+};
+
+// Récupérer une catégorie par ID
+export const getCategoryById = async (id: string): Promise<Category | null> => {
+  try {
+    const docRef = doc(db, 'categories', id);
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      return {
+        id: docSnap.id,
+        ...docSnap.data()
+      } as Category;
+    }
+    return null;
+  } catch (error) {
+    console.error('Erreur lors de la récupération de la catégorie:', error);
+    return null;
+  }
+};
+
+// Récupérer une catégorie par nom
+export const getCategoryByName = async (name: string): Promise<Category | null> => {
+  try {
+    const q = query(categoriesCollection, where('name', '==', name));
+    const querySnapshot = await getDocs(q);
+    
+    if (!querySnapshot.empty) {
+      const doc = querySnapshot.docs[0];
+      return {
+        id: doc.id,
+        ...doc.data()
+      } as Category;
+    }
+    return null;
+  } catch (error) {
+    console.error('Erreur lors de la recherche de catégorie par nom:', error);
+    return null;
+  }
+};
+
+// Créer une nouvelle catégorie
+export const addCategory = async (category: Omit<Category, 'id'>): Promise<Category> => {
+  const docRef = await addDoc(categoriesCollection, {
+    ...category,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  });
+  
+  return {
+    id: docRef.id,
+    ...category
+  };
+};
+
+// Créer ou récupérer une catégorie par nom
+export const createOrGetCategory = async (name: string): Promise<Category> => {
+  // Vérifier si la catégorie existe déjà
+  const existingCategory = await getCategoryByName(name);
+  
+  if (existingCategory) {
+    return existingCategory;
+  }
+  
+  // Créer une nouvelle catégorie
+  return await addCategory({ name });
+};
+
+// Mettre à jour une catégorie
+export const updateCategory = async (id: string, category: Partial<Category>): Promise<Category> => {
+  const docRef = doc(db, 'categories', id);
+  await updateDoc(docRef, {
+    ...category,
+    updatedAt: serverTimestamp()
+  });
+  
+  return {
+    id,
+    ...category
+  } as Category;
+};
+
+// Supprimer une catégorie
+export const deleteCategory = async (categoryId: string): Promise<boolean> => {
+  try {
+    const docRef = doc(db, 'categories', categoryId);
+    await deleteDoc(docRef);
+    return true;
+  } catch (error) {
+    console.error('Erreur lors de la suppression de la catégorie:', error);
     return false;
   }
 };

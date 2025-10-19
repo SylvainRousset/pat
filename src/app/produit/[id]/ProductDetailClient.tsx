@@ -156,19 +156,19 @@ export default function ProductDetailClient({ params }: { params: { id: string }
         id: uniqueId,
         name: productName,
         price: cleanPrice,
-        image: product.images && product.images.length > 0
-          ? product.images[0]
-          : (product.image || '/images/placeholder.jpg'),
+      image: product.images && product.images.length > 0 
+        ? product.images[0] 
+        : (product.image || '/images/placeholder.jpg'),
         slug: product.name.toLowerCase().replace(/\s+/g, '-'),
         flavor: selectedFlavor || undefined,
         portions: selectedSize || undefined
       }, quantity);
-
-      // Afficher le message de confirmation
-      setAddedToCart(true);
-
-      // Réactiver le bouton après un court délai
-      setTimeout(() => {
+    
+    // Afficher le message de confirmation
+    setAddedToCart(true);
+    
+    // Réactiver le bouton après un court délai
+    setTimeout(() => {
         isAddingRef.current = false;
         setIsProcessing(false);
         setAddedToCart(false);
@@ -291,14 +291,14 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                 {productImages.length > 1 && (
                   <div className="max-w-md mx-auto">
                     <div className="grid grid-cols-4 gap-2">
-                      {productImages.map((image, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setSelectedImage(index)}
-                          className={`relative w-20 h-20 rounded-md overflow-hidden border-2 transition-all ${
+                    {productImages.map((image, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setSelectedImage(index)}
+                        className={`relative w-20 h-20 rounded-md overflow-hidden border-2 transition-all ${
                             selectedImage === index ? 'border-[#a75120] shadow-md' : 'border-gray-200 hover:border-[#a75120]/50'
-                          }`}
-                        >
+                        }`}
+                      >
                         <Image
                           src={image}
                           alt={`Miniature ${index + 1}`}
@@ -307,14 +307,14 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                           className="object-cover w-full h-full"
                           sizes="80px"
                         />
-                        </button>
-                      ))}
+                      </button>
+                    ))}
                     </div>
                   </div>
                 )}
                 
-                {/* Description sous les images */}
-                <div className="mt-8 space-y-4 text-[#421500]">
+                {/* Description sous les images - Visible seulement sur desktop */}
+                <div className="mt-8 space-y-4 text-[#421500] hidden md:block">
                   {productDescription.map((paragraph, index) => {
                     // Détecter les listes à puces
                     if (paragraph.trim().startsWith('•') || paragraph.trim().startsWith('-')) {
@@ -330,9 +330,9 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                     
                     // Paragraphes normaux
                     return (
-                      <p key={index} className="leading-relaxed">
-                        {paragraph}
-                      </p>
+                    <p key={index} className="leading-relaxed">
+                      {paragraph}
+                    </p>
                     );
                   })}
                 </div>
@@ -362,10 +362,145 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                     <p className="text-sm text-[#421500] mt-1">pour {selectedSize}</p>
                   )}
                 </div>
-                
-                {/* Choix des saveurs */}
+
+
+                {/* Choix des saveurs - Visible seulement sur mobile */}
                 {product.flavors && product.flavors.length > 0 && (
-                  <div className="pt-4">
+                  <div className="pt-4 md:hidden">
+                    <label htmlFor="flavor-select" className="block text-sm font-medium text-[#421500] mb-3">
+                      Saveurs disponibles
+                    </label>
+                    <select
+                      id="flavor-select"
+                      value={selectedFlavor}
+                      onChange={(e) => {
+                        console.log('Saveur changée de', selectedFlavor, 'vers', e.target.value);
+                        setSelectedFlavor(e.target.value);
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] bg-white text-[#421500]"
+                    >
+                      {product.flavors.map((flavor) => (
+                        <option key={flavor} value={flavor}>
+                          {flavor}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Choix des tailles - Visible seulement sur mobile */}
+                {product.sizes && product.sizes.length > 0 && (
+                  <div className="pt-4 md:hidden">
+                    <label htmlFor="size-select" className="block text-sm font-medium text-[#421500] mb-3">
+                      Tailles disponibles
+                    </label>
+                    <select
+                      id="size-select"
+                      value={selectedSize}
+                      onChange={(e) => {
+                        console.log('Taille changée de', selectedSize, 'vers', e.target.value);
+                        setSelectedSize(e.target.value);
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] bg-white text-[#421500]"
+                    >
+                      {product.sizes.map((size) => (
+                        <option key={size.name} value={size.name}>
+                          {size.name} - {size.price}€
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Sélecteur de quantité - Visible seulement sur mobile */}
+                <div className="pt-4 md:hidden">
+                  <label htmlFor="quantity" className="block text-sm font-medium text-[#421500] mb-2">
+                    Quantité
+                  </label>
+                  <div className="flex items-center space-x-3">
+                    <button
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="w-10 h-10 rounded-full border-2 border-[#a75120] text-[#a75120] hover:bg-[#a75120] hover:text-white transition-colors flex items-center justify-center"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                      </svg>
+                    </button>
+                    <span className="text-lg font-bold text-[#421500] min-w-[3rem] text-center">{quantity}</span>
+                    <button
+                      onClick={() => setQuantity(quantity + 1)}
+                      className="w-10 h-10 rounded-full border-2 border-[#a75120] text-[#a75120] hover:bg-[#a75120] hover:text-white transition-colors flex items-center justify-center"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Bouton Ajouter au panier - Visible seulement sur mobile */}
+                <div className="pt-6 md:hidden">
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={isProcessing}
+                    className={`w-full py-3 px-6 rounded-md font-medium transition-colors flex items-center justify-center ${
+                      isProcessing || addedToCart
+                        ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                        : 'bg-[#a75120] hover:bg-[#8a421a] text-white'
+                    }`}
+                  >
+                    {isProcessing ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Ajout en cours...
+                      </>
+                    ) : addedToCart ? (
+                      <>
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Ajouté au panier !
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        Ajouter au panier
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Description - Visible seulement sur mobile, après le bouton */}
+                <div className="py-4 border-t border-[#a75120]/20 md:hidden">
+                  <h3 className="text-lg font-semibold text-[#421500] mb-3">Description</h3>
+                  <div className="space-y-3 text-[#421500]">
+                    {productDescription.map((paragraph, index) => {
+                      // Détecter les listes à puces
+                      if (paragraph.trim().startsWith('•') || paragraph.trim().startsWith('-')) {
+                        return (
+                          <div key={index} className="flex items-start">
+                            <span className="text-[#a75120] mr-2 mt-1">•</span>
+                            <p className="text-sm leading-relaxed">{paragraph.trim().substring(1).trim()}</p>
+                          </div>
+                        );
+                      }
+                      return (
+                        <p key={index} className="text-sm leading-relaxed">
+                          {paragraph}
+                        </p>
+                      );
+                    })}
+                  </div>
+                </div>
+                
+                {/* Choix des saveurs - Visible seulement sur desktop */}
+                {product.flavors && product.flavors.length > 0 && (
+                  <div className="pt-4 hidden md:block">
                     <label htmlFor="flavor-select" className="block text-sm font-medium text-[#421500] mb-3">
                       Choisissez votre saveur
                     </label>
@@ -390,9 +525,9 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                   </div>
                 )}
 
-                {/* Sélection de la taille */}
+                {/* Sélection de la taille - Visible seulement sur desktop */}
                 {product.sizes && product.sizes.length > 0 && (
-                  <div className="pt-4">
+                  <div className="pt-4 hidden md:block">
                     <label htmlFor="size-select" className="block text-sm font-medium text-[#421500] mb-3">
                       Choisissez le nombre de parts
                     </label>
@@ -428,8 +563,8 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                   </div>
                 )}
                 
-                {/* Sélecteur de quantité */}
-                <div className="pt-4">
+                {/* Sélecteur de quantité - Visible seulement sur desktop */}
+                <div className="pt-4 hidden md:block">
                   <label htmlFor="quantity" className="block text-sm font-medium text-[#421500] mb-2">
                     Quantité
                   </label>
@@ -454,8 +589,8 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                   </div>
                 </div>
                 
-                {/* Bouton d'ajout au panier */}
-                <div className="pt-4">
+                {/* Bouton d'ajout au panier - Visible seulement sur desktop */}
+                <div className="pt-4 hidden md:block">
                   <button
                     onClick={handleAddToCart}
                     disabled={isProcessing}
@@ -503,11 +638,11 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                     {isAllergensExpanded && (
                       <>
                         <p className="text-[#421500] mb-4">
-                          Il est essentiel de prendre en compte les allergènes lors de la consommation alimentaire.
-                        </p>
+                      Il est essentiel de prendre en compte les allergènes lors de la consommation alimentaire.
+                    </p>
                         <p className="text-[#421500] mb-4">
-                          Certains des allergènes connus incluent :
-                        </p>
+                      Certains des allergènes connus incluent :
+                    </p>
                         <ul className="space-y-3 text-[#421500]">
                           {product.allergens.map((allergen, index) => {
                             const { emoji, text } = parseAllergen(allergen);
@@ -519,16 +654,16 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                                   </div>
                                 )}
                                 <span className="font-medium">{text}</span>
-                              </li>
+                        </li>
                             );
                           })}
-                        </ul>
+                    </ul>
                         <p className="text-[#421500] mt-4">
-                          La sensibilisation aux allergènes alimentaires est cruciale pour assurer la sécurité de tous, en particulier des personnes souffrant d&apos;allergies sévères.
-                        </p>
+                      La sensibilisation aux allergènes alimentaires est cruciale pour assurer la sécurité de tous, en particulier des personnes souffrant d&apos;allergies sévères.
+                    </p>
                         <p className="text-[#421500] mt-4">
-                          En intégrant ces précautions dans la présentation des aliments, je favorise un environnement alimentaire plus sûr et inclusif.
-                        </p>
+                      En intégrant ces précautions dans la présentation des aliments, je favorise un environnement alimentaire plus sûr et inclusif.
+                    </p>
                       </>
                     )}
                   </div>
