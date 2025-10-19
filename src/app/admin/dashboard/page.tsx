@@ -92,7 +92,7 @@ export default function AdminDashboard() {
 
   // États pour les saveurs, tailles et allergènes
   const [flavors, setFlavors] = useState<string[]>([]);
-  const [currentFlavor, setCurrentFlavor] = useState('');
+  // const [currentFlavor, setCurrentFlavor] = useState(''); // Non utilisé
   const [sizes, setSizes] = useState<{ name: string; price: string }[]>([]);
   const [customSizeName, setCustomSizeName] = useState('');
   const [customSizePrice, setCustomSizePrice] = useState('');
@@ -937,7 +937,7 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4">Image des Saveurs de Saison</h2>
           <p className="text-gray-600 mb-4">
-            Gérez l'image affichée dans la section "Les racines du concept" de la page des saveurs de saison.
+            Gérez l&apos;image affichée dans la section &quot;Les racines du concept&quot; de la page des saveurs de saison.
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -978,7 +978,7 @@ export default function AdminDashboard() {
                     Cliquez pour sélectionner une image
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    PNG, JPG, JPEG jusqu'à 10MB
+                    PNG, JPG, JPEG jusqu&apos;à 10MB
                   </p>
                 </label>
               </div>
@@ -1005,7 +1005,7 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4">Images des Cartes Événementielles</h2>
           <p className="text-gray-600 mb-6">
-            Gérez les images affichées dans la section "Cartes Événementielles" de la page événementiel.
+            Gérez les images affichées dans la section &quot;Cartes Événementielles&quot; de la page événementiel.
           </p>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

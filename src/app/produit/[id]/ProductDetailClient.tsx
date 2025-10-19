@@ -29,7 +29,7 @@ export default function ProductDetailClient({ params }: { params: { id: string }
   
   // Stabiliser les fonctions du contexte pour éviter les re-renders
   const cartContext = useCart();
-  const { addToCart, addMultipleToCart } = useMemo(() => cartContext, [cartContext]);
+  const { addMultipleToCart } = useMemo(() => cartContext, [cartContext]);
 
   // Chargement du produit
   useEffect(() => {
@@ -542,7 +542,7 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                 {/* Section Commande 48h */}
                 <div className="mt-8">
                   <div className="flex items-center mb-4">
-                    <h2 className="text-xl font-bold text-[#421500]">Commandez 48h à l'avance</h2>
+                    <h2 className="text-xl font-bold text-[#421500]">Commandez 48h à l&apos;avance</h2>
                     <button
                       onClick={() => setIsOrderInfoExpanded(!isOrderInfoExpanded)}
                       className="ml-3 flex items-center justify-center w-8 h-8 text-[#a75120] hover:text-[#8a421a] hover:bg-[#a75120]/10 rounded-full transition-colors"
@@ -562,7 +562,7 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                   {isOrderInfoExpanded && (
                     <div className="space-y-4 text-[#421500]">
                       <p>
-                        Pour profiter pleinement de mes services, je vous encourage à passer commande au moins 48 heures à l'avance.
+                        Pour profiter pleinement de mes services, je vous encourage à passer commande au moins 48 heures à l&apos;avance.
                       </p>
                       <p>
                         Cela me permet de préparer votre commande avec soin et de garantir que tout soit prêt à votre arrivée.
@@ -608,10 +608,10 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                         Pour une dégustation optimale, je vous conseille de savourer votre dessert dans les 48 heures suivant sa réception.
                       </p>
                       <p>
-                        Conservez-le au réfrigérateur entre 0°C et +4°C jusqu'au moment de servir.
+                        Conservez-le au réfrigérateur entre 0°C et +4°C jusqu&apos;au moment de servir.
                       </p>
                       <p>
-                        Pensez à sortir la pâtisserie 5 minutes avant la dégustation : cela permet aux saveurs de pleinement s'exprimer, car le froid a tendance à atténuer les arômes délicats.
+                        Pensez à sortir la pâtisserie 5 minutes avant la dégustation : cela permet aux saveurs de pleinement s&apos;exprimer, car le froid a tendance à atténuer les arômes délicats.
                       </p>
                     </div>
                   )}

@@ -60,7 +60,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       try {
         const parsedCart = JSON.parse(savedCart);
         // S'assurer que tous les prix sont nettoyés lors du chargement
-        const cleanedCart = parsedCart.map((item: any) => ({
+        const cleanedCart = parsedCart.map((item: CartItem) => ({
           ...item,
           price: typeof item.price === 'string' ? item.price.replace(/[^\d.,]/g, '').replace(',', '.') : item.price
         }));
@@ -83,7 +83,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   }, [cart]);
 
   // Ajouter un produit au panier (quantité = 1)
-  const addToCart = (product: Omit<CartItem, 'quantity'>, openCart: boolean = false) => {
+  const addToCart = useCallback((product: Omit<CartItem, 'quantity'>, openCart: boolean = false) => {
     setCart(prevCart => {
       // Vérifier si le produit est déjà dans le panier (comparaison directe des IDs)
       const existingItemIndex = prevCart.findIndex(item => item.id === product.id);
@@ -103,7 +103,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     if (openCart) {
       setIsCartOpen(true);
     }
-  };
+  }, []);
 
   // Ajouter plusieurs produits du même type au panier
   const addMultipleToCart = useCallback((product: Omit<CartItem, 'quantity'>, quantity: number, openCart: boolean = false) => {
@@ -209,9 +209,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   }, 0).toFixed(2) + ' €';
 
   // Ouvrir/fermer le panier
-  const toggleCart = () => {
+  const toggleCart = useCallback(() => {
     setIsCartOpen(!isCartOpen);
-  };
+  }, [isCartOpen]);
 
   // Valeur du contexte stabilisée avec useMemo
   const value = useMemo(() => ({
