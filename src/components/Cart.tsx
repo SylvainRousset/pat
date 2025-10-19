@@ -79,10 +79,25 @@ const Cart = () => {
                         <div className="ml-4 flex flex-1 flex-col">
                           <div>
                             <div className="flex justify-between">
-                              <h3 className="text-sm font-medium text-gray-900">
-                                <Link href={`/produit/${item.id}`}>{item.name}</Link>
-                              </h3>
-                              <p className="ml-4">{Number(item.price).toFixed(2)} €</p>
+                              <div className="flex-1">
+                                <h3 className="text-sm font-medium text-gray-900">
+                                  <Link href={`/produit/${item.id}`}>{item.name}</Link>
+                                </h3>
+                                {/* Afficher la saveur et les parts si disponibles */}
+                                <div className="mt-1 text-xs text-gray-500">
+                                  {item.flavor && (
+                                    <span className="inline-block mr-2">
+                                      <span className="font-medium">Saveur:</span> {item.flavor}
+                                    </span>
+                                  )}
+                                  {item.portions && (
+                                    <span className="inline-block">
+                                      <span className="font-medium">Parts:</span> {item.portions}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <p className="ml-4">{parseFloat(item.price).toFixed(2)} €</p>
                             </div>
                           </div>
                           
@@ -90,14 +105,14 @@ const Cart = () => {
                             {/* Contrôle de quantité */}
                             <div className="flex items-center border rounded-md">
                               <button
-                                onClick={() => updateQuantity(Number(item.id), item.quantity - 1)}
+                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
                                 className="px-2 py-1 text-gray-600 hover:text-amber-600"
                               >
                                 -
                               </button>
                               <span className="px-2 py-1 text-gray-900">{item.quantity}</span>
                               <button
-                                onClick={() => updateQuantity(Number(item.id), item.quantity + 1)}
+                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
                                 className="px-2 py-1 text-gray-600 hover:text-amber-600"
                               >
                                 +
@@ -109,7 +124,7 @@ const Cart = () => {
                               type="button"
                               onClick={() => {
                                 console.log('Suppression article ID:', item.id, 'Type:', typeof item.id);
-                                removeFromCart(Number(item.id));
+                                removeFromCart(item.id);
                               }}
                               className="font-medium text-amber-600 hover:text-amber-800"
                             >
@@ -129,7 +144,7 @@ const Cart = () => {
               <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                 <div className="flex justify-between text-base font-medium text-gray-900 mb-4">
                   <p>Sous-total</p>
-                  <p>{Number(totalPrice).toFixed(2)} €</p>
+                  <p>{totalPrice}</p>
                 </div>
                 
                 <div className="flex justify-between mb-6">

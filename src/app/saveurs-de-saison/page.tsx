@@ -26,6 +26,7 @@ export default function SaveursDeSaison() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
+  const [seasonalFlavorsImage, setSeasonalFlavorsImage] = useState<string>('/images/saveursaisoncartel.avif');
   
   // États pour la modal de sélection d'options
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -33,9 +34,9 @@ export default function SaveursDeSaison() {
   const [selectedFlavors, setSelectedFlavors] = useState<string[]>([]);
   const [selectedSize, setSelectedSize] = useState<{ name: string; price: string } | null>(null);
 
-  // Charger les produits au chargement de la page
+  // Charger les produits et la configuration au chargement de la page
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
         setIsLoading(true);
         const response = await fetch('/api/products');
@@ -55,6 +56,18 @@ export default function SaveursDeSaison() {
         });
         
         setProducts(seasonProducts);
+        
+        // Charger la configuration du contenu
+        try {
+          const configResponse = await fetch('/api/content-config');
+          if (configResponse.ok) {
+            const config = await configResponse.json();
+            setSeasonalFlavorsImage(config.seasonalFlavorsImage);
+          }
+        } catch (configError) {
+          console.error('Erreur lors du chargement de la configuration:', configError);
+        }
+        
       } catch (error) {
         setError('Impossible de charger les produits. Veuillez réessayer plus tard.');
         console.error(error);
@@ -63,7 +76,7 @@ export default function SaveursDeSaison() {
       }
     };
     
-    fetchProducts();
+    fetchData();
   }, []);
 
   const selectFlavor = (flavor: string) => {
@@ -183,11 +196,11 @@ export default function SaveursDeSaison() {
                 <div className="order-2 md:order-1">
                   <div
                     className="rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#E8DED0] p-1 sm:p-2"
-                    onClick={() => setZoomedImage('/images/saveursaisoncartel.avif')}
+                    onClick={() => setZoomedImage(seasonalFlavorsImage)}
                   >
                     <div className="relative h-[200px] xs:h-[220px] sm:h-[280px] md:h-[350px] lg:h-[450px] xl:h-[500px] overflow-hidden w-full">
                       <Image
-                        src="/images/saveursaisoncartel.avif"
+                        src={seasonalFlavorsImage}
                         alt="Saveurs de saison"
                         fill
                         className="object-contain group-hover:scale-105 transition-transform duration-300 w-full h-full"

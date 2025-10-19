@@ -1,11 +1,31 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 const AboutSection = () => {
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
+  const [carteAccueil1Image, setCarteAccueil1Image] = useState<string>('/images/carteacc1.avif');
+  const [carteAccueil2Image, setCarteAccueil2Image] = useState<string>('/images/carteacc2.avif');
+
+  // Charger la configuration du contenu au chargement du composant
+  useEffect(() => {
+    const fetchContentConfig = async () => {
+      try {
+        const response = await fetch('/api/content-config');
+        if (response.ok) {
+          const config = await response.json();
+          setCarteAccueil1Image(config.carteAccueil1Image);
+          setCarteAccueil2Image(config.carteAccueil2Image);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement de la configuration:', error);
+      }
+    };
+    
+    fetchContentConfig();
+  }, []);
   return (
     <section className="py-8 sm:py-12 md:py-16 bg-[#8B6F47]">
       <div className="container mx-auto px-2 sm:px-3 md:px-4 max-w-6xl">
@@ -55,11 +75,11 @@ const AboutSection = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-12">
             <div
               className="rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] p-1 sm:p-2"
-              onClick={() => setZoomedImage('/images/carteacc1.avif')}
+              onClick={() => setZoomedImage(carteAccueil1Image)}
             >
               <div className="relative h-[240px] sm:h-[260px] md:h-[280px] lg:h-[300px] xl:h-[320px] overflow-hidden w-full">
                 <Image
-                  src="/images/carteacc1.avif"
+                  src={carteAccueil1Image}
                   alt="Carte Boutique Coquelicot"
                   fill
                   className="object-contain group-hover:scale-105 transition-transform duration-300 w-full h-full"
@@ -77,11 +97,11 @@ const AboutSection = () => {
             </div>
             <div
               className="rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] p-1 sm:p-2"
-              onClick={() => setZoomedImage('/images/carteacc2.avif')}
+              onClick={() => setZoomedImage(carteAccueil2Image)}
             >
               <div className="relative h-[240px] sm:h-[260px] md:h-[280px] lg:h-[300px] xl:h-[320px] overflow-hidden w-full">
                 <Image
-                  src="/images/carteacc2.avif"
+                  src={carteAccueil2Image}
                   alt="Carte Évènementielle Coquelicot"
                   fill
                   className="object-contain group-hover:scale-105 transition-transform duration-300 w-full h-full"

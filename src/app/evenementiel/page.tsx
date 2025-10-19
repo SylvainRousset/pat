@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -9,6 +9,26 @@ import ScrollToTop from '@/components/ScrollToTop';
 export default function Evenementiel() {
   const [showLayerCakeModal, setShowLayerCakeModal] = useState(false);
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
+  const [eventCard1Image, setEventCard1Image] = useState<string>('/images/cardevenementiel.avif');
+  const [eventCard2Image, setEventCard2Image] = useState<string>('/images/cardevenementiel2.avif');
+
+  // Charger la configuration du contenu au chargement de la page
+  useEffect(() => {
+    const fetchContentConfig = async () => {
+      try {
+        const response = await fetch('/api/content-config');
+        if (response.ok) {
+          const config = await response.json();
+          setEventCard1Image(config.eventCard1Image);
+          setEventCard2Image(config.eventCard2Image);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement de la configuration:', error);
+      }
+    };
+    
+    fetchContentConfig();
+  }, []);
 
   return (
     <>
@@ -172,11 +192,11 @@ export default function Evenementiel() {
                 <div className="flex-1 w-full">
                   <div
                     className="rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] p-0 sm:p-1"
-                    onClick={() => setZoomedImage('/images/cardevenementiel.avif')}
+                    onClick={() => setZoomedImage(eventCard1Image)}
                   >
                     <div className="relative h-[280px] sm:h-[350px] md:h-[400px] lg:h-[450px] xl:h-[500px] overflow-hidden w-full">
                       <Image
-                        src="/images/cardevenementiel.avif"
+                        src={eventCard1Image}
                         alt="Carte Évènementielle"
                         fill
                         className="object-contain group-hover:scale-105 transition-transform duration-300 w-full h-full"
@@ -219,11 +239,11 @@ export default function Evenementiel() {
                 <div className="flex-1 w-full">
                   <div
                     className="rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-[#6B4E31] p-0 sm:p-1"
-                    onClick={() => setZoomedImage('/images/cardevenementiel2.avif')}
+                    onClick={() => setZoomedImage(eventCard2Image)}
                   >
                     <div className="relative h-[280px] sm:h-[350px] md:h-[400px] lg:h-[450px] xl:h-[500px] overflow-hidden w-full">
                       <Image
-                        src="/images/cardevenementiel2.avif"
+                        src={eventCard2Image}
                         alt="Carte des Saveurs de saison"
                         fill
                         className="object-contain group-hover:scale-105 transition-transform duration-300 w-full h-full"

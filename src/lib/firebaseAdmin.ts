@@ -5,6 +5,7 @@ import {
   getDoc, 
   addDoc, 
   updateDoc, 
+  setDoc,
   deleteDoc, 
   doc, 
   query, 
@@ -172,4 +173,90 @@ export const deleteProductImage = async (imageUrl: string) => {
   const storageRef = ref(storage, imageUrl);
   await deleteObject(storageRef);
   return { success: true };
+};
+
+// Interface pour la configuration du contenu
+export interface ContentConfig {
+  id: string;
+  seasonalFlavorsImage: string;
+  eventCard1Image: string;
+  eventCard2Image: string;
+  carteAccueil1Image: string;
+  carteAccueil2Image: string;
+  updatedAt?: FirebaseTimestamp;
+}
+
+// Fonctions pour la configuration du contenu
+export const getContentConfig = async (): Promise<ContentConfig | null> => {
+  try {
+    const configRef = doc(db, 'contentConfig', 'main');
+    const configSnap = await getDoc(configRef);
+    
+    if (configSnap.exists()) {
+      const data = configSnap.data();
+      return {
+        id: configSnap.id,
+        seasonalFlavorsImage: data.seasonalFlavorsImage || '/images/saveursaisoncartel.avif',
+        eventCard1Image: data.eventCard1Image || '/images/cardevenementiel.avif',
+        eventCard2Image: data.eventCard2Image || '/images/cardevenementiel2.avif',
+        carteAccueil1Image: data.carteAccueil1Image || '/images/carteacc1.avif',
+        carteAccueil2Image: data.carteAccueil2Image || '/images/carteacc2.avif',
+        updatedAt: data.updatedAt
+      };
+    }
+    
+    // Retourner une configuration par défaut si elle n'existe pas
+    return {
+      id: 'main',
+      seasonalFlavorsImage: '/images/saveursaisoncartel.avif',
+      eventCard1Image: '/images/cardevenementiel.avif',
+      eventCard2Image: '/images/cardevenementiel2.avif',
+      carteAccueil1Image: '/images/carteacc1.avif',
+      carteAccueil2Image: '/images/carteacc2.avif'
+    };
+  } catch (error) {
+    console.error('Erreur lors de la récupération de la configuration:', error);
+    return {
+      id: 'main',
+      seasonalFlavorsImage: '/images/saveursaisoncartel.avif',
+      eventCard1Image: '/images/cardevenementiel.avif',
+      eventCard2Image: '/images/cardevenementiel2.avif',
+      carteAccueil1Image: '/images/carteacc1.avif',
+      carteAccueil2Image: '/images/carteacc2.avif'
+    };
+  }
+};
+
+export const updateContentConfig = async (config: Partial<ContentConfig>): Promise<ContentConfig> => {
+  try {
+    console.log('updateContentConfig appelé avec:', config);
+    const configRef = doc(db, 'contentConfig', 'main');
+    
+    // Récupérer la configuration actuelle pour fusionner
+    console.log('Récupération de la configuration actuelle...');
+    const currentConfig = await getContentConfig();
+    console.log('Configuration actuelle:', currentConfig);
+    
+    const configData = {
+      ...currentConfig,
+      ...config,
+      updatedAt: serverTimestamp()
+    };
+    console.log('Données à sauvegarder:', configData);
+    
+    // Utiliser setDoc avec merge: true pour créer ou mettre à jour
+    console.log('Sauvegarde dans Firebase...');
+    await setDoc(configRef, configData, { merge: true });
+    console.log('Sauvegarde réussie');
+    
+    // Récupérer la configuration mise à jour
+    console.log('Récupération de la configuration mise à jour...');
+    const updatedConfig = await getContentConfig();
+    console.log('Configuration mise à jour:', updatedConfig);
+    
+    return updatedConfig!;
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour de la configuration:', error);
+    throw error;
+  }
 }; 

@@ -28,17 +28,6 @@ interface Product {
   sizes?: { name: string; price: string }[];
 }
 
-// Type pour la configuration du contenu
-interface ContentConfig {
-  id: string;
-  seasonalFlavorsImage: string;
-  eventCard1Image: string;
-  eventCard2Image: string;
-  carteAccueil1Image: string;
-  carteAccueil2Image: string;
-  updatedAt?: any;
-}
-
 export default function AdminDashboard() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(true);
@@ -67,35 +56,11 @@ export default function AdminDashboard() {
   const [carte1Preview, setCarte1Preview] = useState<string>('/images/carteacc1.avif');
   const [carte2Preview, setCarte2Preview] = useState<string>('/images/carteacc2.avif');
   const [isUploadingCartes, setIsUploadingCartes] = useState(false);
-  
-  // États pour la configuration du contenu
-  const [contentConfig, setContentConfig] = useState<ContentConfig>({
-    id: 'main',
-    seasonalFlavorsImage: '/images/saveursaisoncartel.avif',
-    eventCard1Image: '/images/cardevenementiel.avif',
-    eventCard2Image: '/images/cardevenementiel2.avif',
-    carteAccueil1Image: '/images/carteacc1.avif',
-    carteAccueil2Image: '/images/carteacc2.avif'
-  });
-  const [seasonalImageFile, setSeasonalImageFile] = useState<File | null>(null);
-  const [seasonalImagePreview, setSeasonalImagePreview] = useState<string>('/images/saveursaisoncartel.avif');
-  const [isUploadingSeasonalImage, setIsUploadingSeasonalImage] = useState(false);
-  
-  // États pour les images des cartes événementielles
-  const [eventCard1File, setEventCard1File] = useState<File | null>(null);
-  const [eventCard1Preview, setEventCard1Preview] = useState<string>('/images/cardevenementiel.avif');
-  const [isUploadingEventCard1, setIsUploadingEventCard1] = useState(false);
-  
-  const [eventCard2File, setEventCard2File] = useState<File | null>(null);
-  const [eventCard2Preview, setEventCard2Preview] = useState<string>('/images/cardevenementiel2.avif');
-  const [isUploadingEventCard2, setIsUploadingEventCard2] = useState(false);
 
   // États pour les saveurs, tailles et allergènes
   const [flavors, setFlavors] = useState<string[]>([]);
   const [currentFlavor, setCurrentFlavor] = useState('');
   const [sizes, setSizes] = useState<{ name: string; price: string }[]>([]);
-  const [customSizeName, setCustomSizeName] = useState('');
-  const [customSizePrice, setCustomSizePrice] = useState('');
   const [selectedAllergens, setSelectedAllergens] = useState<string[]>([]);
   const [customAllergen, setCustomAllergen] = useState('');
   const [isAllergensExpanded, setIsAllergensExpanded] = useState(false);
@@ -123,8 +88,6 @@ export default function AdminDashboard() {
           localStorage.setItem('adminAuthenticated', 'true');
           // Charger les produits depuis l'API
           fetchProducts();
-          // Charger la configuration du contenu
-          fetchContentConfig();
         } else {
           setIsAuthenticated(false);
           localStorage.removeItem('adminAuthenticated');
@@ -156,24 +119,6 @@ export default function AdminDashboard() {
       console.error(error);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  // Fonction pour récupérer la configuration du contenu
-  const fetchContentConfig = async () => {
-    try {
-      const response = await fetch('/api/content-config');
-      if (response.ok) {
-        const config = await response.json();
-        setContentConfig(config);
-        setSeasonalImagePreview(config.seasonalFlavorsImage);
-        setEventCard1Preview(config.eventCard1Image);
-        setEventCard2Preview(config.eventCard2Image);
-        setCarte1Preview(config.carteAccueil1Image);
-        setCarte2Preview(config.carteAccueil2Image);
-      }
-    } catch (error) {
-      console.error('Erreur lors du chargement de la configuration:', error);
     }
   };
 
@@ -234,8 +179,6 @@ export default function AdminDashboard() {
       setErrorMessage('');
       setSuccessMessage('');
 
-      const configUpdates: any = {};
-
       // Upload carte 1 si sélectionnée
       if (carte1File) {
         const formData1 = new FormData();
@@ -248,12 +191,8 @@ export default function AdminDashboard() {
         });
 
         if (!response1.ok) {
-          const errorData = await response1.json();
-          throw new Error(errorData.error || 'Erreur lors de l\'upload de la carte 1');
+          throw new Error('Erreur lors de l\'upload de la carte 1');
         }
-
-        const result1 = await response1.json();
-        configUpdates.carteAccueil1Image = result1.imageUrl;
       }
 
       // Upload carte 2 si sélectionnée
@@ -268,32 +207,8 @@ export default function AdminDashboard() {
         });
 
         if (!response2.ok) {
-          const errorData = await response2.json();
-          throw new Error(errorData.error || 'Erreur lors de l\'upload de la carte 2');
+          throw new Error('Erreur lors de l\'upload de la carte 2');
         }
-
-        const result2 = await response2.json();
-        configUpdates.carteAccueil2Image = result2.imageUrl;
-      }
-
-      // Mettre à jour la configuration dans Firebase
-      if (Object.keys(configUpdates).length > 0) {
-        const configResponse = await fetch('/api/content-config', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(configUpdates),
-        });
-
-        if (!configResponse.ok) {
-          throw new Error('Erreur lors de la mise à jour de la configuration');
-        }
-
-        const updatedConfig = await configResponse.json();
-        setContentConfig(updatedConfig);
-        setCarte1Preview(updatedConfig.carteAccueil1Image);
-        setCarte2Preview(updatedConfig.carteAccueil2Image);
       }
 
       setSuccessMessage('Images des cartes mises à jour avec succès !');
@@ -310,249 +225,6 @@ export default function AdminDashboard() {
       setErrorMessage('Erreur lors de la mise à jour des images');
     } finally {
       setIsUploadingCartes(false);
-    }
-  };
-
-  // Fonction pour gérer le changement d'image des saveurs de saison
-  const handleSeasonalImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setSeasonalImageFile(file);
-      
-      // Créer un aperçu de l'image
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setSeasonalImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Fonction pour uploader l'image des saveurs de saison
-  const uploadSeasonalImage = async () => {
-    if (!seasonalImageFile) {
-      setErrorMessage('Veuillez sélectionner une image');
-      return;
-    }
-
-    try {
-      setIsUploadingSeasonalImage(true);
-      setErrorMessage('');
-      setSuccessMessage('');
-
-      const formData = new FormData();
-      formData.append('file', seasonalImageFile);
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erreur lors du téléchargement de l\'image');
-      }
-
-      const responseData = await response.json();
-      
-      if (!responseData.imageUrl) {
-        throw new Error('URL de l\'image non reçue du serveur');
-      }
-
-      // Mettre à jour la configuration du contenu
-      const configPayload = {
-        seasonalFlavorsImage: responseData.imageUrl
-      };
-      console.log('Envoi de la configuration:', configPayload);
-      
-      const configResponse = await fetch('/api/content-config', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(configPayload),
-      });
-
-      if (!configResponse.ok) {
-        throw new Error('Erreur lors de la mise à jour de la configuration');
-      }
-
-      const updatedConfig = await configResponse.json();
-      setContentConfig(updatedConfig);
-      setSeasonalImagePreview(updatedConfig.seasonalFlavorsImage);
-      setSeasonalImageFile(null);
-      
-      setSuccessMessage('Image des saveurs de saison mise à jour avec succès !');
-      
-      // Recharger la page après 2 secondes
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
-
-    } catch (error) {
-      console.error('Erreur:', error);
-      setErrorMessage('Erreur lors de la mise à jour de l\'image');
-    } finally {
-      setIsUploadingSeasonalImage(false);
-    }
-  };
-
-  // Fonctions pour gérer les images des cartes événementielles
-  const handleEventCard1Change = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setEventCard1File(file);
-      
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setEventCard1Preview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleEventCard2Change = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setEventCard2File(file);
-      
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setEventCard2Preview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const uploadEventCard1 = async () => {
-    if (!eventCard1File) {
-      setErrorMessage('Veuillez sélectionner une image');
-      return;
-    }
-
-    try {
-      setIsUploadingEventCard1(true);
-      setErrorMessage('');
-      setSuccessMessage('');
-
-      const formData = new FormData();
-      formData.append('file', eventCard1File);
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erreur lors du téléchargement de l\'image');
-      }
-
-      const responseData = await response.json();
-      
-      if (!responseData.imageUrl) {
-        throw new Error('URL de l\'image non reçue du serveur');
-      }
-
-      const configPayload = {
-        eventCard1Image: responseData.imageUrl
-      };
-      console.log('Envoi de la configuration (carte 1):', configPayload);
-      
-      const configResponse = await fetch('/api/content-config', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(configPayload),
-      });
-
-      if (!configResponse.ok) {
-        throw new Error('Erreur lors de la mise à jour de la configuration');
-      }
-
-      const updatedConfig = await configResponse.json();
-      setContentConfig(updatedConfig);
-      setEventCard1Preview(updatedConfig.eventCard1Image);
-      setEventCard1File(null);
-      
-      setSuccessMessage('Image de la carte événementielle 1 mise à jour avec succès !');
-      
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
-
-    } catch (error) {
-      console.error('Erreur:', error);
-      setErrorMessage('Erreur lors de la mise à jour de l\'image');
-    } finally {
-      setIsUploadingEventCard1(false);
-    }
-  };
-
-  const uploadEventCard2 = async () => {
-    if (!eventCard2File) {
-      setErrorMessage('Veuillez sélectionner une image');
-      return;
-    }
-
-    try {
-      setIsUploadingEventCard2(true);
-      setErrorMessage('');
-      setSuccessMessage('');
-
-      const formData = new FormData();
-      formData.append('file', eventCard2File);
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erreur lors du téléchargement de l\'image');
-      }
-
-      const responseData = await response.json();
-      
-      if (!responseData.imageUrl) {
-        throw new Error('URL de l\'image non reçue du serveur');
-      }
-
-      const configPayload = {
-        eventCard2Image: responseData.imageUrl
-      };
-      console.log('Envoi de la configuration (carte 2):', configPayload);
-      
-      const configResponse = await fetch('/api/content-config', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(configPayload),
-      });
-
-      if (!configResponse.ok) {
-        throw new Error('Erreur lors de la mise à jour de la configuration');
-      }
-
-      const updatedConfig = await configResponse.json();
-      setContentConfig(updatedConfig);
-      setEventCard2Preview(updatedConfig.eventCard2Image);
-      setEventCard2File(null);
-      
-      setSuccessMessage('Image de la carte événementielle 2 mise à jour avec succès !');
-      
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
-
-    } catch (error) {
-      console.error('Erreur:', error);
-      setErrorMessage('Erreur lors de la mise à jour de l\'image');
-    } finally {
-      setIsUploadingEventCard2(false);
     }
   };
 
@@ -598,15 +270,6 @@ export default function AdminDashboard() {
     setSizes(sizes.filter(s => s.name !== sizeName));
   };
 
-  const addCustomSize = () => {
-    if (customSizeName.trim() && customSizePrice.trim()) {
-      const newSize = { name: customSizeName.trim(), price: customSizePrice.trim() };
-      setSizes([...sizes, newSize]);
-      setCustomSizeName('');
-      setCustomSizePrice('');
-    }
-  };
-
   // Gestion des allergènes
   const toggleAllergen = (allergen: string) => {
     if (selectedAllergens.includes(allergen)) {
@@ -628,10 +291,10 @@ export default function AdminDashboard() {
   };
 
   const addCustomFlavor = () => {
-    if (customFlavor.trim() && selectedProduct && !(selectedProduct.flavors || []).includes(customFlavor.trim())) {
+    if (customFlavor.trim() && !(selectedProduct?.flavors || []).includes(customFlavor.trim())) {
       setSelectedProduct({ 
         ...selectedProduct, 
-        flavors: [...(selectedProduct.flavors || []), customFlavor.trim()] 
+        flavors: [...(selectedProduct?.flavors || []), customFlavor.trim()] 
       });
       setCustomFlavor('');
     }
@@ -942,204 +605,6 @@ export default function AdminDashboard() {
             </button>
           </div>
         </div>
-
-        {/* Section Image des Saveurs de Saison */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Image des Saveurs de Saison</h2>
-          <p className="text-gray-600 mb-4">
-            Gérez l'image affichée dans la section "Les racines du concept" de la page des saveurs de saison.
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Aperçu de l'image actuelle */}
-            <div>
-              <h3 className="text-lg font-semibold text-[#a75120] mb-3">Image actuelle</h3>
-              <div className="relative h-64 rounded-lg overflow-hidden bg-gray-100">
-                <Image
-                  src={seasonalImagePreview}
-                  alt="Image des saveurs de saison"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-            </div>
-            
-            {/* Formulaire d'upload */}
-            <div>
-              <h3 className="text-lg font-semibold text-[#a75120] mb-3">Nouvelle image</h3>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                <input
-                  type="file"
-                  id="seasonalImageFile"
-                  accept="image/*"
-                  onChange={handleSeasonalImageChange}
-                  className="hidden"
-                />
-                <label
-                  htmlFor="seasonalImageFile"
-                  className="cursor-pointer block"
-                >
-                  <div className="text-gray-500 mb-2">
-                    <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                      <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    Cliquez pour sélectionner une image
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    PNG, JPG, JPEG jusqu'à 10MB
-                  </p>
-                </label>
-              </div>
-              
-              {seasonalImageFile && (
-                <div className="mt-4">
-                  <p className="text-sm text-gray-600 mb-2">
-                    Fichier sélectionné: {seasonalImageFile.name}
-                  </p>
-                  <button
-                    onClick={uploadSeasonalImage}
-                    disabled={isUploadingSeasonalImage}
-                    className="w-full bg-[#a75120] hover:bg-[#8a421a] text-white font-medium py-2 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isUploadingSeasonalImage ? 'Mise à jour en cours...' : 'Mettre à jour l\'image'}
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Section Images des Cartes Événementielles */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Images des Cartes Événementielles</h2>
-          <p className="text-gray-600 mb-6">
-            Gérez les images affichées dans la section "Cartes Événementielles" de la page événementiel.
-          </p>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Carte Événementielle 1 */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-[#a75120]">Carte Événementielle 1</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Aperçu */}
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Image actuelle</h4>
-                  <div className="relative h-48 rounded-lg overflow-hidden bg-gray-100">
-                    <Image
-                      src={eventCard1Preview}
-                      alt="Carte Événementielle 1"
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                </div>
-                
-                {/* Upload */}
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Nouvelle image</h4>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-                    <input
-                      type="file"
-                      id="eventCard1File"
-                      accept="image/*"
-                      onChange={handleEventCard1Change}
-                      className="hidden"
-                    />
-                    <label
-                      htmlFor="eventCard1File"
-                      className="cursor-pointer block"
-                    >
-                      <div className="text-gray-500 mb-2">
-                        <svg className="mx-auto h-8 w-8 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                          <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      </div>
-                      <p className="text-xs text-gray-600">Cliquez pour sélectionner</p>
-                    </label>
-                  </div>
-                  
-                  {eventCard1File && (
-                    <div className="mt-3">
-                      <p className="text-xs text-gray-600 mb-2">
-                        Fichier: {eventCard1File.name}
-                      </p>
-                      <button
-                        onClick={uploadEventCard1}
-                        disabled={isUploadingEventCard1}
-                        className="w-full bg-[#a75120] hover:bg-[#8a421a] text-white font-medium py-2 px-3 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                      >
-                        {isUploadingEventCard1 ? 'Mise à jour...' : 'Mettre à jour'}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Carte Événementielle 2 */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-[#a75120]">Carte des Saveurs de Saison</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Aperçu */}
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Image actuelle</h4>
-                  <div className="relative h-48 rounded-lg overflow-hidden bg-gray-100">
-                    <Image
-                      src={eventCard2Preview}
-                      alt="Carte des Saveurs de Saison"
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                </div>
-                
-                {/* Upload */}
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Nouvelle image</h4>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-                    <input
-                      type="file"
-                      id="eventCard2File"
-                      accept="image/*"
-                      onChange={handleEventCard2Change}
-                      className="hidden"
-                    />
-                    <label
-                      htmlFor="eventCard2File"
-                      className="cursor-pointer block"
-                    >
-                      <div className="text-gray-500 mb-2">
-                        <svg className="mx-auto h-8 w-8 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                          <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      </div>
-                      <p className="text-xs text-gray-600">Cliquez pour sélectionner</p>
-                    </label>
-                  </div>
-                  
-                  {eventCard2File && (
-                    <div className="mt-3">
-                      <p className="text-xs text-gray-600 mb-2">
-                        Fichier: {eventCard2File.name}
-                      </p>
-                      <button
-                        onClick={uploadEventCard2}
-                        disabled={isUploadingEventCard2}
-                        className="w-full bg-[#a75120] hover:bg-[#8a421a] text-white font-medium py-2 px-3 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                      >
-                        {isUploadingEventCard2 ? 'Mise à jour...' : 'Mettre à jour'}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Formulaire d'ajout de produit */}
@@ -1308,6 +773,45 @@ export default function AdminDashboard() {
                   />
                 </div>
                 
+                {/* Saveurs */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Saveurs (optionnel)
+                  </label>
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={currentFlavor}
+                      onChange={(e) => setCurrentFlavor(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addFlavor())}
+                      placeholder="Ex: Chocolat Passion"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120]"
+                    />
+                    <button
+                      type="button"
+                      onClick={addFlavor}
+                      className="px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a]"
+                    >
+                      Ajouter
+                    </button>
+                  </div>
+                  {flavors.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {flavors.map((flavor, index) => (
+                        <span key={index} className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-[#f8f3eb] text-[#421500] border border-[#a75120]/30">
+                          {flavor}
+                          <button
+                            type="button"
+                            onClick={() => removeFlavor(index)}
+                            className="ml-2 text-red-600 hover:text-red-800"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
                 {/* Tailles et prix */}
                 <div>
@@ -1353,49 +857,12 @@ export default function AdminDashboard() {
                       );
                     })}
                   </div>
-
-                  {/* Ajout de catégorie personnalisée */}
-                  <div className="mt-4 p-3 bg-amber-50 rounded-md border border-amber-200">
-                    <p className="text-sm font-medium text-amber-700 mb-2">Ajouter une catégorie personnalisée</p>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={customSizeName}
-                        onChange={(e) => setCustomSizeName(e.target.value)}
-                        placeholder="ex: 12 pièces mignardises"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120]"
-                      />
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={customSizePrice}
-                        onChange={(e) => setCustomSizePrice(e.target.value)}
-                        placeholder="Prix (€)"
-                        className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120]"
-                      />
-                      <button
-                        type="button"
-                        onClick={addCustomSize}
-                        className="px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a]"
-                      >
-                        Ajouter
-                      </button>
-                    </div>
-                  </div>
-
                   {sizes.length > 0 && (
                     <div className="mt-3 p-2 bg-[#f8f3eb] rounded-md border border-[#a75120]/30">
                       <p className="text-xs font-semibold text-[#421500] mb-1">Portions proposées :</p>
                       {sizes.map((size) => (
-                        <div key={size.name} className="flex items-center justify-between text-xs text-[#421500]">
-                          <span>• {size.name} : {size.price || '(prix manquant)'}€</span>
-                          <button
-                            type="button"
-                            onClick={() => removeSize(size.name)}
-                            className="ml-2 text-red-600 hover:text-red-800 font-bold"
-                          >
-                            ×
-                          </button>
+                        <div key={size.name} className="text-xs text-[#421500]">
+                          • {size.name} : {size.price || '(prix manquant)'}€
                         </div>
                       ))}
                     </div>
@@ -1578,18 +1045,17 @@ export default function AdminDashboard() {
                             <div className="flex items-center space-x-2">
                               <button
                                 onClick={() => {
-                                  // S'assurer que la description et les tailles sont correctement formatées
+                                  // S'assurer que la description est correctement formatée
                                   const productWithFormattedDescription = {
                                     ...product,
-                                    descriptionArray: product.descriptionArray || (product.description ? product.description.split('\n') : []),
-                                    sizes: product.sizes || []
+                                    descriptionArray: product.descriptionArray || (product.description ? product.description.split('\n') : [])
                                   };
                                   setSelectedProduct(productWithFormattedDescription);
                                   setIsDetailsModalOpen(true);
                                 }}
                                 className="text-amber-600 hover:text-amber-900"
                               >
-                                Modifier
+                                Détails
                               </button>
                               <button
                                 onClick={() => handleDeleteProduct(product.id)}
@@ -1617,13 +1083,12 @@ export default function AdminDashboard() {
       </main>
       <Footer />
 
-      {/* Modal de détails du produit */}
+      {/* Modal de détails du produit - Plein écran comme le formulaire d'ajout */}
       {isDetailsModalOpen && selectedProduct && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Détails du produit</h2>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-6xl max-h-[95vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-900">Modifier le produit</h2>
                 <div className="flex space-x-4 items-center">
                   <button
                     onClick={() => {
@@ -1700,77 +1165,46 @@ export default function AdminDashboard() {
                       />
                     </div>
 
-                    {/* Tailles et prix */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Nombre de parts (optionnel)
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Portions
                       </label>
-                      <div className="space-y-3">
-                        {(selectedProduct.sizes || []).map((size, index) => (
-                          <div key={index} className="flex items-center space-x-3">
-                            <input
-                              type="text"
-                              value={size.name}
-                              onChange={(e) => {
-                                const newSizes = [...(selectedProduct.sizes || [])];
-                                newSizes[index] = { ...newSizes[index], name: e.target.value };
-                                setSelectedProduct({ ...selectedProduct, sizes: newSizes });
-                              }}
-                              placeholder="ex: 12 mignardises"
-                              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
-                            />
-                            <input
-                              type="text"
-                              value={size.price}
-                              onChange={(e) => {
-                                const newSizes = [...(selectedProduct.sizes || [])];
-                                newSizes[index] = { ...newSizes[index], price: e.target.value };
-                                setSelectedProduct({ ...selectedProduct, sizes: newSizes });
-                              }}
-                              placeholder="Prix (€)"
-                              className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const newSizes = [...(selectedProduct.sizes || [])];
-                                newSizes.splice(index, 1);
-                                setSelectedProduct({ ...selectedProduct, sizes: newSizes });
-                              }}
-                              className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                        
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const newSizes = [...(selectedProduct.sizes || []), { name: '', price: '' }];
-                            setSelectedProduct({ ...selectedProduct, sizes: newSizes });
-                          }}
-                          className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700"
-                        >
-                          Ajouter une taille
-                        </button>
-                        
-                        {(selectedProduct.sizes || []).length > 0 && (
-                          <div className="mt-3 p-2 bg-amber-50 rounded-md border border-amber-200">
-                            <p className="text-xs font-semibold text-amber-700 mb-1">Tailles proposées :</p>
-                            {(selectedProduct.sizes || []).map((size, index) => (
-                              <div key={index} className="text-xs text-amber-700">
-                                • {size.name} : {size.price || '(prix manquant)'}€
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                      <input
+                        type="text"
+                        value={selectedProduct.portions || ''}
+                        onChange={(e) => setSelectedProduct({ ...selectedProduct, portions: e.target.value })}
+                        placeholder="ex: 12 mignardises"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                      />
                     </div>
-
                   </div>
 
                   <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Adresse
+                      </label>
+                      <input
+                        type="text"
+                        value={selectedProduct.address || ''}
+                        onChange={(e) => setSelectedProduct({ ...selectedProduct, address: e.target.value })}
+                        placeholder="ex: 3 rue des prés du roi 64800 NAY"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Notice
+                      </label>
+                      <input
+                        type="text"
+                        value={selectedProduct.notice || ''}
+                        onChange={(e) => setSelectedProduct({ ...selectedProduct, notice: e.target.value })}
+                        placeholder="ex: Commandez 48h à l&apos;avance"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                      />
+                    </div>
 
                     <div className="grid grid-cols-1 gap-4">
                       <div className="flex items-center">
@@ -1787,268 +1221,6 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                   </div>
-                </div>
-
-                {/* Image principale */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Image principale
-                  </label>
-                  <div className="bg-amber-50 p-3 rounded-md text-sm mb-3">
-                    <p className="text-amber-700 mb-1">
-                      Téléchargez l&apos;image principale depuis votre ordinateur.
-                    </p>
-                  </div>
-                  
-                  {/* Formulaire d'upload d'image principale */}
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          const formData = new FormData();
-                          formData.append('file', file);
-                          
-                          try {
-                            const response = await fetch('/api/upload', {
-                              method: 'POST',
-                              body: formData,
-                            });
-                            
-                            if (response.ok) {
-                              const data = await response.json();
-                              setSelectedProduct({ ...selectedProduct, image: data.url });
-                            } else {
-                              console.error('Erreur lors de l\'upload');
-                            }
-                          } catch (error) {
-                            console.error('Erreur:', error);
-                          }
-                        }
-                      }}
-                      className="hidden"
-                      id="main-image-upload"
-                    />
-                    <label
-                      htmlFor="main-image-upload"
-                      className="cursor-pointer flex flex-col items-center"
-                    >
-                      <svg className="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
-                      <span className="text-sm text-gray-600">Cliquez pour télécharger l&apos;image principale</span>
-                    </label>
-                  </div>
-                  
-                  {/* Aperçu de l'image principale */}
-                  {selectedProduct.image && (
-                    <div className="mt-3">
-                      <div className="relative h-32 w-32 rounded overflow-hidden border border-gray-300">
-                        <Image
-                          src={selectedProduct.image}
-                          alt={selectedProduct.name}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                
-                {/* Images additionnelles */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Images additionnelles
-                  </label>
-                  <div className="bg-amber-50 p-3 rounded-md text-sm mb-3">
-                    <p className="text-amber-700 mb-1">
-                      Téléchargez des images supplémentaires depuis votre ordinateur.
-                    </p>
-                  </div>
-                  
-                  {/* Formulaire d'upload d'image additionnelle */}
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          const formData = new FormData();
-                          formData.append('file', file);
-                          
-                          try {
-                            const response = await fetch('/api/upload', {
-                              method: 'POST',
-                              body: formData,
-                            });
-                            
-                            if (response.ok) {
-                              const data = await response.json();
-                              const currentImages = selectedProduct.images || [];
-                              setSelectedProduct({ 
-                                ...selectedProduct, 
-                                images: [...currentImages, data.url] 
-                              });
-                            } else {
-                              console.error('Erreur lors de l\'upload');
-                            }
-                          } catch (error) {
-                            console.error('Erreur:', error);
-                          }
-                        }
-                      }}
-                      className="hidden"
-                      id="additional-image-upload"
-                    />
-                    <label
-                      htmlFor="additional-image-upload"
-                      className="cursor-pointer flex flex-col items-center"
-                    >
-                      <svg className="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
-                      <span className="text-sm text-gray-600">Cliquez pour ajouter une image supplémentaire</span>
-                    </label>
-                  </div>
-                  
-                  {/* Affichage des images additionnelles */}
-                  {(selectedProduct.images || []).length > 0 && (
-                    <div className="mt-4">
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        {(selectedProduct.images || []).map((imageUrl, index) => (
-                          <div key={index} className="relative group">
-                            <div className="relative h-24 rounded overflow-hidden border border-gray-300">
-                              <Image
-                                src={imageUrl}
-                                alt={`Image ${index + 1}`}
-                                fill
-                                className="object-cover"
-                              />
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const updatedImages = [...(selectedProduct.images || [])];
-                                updatedImages.splice(index, 1);
-                                setSelectedProduct({
-                                  ...selectedProduct,
-                                  images: updatedImages
-                                });
-                              }}
-                              className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-                {/* Description détaillée */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description détaillée (un paragraphe par ligne)
-                  </label>
-                  <textarea
-                    value={selectedProduct.descriptionArray ? selectedProduct.descriptionArray.join('\n') : ''}
-                    onChange={(e) => {
-                      const lines = e.target.value.split('\n');
-                      setSelectedProduct({ ...selectedProduct, descriptionArray: lines });
-                    }}
-                    rows={8}
-                    placeholder="Collez votre texte ici...&#10;&#10;Exemple :&#10;Une délicieuse tarte aux fruits de saison, préparée avec des ingrédients frais et locaux.&#10;&#10;• Fruits de saison sélectionnés&#10;• Pâte brisée maison&#10;• Crème pâtissière vanille&#10;&#10;Parfait pour accompagner vos moments de gourmandise."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500 font-mono text-sm"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Séparez les paragraphes par une ligne vide pour une meilleure présentation.
-                  </p>
-                </div>
-
-                {/* Allergènes */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Allergènes
-                  </label>
-                  <div className="grid grid-cols-1 gap-2 mb-3">
-                    {availableAllergens.map((allergen) => (
-                      <div key={allergen} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id={`edit-allergen-${allergen}`}
-                          checked={(selectedProduct.allergens || []).includes(allergen)}
-                          onChange={() => {
-                            const currentAllergens = selectedProduct.allergens || [];
-                            if (currentAllergens.includes(allergen)) {
-                              setSelectedProduct({ 
-                                ...selectedProduct, 
-                                allergens: currentAllergens.filter(a => a !== allergen) 
-                              });
-                            } else {
-                              setSelectedProduct({ 
-                                ...selectedProduct, 
-                                allergens: [...currentAllergens, allergen] 
-                              });
-                            }
-                          }}
-                          className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
-                        />
-                        <label htmlFor={`edit-allergen-${allergen}`} className="ml-2 block text-sm text-gray-700">
-                          {allergen}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {/* Allergène personnalisé */}
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={customAllergen}
-                      onChange={(e) => setCustomAllergen(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomAllergen())}
-                      placeholder="Allergène personnalisé"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
-                    />
-                    <button
-                      type="button"
-                      onClick={addCustomAllergen}
-                      className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700"
-                    >
-                      Ajouter
-                    </button>
-                  </div>
-                  
-                  {/* Allergènes sélectionnés */}
-                  {(selectedProduct.allergens || []).length > 0 && (
-                    <div className="mt-3">
-                      <p className="text-sm font-medium text-gray-700 mb-2">Allergènes sélectionnés :</p>
-                      <div className="flex flex-wrap gap-2">
-                        {(selectedProduct.allergens || []).map((allergen) => (
-                          <span key={allergen} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-red-100 text-red-800">
-                            {allergen}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const currentAllergens = selectedProduct.allergens || [];
-                                setSelectedProduct({ 
-                                  ...selectedProduct, 
-                                  allergens: currentAllergens.filter(a => a !== allergen) 
-                                });
-                              }}
-                              className="ml-1 text-red-600 hover:text-red-800"
-                            >
-                              ×
-                            </button>
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
 
                 {/* Saveurs */}
@@ -2095,55 +1267,307 @@ export default function AdminDashboard() {
                     </div>
                   )}
                 </div>
-              </div>
 
-              {/* Boutons d'action */}
-              <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
-                <button
-                  type="button"
-                  onClick={() => setIsDetailsModalOpen(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-                >
-                  Annuler
-                </button>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      const productToUpdate = {
-                        ...selectedProduct,
-                        portions: selectedProduct.portions || '',
-                        images: selectedProduct.images || [selectedProduct.image],
-                        descriptionArray: selectedProduct.descriptionArray || [selectedProduct.description],
-                        allergens: selectedProduct.allergens || [],
-                        flavors: selectedProduct.flavors || [],
-                        sizes: selectedProduct.sizes || []
-                      };
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Image URL
+                  </label>
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-grow">
+                      <input
+                        type="text"
+                        value={selectedProduct.image}
+                        onChange={(e) => setSelectedProduct({ ...selectedProduct, image: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                      />
+                    </div>
+                    <div>
+                      <div className="relative h-20 w-20 rounded overflow-hidden">
+                        <Image
+                          src={selectedProduct.image}
+                          alt={selectedProduct.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-                      const response = await fetch(`/api/products?id=${selectedProduct.id}`, {
-                        method: 'PUT',
-                        headers: {
-                          'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(productToUpdate),
-                      });
+                
+                <div className="border-t border-gray-200 pt-4">
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Options avancées</h3>
+                  
+                  <div className="space-y-4 mt-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Images additionnelles
+                      </label>
+                      <div className="space-y-4">
+                        <div className="bg-amber-50 p-3 rounded-md text-sm">
+                          <p className="text-amber-700 mb-1">
+                            Téléchargez des images supplémentaires depuis votre ordinateur.
+                          </p>
+                        </div>
+                        
+                        {/* Formulaire d'upload d'image additionnelle */}
+                        <div className="border border-gray-200 rounded-md p-3">
+                          <h4 className="text-sm font-medium text-gray-700 mb-2">Ajouter une nouvelle image</h4>
+                          <div className="flex flex-col space-y-3">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                  const file = e.target.files[0];
+                                  setAdditionalImagesFiles(prev => [...prev, file]);
+                                }
+                              }}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                            />
+                            
+                            {additionalImagesFiles.length > 0 && (
+                              <div className="mt-2">
+                                <p className="text-sm text-gray-500 mb-1">Images sélectionnées: {additionalImagesFiles.length}</p>
+                                <div className="flex flex-wrap gap-2">
+                                  {additionalImagesFiles.map((file, index) => (
+                                    <div key={index} className="relative group">
+                                      <div className="relative h-16 w-16 rounded overflow-hidden border border-gray-300">
+                                        <Image
+                                          src={URL.createObjectURL(file)}
+                                          alt={`Image ${index + 1}`}
+                                          fill
+                                          className="object-cover"
+                                        />
+                                      </div>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const newFiles = [...additionalImagesFiles];
+                                          newFiles.splice(index, 1);
+                                          setAdditionalImagesFiles(newFiles);
+                                        }}
+                                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                      >
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {/* Affichage et gestion des images existantes */}
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-700 mb-2">Images actuelles</h4>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            {(selectedProduct.images || [selectedProduct.image]).map((imageUrl, index) => (
+                              <div key={index} className="relative group">
+                                <div className="relative h-24 rounded overflow-hidden border border-gray-300">
+                                  <Image
+                                    src={imageUrl}
+                                    alt={`Image ${index + 1}`}
+                                    fill
+                                    className="object-cover"
+                                  />
+                                </div>
+                                {index > 0 && ( // Ne pas permettre de supprimer l'image principale
+                                  <button
+                                    onClick={() => {
+                                      const updatedImages = [...(selectedProduct.images || [])];
+                                      updatedImages.splice(index, 1);
+                                      setSelectedProduct({
+                                        ...selectedProduct,
+                                        images: updatedImages.length > 0 ? updatedImages : [selectedProduct.image]
+                                      });
+                                    }}
+                                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                    title="Supprimer l&apos;image"
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                  </button>
+                                )}
+                                {index === 0 && (
+                                  <div className="absolute bottom-0 left-0 right-0 bg-amber-500 text-white text-xs text-center py-1">
+                                    Image principale
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        
+                      </div>
+                    </div>
 
-                      if (response.ok) {
-                        // Rafraîchir la liste des produits
-                        fetchProducts();
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Description détaillée (un paragraphe par ligne)
+                      </label>
+                      <textarea
+                        value={selectedProduct.descriptionArray ? selectedProduct.descriptionArray.join('\n') : ''}
+                        onChange={(e) => {
+                          const lines = e.target.value.split('\n');
+                          setSelectedProduct({ ...selectedProduct, descriptionArray: lines });
+                        }}
+                        rows={8}
+                        placeholder="Collez votre texte ici...&#10;&#10;Exemple :&#10;Une délicieuse tarte aux fruits de saison, préparée avec des ingrédients frais et locaux.&#10;&#10;• Fruits de saison sélectionnés&#10;• Pâte brisée maison&#10;• Crème pâtissière vanille&#10;&#10;Parfait pour accompagner vos moments de gourmandise."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500 font-mono text-sm"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Séparez les paragraphes par une ligne vide pour une meilleure présentation.
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Allergènes
+                      </label>
+                      <div className="grid grid-cols-1 gap-2 mb-3">
+                        {availableAllergens.map((allergen) => (
+                          <div key={allergen} className="flex items-center">
+                            <input
+                              type="checkbox"
+                              id={`edit-allergen-${allergen}`}
+                              checked={(selectedProduct.allergens || []).includes(allergen)}
+                              onChange={() => {
+                                const currentAllergens = selectedProduct.allergens || [];
+                                if (currentAllergens.includes(allergen)) {
+                                  setSelectedProduct({ 
+                                    ...selectedProduct, 
+                                    allergens: currentAllergens.filter(a => a !== allergen) 
+                                  });
+                                } else {
+                                  setSelectedProduct({ 
+                                    ...selectedProduct, 
+                                    allergens: [...currentAllergens, allergen] 
+                                  });
+                                }
+                              }}
+                              className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                            />
+                            <label htmlFor={`edit-allergen-${allergen}`} className="ml-2 block text-sm text-gray-700">
+                              {allergen}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* Allergène personnalisé */}
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={customAllergen}
+                          onChange={(e) => setCustomAllergen(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomAllergen())}
+                          placeholder="Allergène personnalisé"
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={addCustomAllergen}
+                          className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700"
+                        >
+                          Ajouter
+                        </button>
+                      </div>
+                      
+                      {/* Allergènes sélectionnés */}
+                      {(selectedProduct.allergens || []).length > 0 && (
+                        <div className="mt-3">
+                          <p className="text-sm font-medium text-gray-700 mb-2">Allergènes sélectionnés :</p>
+                          <div className="flex flex-wrap gap-2">
+                            {(selectedProduct.allergens || []).map((allergen) => (
+                              <span key={allergen} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-red-100 text-red-800">
+                                {allergen}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const currentAllergens = selectedProduct.allergens || [];
+                                    setSelectedProduct({ 
+                                      ...selectedProduct, 
+                                      allergens: currentAllergens.filter(a => a !== allergen) 
+                                    });
+                                  }}
+                                  className="ml-1 text-red-600 hover:text-red-800"
+                                >
+                                  ×
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end space-x-4 mt-6">
+                  <button
+                    onClick={() => setIsDetailsModalOpen(false)}
+                    className="px-4 py-2 text-gray-700 hover:text-gray-900 border border-gray-300 rounded-md"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    onClick={async () => {
+                      try {
+                        // Si le tableau d'images n'est pas défini ou est vide, mais qu'il y a une image principale,
+                        // créer un tableau avec juste l'image principale
+                        if ((!selectedProduct.images || selectedProduct.images.length === 0) && selectedProduct.image) {
+                          selectedProduct.images = [selectedProduct.image];
+                        }
+
+                        // Si description detaillée est vide, créer un tableau avec la description simple
+                        if ((!selectedProduct.descriptionArray || selectedProduct.descriptionArray.length === 0) && selectedProduct.description) {
+                          selectedProduct.descriptionArray = [selectedProduct.description];
+                        }
+
+                        // S'assurer que tous les champs optionnels sont présents
+                        const productToUpdate = {
+                          ...selectedProduct,
+                          portions: selectedProduct.portions || '',
+                          address: selectedProduct.address || '',
+                          images: selectedProduct.images || [selectedProduct.image],
+                          descriptionArray: selectedProduct.descriptionArray || [selectedProduct.description],
+                          allergens: selectedProduct.allergens || [],
+                          notice: selectedProduct.notice || ''
+                        };
+
+                        const response = await fetch(`/api/products?id=${selectedProduct.id}`, {
+                          method: 'PUT',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify(productToUpdate),
+                        });
+
+                        if (!response.ok) {
+                          throw new Error('Erreur lors de la mise à jour du produit');
+                        }
+
+                        // Mettre à jour la liste des produits
+                        setProducts(products.map(p => 
+                          p.id === selectedProduct.id ? selectedProduct : p
+                        ));
+
+                        setSuccessMessage('Produit mis à jour avec succès !');
                         setIsDetailsModalOpen(false);
-                        setSelectedProduct(null);
-                      } else {
-                        console.error('Erreur lors de la mise à jour du produit');
+                      } catch {
+                        setErrorMessage('Erreur lors de la mise à jour du produit');
                       }
-                    } catch (error) {
-                      console.error('Erreur:', error);
-                    }
-                  }}
-                  className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700"
-                >
-                  Enregistrer
-                </button>
+                    }}
+                    className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700"
+                  >
+                    Enregistrer
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -2151,4 +1575,4 @@ export default function AdminDashboard() {
       )}
     </div>
   );
-}
+} 
