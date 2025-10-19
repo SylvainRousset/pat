@@ -4,8 +4,7 @@ import {
   addCategory, 
   createOrGetCategory,
   updateCategory,
-  deleteCategory,
-  getCategoryById 
+  deleteCategory
 } from '@/lib/firebaseAdmin';
 
 // GET - Récupérer toutes les catégories

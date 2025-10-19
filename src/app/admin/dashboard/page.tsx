@@ -107,7 +107,6 @@ export default function AdminDashboard() {
   const [customSizePrice, setCustomSizePrice] = useState('');
   const [selectedAllergens, setSelectedAllergens] = useState<string[]>([]);
   const [customAllergen, setCustomAllergen] = useState('');
-  const [isAllergensExpanded, setIsAllergensExpanded] = useState(true);
   const [customFlavor, setCustomFlavor] = useState('');
   
   // États pour les catégories
