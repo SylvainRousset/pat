@@ -36,7 +36,7 @@ interface ContentConfig {
   eventCard2Image: string;
   carteAccueil1Image: string;
   carteAccueil2Image: string;
-  updatedAt?: any;
+  updatedAt?: unknown;
 }
 
 export default function AdminDashboard() {
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
   const [isUploadingCartes, setIsUploadingCartes] = useState(false);
   
   // États pour la configuration du contenu
-  const [contentConfig, setContentConfig] = useState<ContentConfig>({
+  const [, setContentConfig] = useState<ContentConfig>({
     id: 'main',
     seasonalFlavorsImage: '/images/saveursaisoncartel.avif',
     eventCard1Image: '/images/cardevenementiel.avif',
@@ -234,7 +234,7 @@ export default function AdminDashboard() {
       setErrorMessage('');
       setSuccessMessage('');
 
-      const configUpdates: any = {};
+      const configUpdates: Partial<ContentConfig> = {};
 
       // Upload carte 1 si sélectionnée
       if (carte1File) {
@@ -562,16 +562,6 @@ export default function AdminDashboard() {
   };
 
   // Gestion des saveurs
-  const addFlavor = () => {
-    if (currentFlavor.trim()) {
-      setFlavors([...flavors, currentFlavor.trim()]);
-      setCurrentFlavor('');
-    }
-  };
-
-  const removeFlavor = (index: number) => {
-    setFlavors(flavors.filter((_, i) => i !== index));
-  };
 
   // Gestion des tailles
   const addOrUpdateSize = (sizeName: string, price: string) => {
