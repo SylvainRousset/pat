@@ -24,7 +24,8 @@ interface Product {
   description: string;
   showInCreations: boolean;
   showOnHome: boolean;
-  category?: string; // ID de la catégorie
+  category?: string; // ID de la catégorie (pour compatibilité)
+  categories?: string[]; // IDs des catégories (nouveau système)
   portions?: string;
   address?: string;
   images?: string[];
@@ -70,6 +71,7 @@ export default function AdminDashboard() {
   const [imagePreview, setImagePreview] = useState<string>('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [selectedCategoriesModal, setSelectedCategoriesModal] = useState<string[]>([]); // Pour la modal de modification
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
   const [additionalImagesFiles, setAdditionalImagesFiles] = useState<File[]>([]);
   
@@ -114,6 +116,7 @@ export default function AdminDashboard() {
   
   // États pour les catégories
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]); // Pour la sélection multiple
   const [newCategoryName, setNewCategoryName] = useState('');
   const [isCreatingNewCategory, setIsCreatingNewCategory] = useState(false);
 
@@ -666,9 +669,63 @@ export default function AdminDashboard() {
     }
   };
 
+  const deleteCategory = async (categoryId: string) => {
+    const category = categories.find(c => c.id === categoryId);
+    if (!category) return;
+
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer la catégorie "${category.name}" ?\n\nCette action supprimera la catégorie de tous les produits qui l'utilisent.`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/categories?id=${categoryId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la suppression de la catégorie');
+      }
+
+      // Supprimer la catégorie de la liste
+      setCategories(categories.filter(c => c.id !== categoryId));
+      
+      // Supprimer la catégorie des sélections
+      setSelectedCategories(selectedCategories.filter(c => c !== categoryId));
+      setSelectedCategoriesModal(selectedCategoriesModal.filter(c => c !== categoryId));
+      
+      // Si c'était la catégorie sélectionnée, la désélectionner
+      if (selectedCategory === categoryId) {
+        setSelectedCategory('');
+      }
+
+      setSuccessMessage(`Catégorie "${category.name}" supprimée avec succès`);
+    } catch (error) {
+      setErrorMessage('Erreur lors de la suppression de la catégorie');
+      console.error(error);
+    }
+  };
+
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategory(categoryId);
     setNewProduct({ ...newProduct, category: categoryId });
+  };
+
+  // Gestion des catégories multiples
+  const toggleCategory = (categoryId: string) => {
+    if (selectedCategories.includes(categoryId)) {
+      setSelectedCategories(selectedCategories.filter(c => c !== categoryId));
+    } else {
+      setSelectedCategories([...selectedCategories, categoryId]);
+    }
+  };
+
+  // Gestion des catégories multiples dans la modal
+  const toggleCategoryModal = (categoryId: string) => {
+    if (selectedCategoriesModal.includes(categoryId)) {
+      setSelectedCategoriesModal(selectedCategoriesModal.filter(c => c !== categoryId));
+    } else {
+      setSelectedCategoriesModal([...selectedCategoriesModal, categoryId]);
+    }
   };
 
   // Gestion des allergènes
@@ -817,7 +874,8 @@ export default function AdminDashboard() {
         images: [imagePath, ...additionalImagePaths],
         flavors: flavors.length > 0 ? flavors : undefined,
         sizes: sizes.length > 0 ? sizes : undefined,
-        allergens: selectedAllergens.length > 0 ? selectedAllergens : undefined
+        allergens: selectedAllergens.length > 0 ? selectedAllergens : undefined,
+        categories: selectedCategories.length > 0 ? selectedCategories : undefined
       };
       
       setSuccessMessage('Ajout du produit en cours...');
@@ -857,6 +915,7 @@ export default function AdminDashboard() {
       setFlavors([]);
       setSizes([]);
       setSelectedAllergens([]);
+      setSelectedCategories([]);
       setCustomAllergen('');
       
       // Afficher un message de succès
@@ -1242,62 +1301,106 @@ export default function AdminDashboard() {
                   />
                 </div>
 
-                {/* Section Catégorie */}
+                {/* Catégories */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Catégorie
+                    Catégories
                   </label>
+                  <p className="text-xs text-gray-500 mb-3">
+                    Sélectionnez une ou plusieurs catégories pour ce produit
+                  </p>
                   
-                  {!isCreatingNewCategory ? (
-                    <div className="space-y-3">
-                      <select
-                        value={selectedCategory}
-                        onChange={(e) => handleCategoryChange(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
-                      >
-                        <option value="">Sélectionner une catégorie</option>
-                        {categories.map((category) => (
-                          <option key={category.id} value={category.id}>
-                            {category.name}
-                          </option>
-                        ))}
-                      </select>
-                      <button
-                        type="button"
-                        onClick={() => setIsCreatingNewCategory(true)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 w-fit"
-                      >
-                        Nouvelle catégorie
-                      </button>
+                  {/* Catégories disponibles */}
+                  {categories.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto p-3 bg-gray-50 rounded-md mb-3">
+                      {categories.map((category) => (
+                        <div key={category.id} className="flex items-center justify-between p-2 bg-white rounded border">
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              id={`category-${category.id}`}
+                              checked={selectedCategories.includes(category.id)}
+                              onChange={() => toggleCategory(category.id)}
+                              className="h-4 w-4 text-[#a75120] focus:ring-[#a75120] border-gray-300 rounded"
+                            />
+                            <label htmlFor={`category-${category.id}`} className="ml-2 block text-sm text-gray-700 cursor-pointer">
+                              {category.name}
+                            </label>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => deleteCategory(category.id)}
+                            className="text-red-500 hover:text-red-700 p-1"
+                            title={`Supprimer la catégorie "${category.name}"`}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
                     </div>
                   ) : (
-                    <div className="space-y-3">
+                    <p className="text-sm text-gray-500 italic mb-3">Aucune catégorie disponible. Créez-en une ci-dessous.</p>
+                  )}
+
+                  {/* Créer une nouvelle catégorie */}
+                  {!isCreatingNewCategory ? (
+                    <button
+                      type="button"
+                      onClick={() => setIsCreatingNewCategory(true)}
+                      className="text-sm text-[#a75120] hover:text-[#8a421a] font-medium"
+                    >
+                      + Nouvelle catégorie
+                    </button>
+                  ) : (
+                    <div className="flex gap-2 mb-3">
                       <input
                         type="text"
                         value={newCategoryName}
                         onChange={(e) => setNewCategoryName(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), createNewCategory())}
                         placeholder="Nom de la nouvelle catégorie"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] text-sm"
                       />
-                      <div className="flex gap-2">
-                        <button
-                          type="button"
-                          onClick={createNewCategory}
-                          className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-                        >
-                          Créer
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setIsCreatingNewCategory(false);
-                            setNewCategoryName('');
-                          }}
-                          className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
-                        >
-                          Annuler
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={createNewCategory}
+                        className="px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a] font-bold"
+                      >
+                        Créer
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsCreatingNewCategory(false);
+                          setNewCategoryName('');
+                        }}
+                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                      >
+                        Annuler
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Liste des catégories sélectionnées */}
+                  {selectedCategories.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {selectedCategories.map((categoryId) => {
+                        const category = categories.find(c => c.id === categoryId);
+                        return category ? (
+                          <span key={categoryId} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-amber-100 text-amber-800">
+                            {category.name}
+                            <button
+                              type="button"
+                              onClick={() => toggleCategory(categoryId)}
+                              className="ml-1 text-amber-600 hover:text-amber-900 font-bold"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        ) : null;
+                      })}
                     </div>
                   )}
                 </div>
@@ -1598,6 +1701,110 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
+                {/* Catégories */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Catégories
+                  </label>
+                  <p className="text-xs text-gray-500 mb-3">
+                    Sélectionnez une ou plusieurs catégories pour ce produit
+                  </p>
+                  
+                  {/* Catégories disponibles */}
+                  {categories.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto p-3 bg-gray-50 rounded-md mb-3">
+                      {categories.map((category) => (
+                        <div key={category.id} className="flex items-center justify-between p-2 bg-white rounded border">
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              id={`category-${category.id}`}
+                              checked={selectedCategories.includes(category.id)}
+                              onChange={() => toggleCategory(category.id)}
+                              className="h-4 w-4 text-[#a75120] focus:ring-[#a75120] border-gray-300 rounded"
+                            />
+                            <label htmlFor={`category-${category.id}`} className="ml-2 block text-sm text-gray-700 cursor-pointer">
+                              {category.name}
+                            </label>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => deleteCategory(category.id)}
+                            className="text-red-500 hover:text-red-700 p-1"
+                            title={`Supprimer la catégorie "${category.name}"`}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500 italic mb-3">Aucune catégorie disponible. Créez-en une ci-dessous.</p>
+                  )}
+
+                  {/* Créer une nouvelle catégorie */}
+                  {!isCreatingNewCategory ? (
+                    <button
+                      type="button"
+                      onClick={() => setIsCreatingNewCategory(true)}
+                      className="text-sm text-[#a75120] hover:text-[#8a421a] font-medium"
+                    >
+                      + Nouvelle catégorie
+                    </button>
+                  ) : (
+                    <div className="flex gap-2 mb-3">
+                      <input
+                        type="text"
+                        value={newCategoryName}
+                        onChange={(e) => setNewCategoryName(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), createNewCategory())}
+                        placeholder="Nom de la nouvelle catégorie"
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={createNewCategory}
+                        className="px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a] font-bold"
+                      >
+                        Créer
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsCreatingNewCategory(false);
+                          setNewCategoryName('');
+                        }}
+                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                      >
+                        Annuler
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Liste des catégories sélectionnées */}
+                  {selectedCategories.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {selectedCategories.map((categoryId) => {
+                        const category = categories.find(c => c.id === categoryId);
+                        return category ? (
+                          <span key={categoryId} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-amber-100 text-amber-800">
+                            {category.name}
+                            <button
+                              type="button"
+                              onClick={() => toggleCategory(categoryId)}
+                              className="ml-1 text-amber-600 hover:text-amber-900 font-bold"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        ) : null;
+                      })}
+                    </div>
+                  )}
+                </div>
+
                 {/* Type de gestion des saveurs */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1785,6 +1992,8 @@ export default function AdminDashboard() {
                                     flavorManagementType: product.flavorManagementType || 'standard'
                                   };
                                   setSelectedProduct(productWithFormattedDescription);
+                                  // Initialiser les catégories sélectionnées pour la modal
+                                  setSelectedCategoriesModal(product.categories || (product.category ? [product.category] : []));
                                   setIsDetailsModalOpen(true);
                                 }}
                                 className="text-amber-600 hover:text-amber-900"
@@ -1875,23 +2084,57 @@ export default function AdminDashboard() {
                       />
                     </div>
 
-                    {/* Section Catégorie dans le modal d'édition */}
+                    {/* Section Catégories dans le modal d'édition */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Catégorie
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Catégories
                       </label>
-                      <select
-                        value={selectedProduct.category || ''}
-                        onChange={(e) => setSelectedProduct({ ...selectedProduct, category: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
-                      >
-                        <option value="">Aucune catégorie</option>
-                        {categories.map((category) => (
-                          <option key={category.id} value={category.id}>
-                            {category.name}
-                          </option>
-                        ))}
-                      </select>
+                      <p className="text-xs text-gray-500 mb-3">
+                        Sélectionnez une ou plusieurs catégories pour ce produit
+                      </p>
+                      
+                      {/* Catégories disponibles */}
+                      {categories.length > 0 ? (
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-3 bg-gray-50 rounded-md mb-3">
+                          {categories.map((category) => (
+                            <div key={category.id} className="flex items-center">
+                              <input
+                                type="checkbox"
+                                id={`modal-category-${category.id}`}
+                                checked={selectedCategoriesModal.includes(category.id)}
+                                onChange={() => toggleCategoryModal(category.id)}
+                                className="h-4 w-4 text-[#a75120] focus:ring-[#a75120] border-gray-300 rounded"
+                              />
+                              <label htmlFor={`modal-category-${category.id}`} className="ml-2 block text-sm text-gray-700 cursor-pointer">
+                                {category.name}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500 italic mb-3">Aucune catégorie disponible.</p>
+                      )}
+
+                      {/* Liste des catégories sélectionnées */}
+                      {selectedCategoriesModal.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {selectedCategoriesModal.map((categoryId) => {
+                            const category = categories.find(c => c.id === categoryId);
+                            return category ? (
+                              <span key={categoryId} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-amber-100 text-amber-800">
+                                {category.name}
+                                <button
+                                  type="button"
+                                  onClick={() => toggleCategoryModal(categoryId)}
+                                  className="ml-1 text-amber-600 hover:text-amber-900 font-bold"
+                                >
+                                  ×
+                                </button>
+                              </span>
+                            ) : null;
+                          })}
+                        </div>
+                      )}
                     </div>
 
 
@@ -2354,7 +2597,8 @@ export default function AdminDashboard() {
                           images: selectedProduct.images || [selectedProduct.image],
                           descriptionArray: selectedProduct.descriptionArray || [selectedProduct.description],
                           allergens: selectedProduct.allergens || [],
-                        flavors: selectedProduct.flavors || [],
+                          flavors: selectedProduct.flavors || [],
+                          categories: selectedCategoriesModal.length > 0 ? selectedCategoriesModal : undefined,
                         sizes: selectedProduct.sizes || []
                         };
 

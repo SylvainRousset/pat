@@ -15,7 +15,8 @@ interface Product {
   price: string;
   image: string;
   description: string;
-  category?: string; // ID de la catégorie
+  category?: string; // ID de la catégorie (pour compatibilité)
+  categories?: string[]; // IDs des catégories (nouveau système)
   flavors?: string[];
   sizes?: { name: string; price: string }[];
   flavorManagementType?: 'standard' | 'pack'; // Type de gestion des saveurs
@@ -89,7 +90,12 @@ export default function BoutiquePage() {
     }
     
     return products.filter(product => {
-      // Utiliser le champ category du produit pour filtrer
+      // Vérifier si le produit utilise le nouveau système de catégories multiples
+      if (product.categories && product.categories.length > 0) {
+        return product.categories.includes(selectedCategory);
+      }
+      
+      // Sinon, vérifier l'ancien champ category (pour compatibilité)
       return product.category === selectedCategory;
     });
   };

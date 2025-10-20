@@ -41,7 +41,8 @@ export interface Product {
   description: string;
   showInCreations: boolean;
   showOnHome: boolean;
-  category?: string; // ID de la catégorie
+  category?: string; // ID de la catégorie (pour compatibilité)
+  categories?: string[]; // IDs des catégories (nouveau système)
   createdAt?: FirebaseTimestamp;
   updatedAt?: FirebaseTimestamp;
   portions?: string;
@@ -251,9 +252,9 @@ export const updateCategory = async (id: string, category: Partial<Category>): P
 };
 
 // Supprimer une catégorie
-export const deleteCategory = async (categoryId: string): Promise<boolean> => {
+export const deleteCategory = async (id: string): Promise<boolean> => {
   try {
-    const docRef = doc(db, 'categories', categoryId);
+    const docRef = doc(db, 'categories', id);
     await deleteDoc(docRef);
     return true;
   } catch (error) {
