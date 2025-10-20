@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useCart } from '@/context/CartContext';
+import { useCart, CartItem } from '@/context/CartContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { getProductById } from '@/lib/firebaseAdmin';
@@ -115,30 +115,6 @@ export default function ProductDetailClient({ params }: { params: { id: string }
   }, [selectedFlavors]);
 
   // Fonction pour gérer la sélection des saveurs dans les packs
-  const handleFlavorToggle = useCallback((flavor: string) => {
-    if (!product?.sizes || !selectedSize) return;
-    
-    const selectedSizeData = product.sizes.find(size => size.name === selectedSize);
-    if (!selectedSizeData) return;
-    
-    // Extraire le nombre de pièces de la taille (ex: "6 pièces" -> 6)
-    const sizeNumber = parseInt(selectedSizeData.name.split(' ')[0]);
-    
-    setSelectedFlavors(prev => {
-      const isSelected = prev.includes(flavor);
-      
-      if (isSelected) {
-        // Désélectionner la saveur (toujours possible)
-        return prev.filter(f => f !== flavor);
-      } else {
-        // Vérifier si on peut encore ajouter des saveurs
-        if (prev.length < sizeNumber) {
-          return [...prev, flavor];
-        }
-        return prev; // Ne pas ajouter si on a déjà atteint la limite
-      }
-    });
-  }, [product, selectedSize]);
 
   // Fonction pour ajouter une saveur spécifique (permet les doublons)
   const handleAddFlavor = useCallback((flavor: string) => {
@@ -275,7 +251,7 @@ export default function ProductDetailClient({ params }: { params: { id: string }
       console.log('========================');
 
       // Ajouter le produit avec la quantité sélectionnée
-      const cartItem: any = {
+      const cartItem: CartItem = {
         id: uniqueId,
         name: productName,
         price: cleanPrice,
@@ -283,6 +259,7 @@ export default function ProductDetailClient({ params }: { params: { id: string }
         ? product.images[0] 
         : (product.image || '/images/placeholder.jpg'),
         slug: product.name.toLowerCase().replace(/\s+/g, '-'),
+        quantity: quantity,
         portions: selectedSize || undefined
       };
 
@@ -312,7 +289,7 @@ export default function ProductDetailClient({ params }: { params: { id: string }
       isAddingRef.current = false;
       setIsProcessing(false);
     }
-  }, [product, quantity, isProcessing, addMultipleToCart, selectedFlavor, selectedSize]);
+  }, [product, quantity, isProcessing, addMultipleToCart, selectedFlavor, selectedSize, selectedFlavors]);
 
   if (loading) {
     return (
