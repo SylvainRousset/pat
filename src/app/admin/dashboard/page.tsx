@@ -705,10 +705,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleCategoryChange = (categoryId: string) => {
-    setSelectedCategory(categoryId);
-    setNewProduct({ ...newProduct, category: categoryId });
-  };
 
   // Gestion des catégories multiples
   const toggleCategory = (categoryId: string) => {
