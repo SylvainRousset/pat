@@ -741,6 +741,19 @@ export default function AdminDashboard() {
     }
   };
 
+  // Supprimer une image existante dans la modal
+  const removeExistingImage = (index: number) => {
+    if (!selectedProduct) return;
+    
+    const updatedImages = [...(selectedProduct.images || [])];
+    updatedImages.splice(index, 1);
+    setSelectedProduct({
+      ...selectedProduct,
+      images: updatedImages
+    });
+  };
+
+
 
   // Gestion des catégories multiples
   const toggleCategory = (categoryId: string) => {
@@ -2344,7 +2357,7 @@ export default function AdminDashboard() {
                             
                             if (response.ok) {
                               const data = await response.json();
-                              setSelectedProduct({ ...selectedProduct, image: data.url });
+                              setSelectedProduct({ ...selectedProduct, image: data.imageUrl });
                             } else {
                               console.error('Erreur lors de l\'upload');
                             }
@@ -2377,6 +2390,13 @@ export default function AdminDashboard() {
                           fill
                           className="object-cover"
                         />
+                        <button
+                          type="button"
+                          onClick={() => selectedProduct && setSelectedProduct({ ...selectedProduct, image: '' })}
+                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                        >
+                          ×
+                        </button>
                       </div>
                     </div>
                   )}
@@ -2394,32 +2414,51 @@ export default function AdminDashboard() {
                           </p>
                         </div>
                         
-                        {/* Formulaire d'upload d'image additionnelle */}
+                        {/* Formulaire d'upload d'images additionnelles (multiple) */}
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                             <input
                               type="file"
                               accept="image/*"
+                              multiple
                       onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          const formData = new FormData();
-                          formData.append('file', file);
-                          
+                        const files = Array.from(e.target.files || []);
+                        if (files.length > 0) {
                           try {
-                            const response = await fetch('/api/upload', {
-                              method: 'POST',
-                              body: formData,
+                            // Upload chaque fichier
+                            const uploadPromises = files.map(async (file) => {
+                              try {
+                                const formData = new FormData();
+                                formData.append('file', file);
+                                
+                                const response = await fetch('/api/upload', {
+                                  method: 'POST',
+                                  body: formData,
+                                });
+                                
+                                if (response.ok) {
+                                  const data = await response.json();
+                                  console.log('Upload réussi pour:', file.name, 'URL:', data.imageUrl);
+                                  return data.imageUrl;
+                                } else {
+                                  console.error('Erreur lors de l\'upload pour:', file.name);
+                                  return null;
+                                }
+                              } catch (error) {
+                                console.error('Erreur lors de l\'upload pour:', file.name, error);
+                                return null;
+                              }
                             });
                             
-                            if (response.ok) {
-                              const data = await response.json();
-                              const currentImages = selectedProduct.images || [];
+                            const uploadedUrls = await Promise.all(uploadPromises);
+                            const validUrls = uploadedUrls.filter(url => url !== null && url !== undefined);
+                            console.log('URLs uploadées avec succès:', validUrls);
+                            
+                            if (validUrls.length > 0) {
+                              const currentImages = (selectedProduct.images || []).filter(img => img && img !== undefined);
                               setSelectedProduct({ 
                                 ...selectedProduct, 
-                                images: [...currentImages, data.url] 
+                                images: [...currentImages, ...validUrls] 
                               });
-                            } else {
-                              console.error('Erreur lors de l\'upload');
                             }
                           } catch (error) {
                             console.error('Erreur:', error);
@@ -2436,15 +2475,18 @@ export default function AdminDashboard() {
                       <svg className="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                         </svg>
-                      <span className="text-sm text-gray-600">Cliquez pour ajouter une image supplémentaire</span>
+                      <span className="text-sm text-gray-600">Cliquez pour ajouter des images supplémentaires (plusieurs à la fois)</span>
                     </label>
                         </div>
                         
                   {/* Affichage des images additionnelles */}
-                  {(selectedProduct.images || []).length > 0 && (
+                  {(() => {
+                    const allImages = (selectedProduct.images || []).filter(img => img && img !== undefined && typeof img === 'string' && img.trim() !== '');
+                    return allImages.length > 0;
+                  })() && (
                     <div className="mt-4">
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        {(selectedProduct.images || []).map((imageUrl, index) => (
+                        {(selectedProduct.images || []).filter(img => img && img !== undefined && typeof img === 'string' && img.trim() !== '').map((imageUrl, index) => (
                               <div key={index} className="relative group">
                                 <div className="relative h-24 rounded overflow-hidden border border-gray-300">
                                   <Image
@@ -2456,15 +2498,8 @@ export default function AdminDashboard() {
                                 </div>
                                   <button
                               type="button"
-                                    onClick={() => {
-                                      const updatedImages = [...(selectedProduct.images || [])];
-                                      updatedImages.splice(index, 1);
-                                      setSelectedProduct({
-                                        ...selectedProduct,
-                                  images: updatedImages
-                                      });
-                                    }}
-                              className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    onClick={() => removeExistingImage(index)}
+                              className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
                                   >
                               ×
                                   </button>
