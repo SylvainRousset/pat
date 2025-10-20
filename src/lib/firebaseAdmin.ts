@@ -52,6 +52,7 @@ export interface Product {
   notice?: string;
   flavors?: string[];
   sizes?: { name: string; price: string }[];
+  flavorManagementType?: 'standard' | 'pack'; // Type de gestion des saveurs
   [key: string]: unknown;
 }
 

@@ -22,6 +22,8 @@ export default function ProductDetailClient({ params }: { params: { id: string }
   const [addedToCart, setAddedToCart] = useState(false);
   const [selectedFlavor, setSelectedFlavor] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
+  const [selectedFlavors, setSelectedFlavors] = useState<string[]>([]); // Pour les packs de saveurs
+  const selectedFlavorsRef = useRef<string[]>([]); // Ref pour persister les saveurs
   const [isAllergensExpanded, setIsAllergensExpanded] = useState(false);
   const [isOrderInfoExpanded, setIsOrderInfoExpanded] = useState(false);
   const [isTastingTipExpanded, setIsTastingTipExpanded] = useState(false);
@@ -104,6 +106,89 @@ export default function ProductDetailClient({ params }: { params: { id: string }
     }
   }, [addedToCart]);
 
+  // Debug: Surveiller les changements de selectedFlavors
+  useEffect(() => {
+    console.log('=== SELECTED FLAVORS CHANGED ===');
+    console.log('selectedFlavors:', selectedFlavors);
+    console.log('selectedFlavors.length:', selectedFlavors.length);
+    console.log('================================');
+  }, [selectedFlavors]);
+
+  // Fonction pour gérer la sélection des saveurs dans les packs
+  const handleFlavorToggle = useCallback((flavor: string) => {
+    if (!product?.sizes || !selectedSize) return;
+    
+    const selectedSizeData = product.sizes.find(size => size.name === selectedSize);
+    if (!selectedSizeData) return;
+    
+    // Extraire le nombre de pièces de la taille (ex: "6 pièces" -> 6)
+    const sizeNumber = parseInt(selectedSizeData.name.split(' ')[0]);
+    
+    setSelectedFlavors(prev => {
+      const isSelected = prev.includes(flavor);
+      
+      if (isSelected) {
+        // Désélectionner la saveur (toujours possible)
+        return prev.filter(f => f !== flavor);
+      } else {
+        // Vérifier si on peut encore ajouter des saveurs
+        if (prev.length < sizeNumber) {
+          return [...prev, flavor];
+        }
+        return prev; // Ne pas ajouter si on a déjà atteint la limite
+      }
+    });
+  }, [product, selectedSize]);
+
+  // Fonction pour ajouter une saveur spécifique (permet les doublons)
+  const handleAddFlavor = useCallback((flavor: string) => {
+    if (!product?.sizes || !selectedSize) return;
+    
+    const selectedSizeData = product.sizes.find(size => size.name === selectedSize);
+    if (!selectedSizeData) return;
+    
+    const sizeNumber = parseInt(selectedSizeData.name.split(' ')[0]);
+    
+    console.log('=== AJOUT SAVEUR ===');
+    console.log('flavor:', flavor);
+    console.log('selectedSize:', selectedSize);
+    console.log('sizeNumber:', sizeNumber);
+    console.log('selectedFlavorsRef.current avant:', selectedFlavorsRef.current);
+    
+    if (selectedFlavorsRef.current.length < sizeNumber) {
+      const newFlavors = [...selectedFlavorsRef.current, flavor];
+      selectedFlavorsRef.current = newFlavors;
+      setSelectedFlavors(newFlavors);
+      console.log('selectedFlavorsRef.current après:', selectedFlavorsRef.current);
+    } else {
+      console.log('Limite atteinte, pas d\'ajout');
+    }
+  }, [product, selectedSize]);
+
+  // Fonction pour retirer une saveur spécifique
+  const handleRemoveFlavor = useCallback((index: number) => {
+    console.log('=== SUPPRESSION SAVEUR ===');
+    console.log('index à supprimer:', index);
+    console.log('selectedFlavorsRef.current avant:', selectedFlavorsRef.current);
+    
+    const newFlavors = selectedFlavorsRef.current.filter((_, i) => i !== index);
+    selectedFlavorsRef.current = newFlavors;
+    setSelectedFlavors(newFlavors);
+    console.log('selectedFlavorsRef.current après:', selectedFlavorsRef.current);
+  }, []);
+
+  // Fonction pour vérifier si le bouton doit être désactivé
+  const isAddButtonDisabled = useCallback(() => {
+    if (isProcessing) return true;
+    
+    if (product?.flavorManagementType === 'pack') {
+      const selectedSizeData = product.sizes?.find(size => size.name === selectedSize);
+      const requiredFlavors = selectedSizeData ? parseInt(selectedSizeData.name.split(' ')[0]) : 0;
+      return selectedFlavorsRef.current.length !== requiredFlavors;
+    }
+    
+    return false;
+  }, [isProcessing, product, selectedSize]);
 
   const handleAddToCart = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -131,19 +216,57 @@ export default function ProductDetailClient({ params }: { params: { id: string }
       // Nettoyer le prix pour le stockage dans le panier
       const cleanPrice = sizePrice.replace(/[^\d.,]/g, '').replace(',', '.');
       
-      // Créer un ID unique basé sur le produit, la saveur et la taille
-      const flavorKey = selectedFlavor ? selectedFlavor.replace(/\s+/g, '_') : 'default';
-      const sizeKey = selectedSize ? selectedSize.replace(/\s+/g, '_') : 'default';
-      const uniqueId = `${productId}_${flavorKey}_${sizeKey}`;
+      // Gérer selon le type de produit
+      let uniqueId: string;
+      let productName: string;
       
-      // Créer le nom du produit avec la saveur et la taille si sélectionnées
-      let productName = product.name;
-      if (selectedFlavor) productName += ` - ${selectedFlavor}`;
-      if (selectedSize) productName += ` (${selectedSize})`;
+      if (product.flavorManagementType === 'pack') {
+        // Mode pack : utiliser les saveurs sélectionnées
+        const selectedSizeData = product.sizes?.find(size => size.name === selectedSize);
+        const requiredFlavors = selectedSizeData ? parseInt(selectedSizeData.name.split(' ')[0]) : 0;
+        
+        console.log('=== VALIDATION PACK ===');
+        console.log('selectedFlavors (état):', selectedFlavors);
+        console.log('selectedFlavorsRef.current:', selectedFlavorsRef.current);
+        console.log('selectedFlavorsRef.current.length:', selectedFlavorsRef.current.length);
+        console.log('requiredFlavors:', requiredFlavors);
+        console.log('selectedSize:', selectedSize);
+        console.log('========================');
+        
+        if (selectedFlavorsRef.current.length === 0) {
+          setError('Veuillez sélectionner au moins une saveur');
+          return;
+        }
+        
+        if (selectedFlavorsRef.current.length !== requiredFlavors) {
+          setError(`Veuillez sélectionner exactement ${requiredFlavors} saveur${requiredFlavors > 1 ? 's' : ''} pour le pack de ${selectedSize}`);
+          return;
+        }
+        
+        const flavorsKey = selectedFlavorsRef.current.join('-').replace(/\s+/g, '_');
+        const sizeKey = selectedSize ? selectedSize.replace(/\s+/g, '_') : 'default';
+        uniqueId = `${productId}_pack_${sizeKey}_${flavorsKey}`;
+        
+        productName = `${product.name} - Pack de ${selectedSize}`;
+        if (selectedFlavorsRef.current.length > 0) {
+          productName += ` (${selectedFlavorsRef.current.join(', ')})`;
+        }
+      } else {
+        // Mode standard : utiliser une saveur unique
+        const flavorKey = selectedFlavor ? selectedFlavor.replace(/\s+/g, '_') : 'default';
+        const sizeKey = selectedSize ? selectedSize.replace(/\s+/g, '_') : 'default';
+        uniqueId = `${productId}_${flavorKey}_${sizeKey}`;
+        
+        productName = product.name;
+        if (selectedFlavor) productName += ` - ${selectedFlavor}`;
+        if (selectedSize) productName += ` (${selectedSize})`;
+      }
 
       console.log('=== AJOUT AU PANIER ===');
       console.log('Produit:', product.name);
+      console.log('Type:', product.flavorManagementType);
       console.log('Saveur sélectionnée:', selectedFlavor);
+      console.log('Saveurs sélectionnées:', selectedFlavors);
       console.log('Taille sélectionnée:', selectedSize);
       console.log('Prix de la taille:', sizePrice);
       console.log('ID unique:', uniqueId);
@@ -152,7 +275,7 @@ export default function ProductDetailClient({ params }: { params: { id: string }
       console.log('========================');
 
       // Ajouter le produit avec la quantité sélectionnée
-      addMultipleToCart({
+      const cartItem: any = {
         id: uniqueId,
         name: productName,
         price: cleanPrice,
@@ -160,9 +283,19 @@ export default function ProductDetailClient({ params }: { params: { id: string }
         ? product.images[0] 
         : (product.image || '/images/placeholder.jpg'),
         slug: product.name.toLowerCase().replace(/\s+/g, '-'),
-        flavor: selectedFlavor || undefined,
         portions: selectedSize || undefined
-      }, quantity);
+      };
+
+      // Ajouter les données spécifiques selon le type
+      if (product.flavorManagementType === 'pack') {
+        cartItem.selectedFlavors = selectedFlavorsRef.current;
+        cartItem.flavorManagementType = 'pack';
+      } else {
+        cartItem.flavor = selectedFlavor || undefined;
+        cartItem.flavorManagementType = 'standard';
+      }
+
+      addMultipleToCart(cartItem, quantity);
     
     // Afficher le message de confirmation
     setAddedToCart(true);
@@ -367,24 +500,103 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                 {/* Choix des saveurs - Visible seulement sur mobile */}
                 {product.flavors && product.flavors.length > 0 && (
                   <div className="pt-4 md:hidden">
-                    <label htmlFor="flavor-select" className="block text-sm font-medium text-[#421500] mb-3">
-                      Saveurs disponibles
+                    <label className="block text-sm font-medium text-[#421500] mb-3">
+                      {product.flavorManagementType === 'pack' ? 'Choisissez vos saveurs' : 'Saveurs disponibles'}
                     </label>
-                    <select
-                      id="flavor-select"
-                      value={selectedFlavor}
-                      onChange={(e) => {
-                        console.log('Saveur changée de', selectedFlavor, 'vers', e.target.value);
-                        setSelectedFlavor(e.target.value);
-                      }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] bg-white text-[#421500]"
-                    >
-                      {product.flavors.map((flavor) => (
-                        <option key={flavor} value={flavor}>
-                          {flavor}
-                        </option>
-                      ))}
-                    </select>
+                    
+                    {product.flavorManagementType === 'pack' ? (
+                      // Mode pack : sélection flexible
+                      <div className="space-y-4">
+                        {/* Saveurs sélectionnées */}
+                        {selectedFlavors.length > 0 && (
+                          <div>
+                            <h4 className="text-sm font-medium text-[#421500] mb-2">Vos saveurs sélectionnées :</h4>
+                            <div className="flex flex-wrap gap-2">
+                              {selectedFlavors.map((flavor, index) => (
+                                <div key={index} className="flex items-center bg-[#a75120] text-white px-3 py-1 rounded-full text-sm">
+                                  <span>{flavor}</span>
+                                  <button
+                                    onClick={() => handleRemoveFlavor(index)}
+                                    className="ml-2 text-white hover:text-gray-200"
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Boutons pour ajouter des saveurs */}
+                        <div>
+                          <h4 className="text-sm font-medium text-[#421500] mb-2">Ajouter une saveur :</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {product.flavors.map((flavor) => {
+                              const selectedSizeData = product.sizes?.find(size => size.name === selectedSize);
+                              const sizeNumber = selectedSizeData ? parseInt(selectedSizeData.name.split(' ')[0]) : 0;
+                              const canAdd = selectedFlavors.length < sizeNumber;
+                              
+                              return (
+                                <button
+                                  key={flavor}
+                                  onClick={() => handleAddFlavor(flavor)}
+                                  disabled={!canAdd}
+                                  className={`px-3 py-1 rounded-md text-sm transition-colors ${
+                                    canAdd
+                                      ? 'bg-white text-[#421500] border border-gray-300 hover:bg-gray-50'
+                                      : 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed'
+                                  }`}
+                                >
+                                  + {flavor}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                        
+                        {/* Message d'état */}
+                        {selectedSize && (
+                          <p className={`text-xs ${
+                            (() => {
+                              const selectedSizeData = product.sizes?.find(size => size.name === selectedSize);
+                              const requiredFlavors = selectedSizeData ? parseInt(selectedSizeData.name.split(' ')[0]) : 0;
+                              return selectedFlavors.length === requiredFlavors ? 'text-green-600' : 'text-orange-500';
+                            })()
+                          }`}>
+                            {(() => {
+                              const selectedSizeData = product.sizes?.find(size => size.name === selectedSize);
+                              const requiredFlavors = selectedSizeData ? parseInt(selectedSizeData.name.split(' ')[0]) : 0;
+                              const remaining = requiredFlavors - selectedFlavors.length;
+                              
+                              if (selectedFlavors.length === requiredFlavors) {
+                                return `✅ ${selectedFlavors.length} saveur${selectedFlavors.length > 1 ? 's' : ''} sélectionnée${selectedFlavors.length > 1 ? 's' : ''} - Prêt à ajouter !`;
+                              } else if (remaining > 0) {
+                                return `⚠️ ${selectedFlavors.length} sur ${requiredFlavors} saveurs sélectionnées - Il reste ${remaining} saveur${remaining > 1 ? 's' : ''} à choisir`;
+                              } else {
+                                return `❌ Trop de saveurs sélectionnées - Retirez ${Math.abs(remaining)} saveur${Math.abs(remaining) > 1 ? 's' : ''}`;
+                              }
+                            })()}
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      // Mode standard : dropdown
+                      <select
+                        id="flavor-select"
+                        value={selectedFlavor}
+                        onChange={(e) => {
+                          console.log('Saveur changée de', selectedFlavor, 'vers', e.target.value);
+                          setSelectedFlavor(e.target.value);
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] bg-white text-[#421500]"
+                      >
+                        {product.flavors.map((flavor) => (
+                          <option key={flavor} value={flavor}>
+                            {flavor}
+                          </option>
+                        ))}
+                      </select>
+                    )}
                   </div>
                 )}
 
@@ -400,6 +612,12 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                       onChange={(e) => {
                         console.log('Taille changée de', selectedSize, 'vers', e.target.value);
                         setSelectedSize(e.target.value);
+                        // Réinitialiser les saveurs sélectionnées pour les packs
+                        if (product?.flavorManagementType === 'pack') {
+                          console.log('Réinitialisation des saveurs à cause du changement de taille');
+                          selectedFlavorsRef.current = [];
+                          setSelectedFlavors([]);
+                        }
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] bg-white text-[#421500]"
                     >
@@ -442,9 +660,9 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                 <div className="pt-6 md:hidden">
                   <button
                     onClick={handleAddToCart}
-                    disabled={isProcessing}
+                    disabled={isAddButtonDisabled()}
                     className={`w-full py-3 px-6 rounded-md font-medium transition-colors flex items-center justify-center ${
-                      isProcessing || addedToCart
+                      isAddButtonDisabled() || addedToCart
                         ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
                         : 'bg-[#a75120] hover:bg-[#8a421a] text-white'
                     }`}
@@ -501,27 +719,108 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                 {/* Choix des saveurs - Visible seulement sur desktop */}
                 {product.flavors && product.flavors.length > 0 && (
                   <div className="pt-4 hidden md:block">
-                    <label htmlFor="flavor-select" className="block text-sm font-medium text-[#421500] mb-3">
-                      Choisissez votre saveur
+                    <label className="block text-sm font-medium text-[#421500] mb-3">
+                      {product.flavorManagementType === 'pack' ? 'Choisissez vos saveurs' : 'Choisissez votre saveur'}
                     </label>
-                    <div className="text-xs text-gray-500 mb-2">
-                      Saveur actuellement sélectionnée: <strong>{selectedFlavor}</strong>
-                    </div>
-                    <select
-                      id="flavor-select"
-                      value={selectedFlavor}
-                      onChange={(e) => {
-                        console.log('Saveur changée de', selectedFlavor, 'vers', e.target.value);
-                        setSelectedFlavor(e.target.value);
-                      }}
-                      className="w-64 max-w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] bg-white text-[#421500]"
-                    >
-                      {product.flavors.map((flavor) => (
-                        <option key={flavor} value={flavor}>
-                          {flavor}
-                        </option>
-                      ))}
-                    </select>
+                    
+                    {product.flavorManagementType === 'pack' ? (
+                      // Mode pack : sélection flexible
+                      <div className="space-y-4">
+                        {/* Saveurs sélectionnées */}
+                        {selectedFlavors.length > 0 && (
+                          <div>
+                            <h4 className="text-sm font-medium text-[#421500] mb-2">Vos saveurs sélectionnées :</h4>
+                            <div className="flex flex-wrap gap-2">
+                              {selectedFlavors.map((flavor, index) => (
+                                <div key={index} className="flex items-center bg-[#a75120] text-white px-3 py-1 rounded-full text-sm">
+                                  <span>{flavor}</span>
+                                  <button
+                                    onClick={() => handleRemoveFlavor(index)}
+                                    className="ml-2 text-white hover:text-gray-200"
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Boutons pour ajouter des saveurs */}
+                        <div>
+                          <h4 className="text-sm font-medium text-[#421500] mb-2">Ajouter une saveur :</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {product.flavors.map((flavor) => {
+                              const selectedSizeData = product.sizes?.find(size => size.name === selectedSize);
+                              const sizeNumber = selectedSizeData ? parseInt(selectedSizeData.name.split(' ')[0]) : 0;
+                              const canAdd = selectedFlavors.length < sizeNumber;
+                              
+                              return (
+                                <button
+                                  key={flavor}
+                                  onClick={() => handleAddFlavor(flavor)}
+                                  disabled={!canAdd}
+                                  className={`px-3 py-1 rounded-md text-sm transition-colors ${
+                                    canAdd
+                                      ? 'bg-white text-[#421500] border border-gray-300 hover:bg-gray-50'
+                                      : 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed'
+                                  }`}
+                                >
+                                  + {flavor}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                        
+                        {/* Message d'état */}
+                        {selectedSize && (
+                          <p className={`text-xs ${
+                            (() => {
+                              const selectedSizeData = product.sizes?.find(size => size.name === selectedSize);
+                              const requiredFlavors = selectedSizeData ? parseInt(selectedSizeData.name.split(' ')[0]) : 0;
+                              return selectedFlavors.length === requiredFlavors ? 'text-green-600' : 'text-orange-500';
+                            })()
+                          }`}>
+                            {(() => {
+                              const selectedSizeData = product.sizes?.find(size => size.name === selectedSize);
+                              const requiredFlavors = selectedSizeData ? parseInt(selectedSizeData.name.split(' ')[0]) : 0;
+                              const remaining = requiredFlavors - selectedFlavors.length;
+                              
+                              if (selectedFlavors.length === requiredFlavors) {
+                                return `✅ ${selectedFlavors.length} saveur${selectedFlavors.length > 1 ? 's' : ''} sélectionnée${selectedFlavors.length > 1 ? 's' : ''} - Prêt à ajouter !`;
+                              } else if (remaining > 0) {
+                                return `⚠️ ${selectedFlavors.length} sur ${requiredFlavors} saveurs sélectionnées - Il reste ${remaining} saveur${remaining > 1 ? 's' : ''} à choisir`;
+                              } else {
+                                return `❌ Trop de saveurs sélectionnées - Retirez ${Math.abs(remaining)} saveur${Math.abs(remaining) > 1 ? 's' : ''}`;
+                              }
+                            })()}
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      // Mode standard : dropdown
+                      <>
+                        <div className="text-xs text-gray-500 mb-2">
+                          Saveur actuellement sélectionnée: <strong>{selectedFlavor}</strong>
+                        </div>
+                        <select
+                          id="flavor-select"
+                          value={selectedFlavor}
+                          onChange={(e) => {
+                            console.log('Saveur changée de', selectedFlavor, 'vers', e.target.value);
+                            setSelectedFlavor(e.target.value);
+                          }}
+                          className="w-64 max-w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] bg-white text-[#421500]"
+                        >
+                          {product.flavors.map((flavor) => (
+                            <option key={flavor} value={flavor}>
+                              {flavor}
+                            </option>
+                          ))}
+                        </select>
+                      </>
+                    )}
                   </div>
                 )}
 
@@ -540,6 +839,12 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                       onChange={(e) => {
                         console.log('Taille changée de', selectedSize, 'vers', e.target.value);
                         setSelectedSize(e.target.value);
+                        // Réinitialiser les saveurs sélectionnées pour les packs
+                        if (product?.flavorManagementType === 'pack') {
+                          console.log('Réinitialisation des saveurs à cause du changement de taille');
+                          selectedFlavorsRef.current = [];
+                          setSelectedFlavors([]);
+                        }
                       }}
                       className="w-64 max-w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] bg-white text-[#421500]"
                     >
@@ -593,9 +898,9 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                 <div className="pt-4 hidden md:block">
                   <button
                     onClick={handleAddToCart}
-                    disabled={isProcessing}
+                    disabled={isAddButtonDisabled()}
                     type="button"
-                    className={`w-44 ${isProcessing ? 'bg-[#a75120]/70 cursor-not-allowed' : 'bg-[#a75120] hover:bg-[#8a421a]'} text-white font-bold py-3 px-4 rounded-md transition-colors flex items-center justify-center text-sm whitespace-nowrap`}
+                    className={`w-44 ${isAddButtonDisabled() ? 'bg-[#a75120]/70 cursor-not-allowed' : 'bg-[#a75120] hover:bg-[#8a421a]'} text-white font-bold py-3 px-4 rounded-md transition-colors flex items-center justify-center text-sm whitespace-nowrap`}
                   >
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />

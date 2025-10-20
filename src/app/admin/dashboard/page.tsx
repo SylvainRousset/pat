@@ -33,6 +33,7 @@ interface Product {
   notice?: string;
   flavors?: string[];
   sizes?: { name: string; price: string }[];
+  flavorManagementType?: 'standard' | 'pack'; // Type de gestion des saveurs
 }
 
 // Type pour la configuration du contenu
@@ -58,11 +59,13 @@ export default function AdminDashboard() {
     description: '',
     showInCreations: true,
     showOnHome: true,
-    category: ''
+    category: '',
+    flavorManagementType: 'standard'
   });
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -721,12 +724,18 @@ export default function AdminDashboard() {
     // Validation simple
     if (!newProduct.name || !newProduct.price || !newProduct.description) {
       setErrorMessage('Tous les champs sont obligatoires');
+      setIsAddingProduct(false);
       return;
     }
+    
+    setIsAddingProduct(true);
+    setErrorMessage('');
+    setSuccessMessage('');
     
     // Vérifier si une image a été sélectionnée
     if (!imageFile) {
       setErrorMessage('Veuillez sélectionner une image');
+      setIsAddingProduct(false);
       return;
     }
     
@@ -860,6 +869,8 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Erreur complète:', error);
       setErrorMessage((error as Error).message || 'Erreur lors de l&apos;ajout du produit');
+    } finally {
+      setIsAddingProduct(false);
     }
   };
 
@@ -1587,6 +1598,37 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
+                {/* Type de gestion des saveurs */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Type de gestion des saveurs
+                  </label>
+                  <div className="space-y-2">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="flavorManagementType"
+                        value="standard"
+                        checked={newProduct.flavorManagementType === 'standard'}
+                        onChange={(e) => setNewProduct({...newProduct, flavorManagementType: e.target.value as 'standard' | 'pack'})}
+                        className="mr-2"
+                      />
+                      <span className="text-sm text-gray-700">Standard (une saveur par ajout)</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="flavorManagementType"
+                        value="pack"
+                        checked={newProduct.flavorManagementType === 'pack'}
+                        onChange={(e) => setNewProduct({...newProduct, flavorManagementType: e.target.value as 'standard' | 'pack'})}
+                        className="mr-2"
+                      />
+                      <span className="text-sm text-gray-700">Pack de saveurs (plusieurs saveurs par pack)</span>
+                    </label>
+                  </div>
+                </div>
+
                 {/* Saveurs */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1649,9 +1691,24 @@ export default function AdminDashboard() {
                 
                 <button
                   type="submit"
-                  className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-md transition-colors"
+                  disabled={isAddingProduct}
+                  className={`w-full font-bold py-2 px-4 rounded-md transition-colors ${
+                    isAddingProduct 
+                      ? 'bg-gray-400 cursor-not-allowed' 
+                      : 'bg-amber-600 hover:bg-amber-700'
+                  } text-white`}
                 >
-                  Ajouter le produit
+                  {isAddingProduct ? (
+                    <div className="flex items-center justify-center">
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Ajout en cours...
+                    </div>
+                  ) : (
+                    'Ajouter le produit'
+                  )}
                 </button>
               </form>
             </div>
@@ -1724,7 +1781,8 @@ export default function AdminDashboard() {
                                   const productWithFormattedDescription = {
                                     ...product,
                                     descriptionArray: product.descriptionArray || (product.description ? product.description.split('\n') : []),
-                                    sizes: product.sizes || []
+                                    sizes: product.sizes || [],
+                                    flavorManagementType: product.flavorManagementType || 'standard'
                                   };
                                   setSelectedProduct(productWithFormattedDescription);
                                   setIsDetailsModalOpen(true);
@@ -2198,6 +2256,37 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                   )}
+                </div>
+
+                {/* Type de gestion des saveurs */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Type de gestion des saveurs
+                  </label>
+                  <div className="space-y-2">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="editFlavorManagementType"
+                        value="standard"
+                        checked={selectedProduct.flavorManagementType === 'standard'}
+                        onChange={(e) => setSelectedProduct({...selectedProduct, flavorManagementType: e.target.value as 'standard' | 'pack'})}
+                        className="mr-2"
+                      />
+                      <span className="text-sm text-gray-700">Standard (une saveur par ajout)</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="editFlavorManagementType"
+                        value="pack"
+                        checked={selectedProduct.flavorManagementType === 'pack'}
+                        onChange={(e) => setSelectedProduct({...selectedProduct, flavorManagementType: e.target.value as 'standard' | 'pack'})}
+                        className="mr-2"
+                      />
+                      <span className="text-sm text-gray-700">Pack de saveurs (plusieurs saveurs par pack)</span>
+                    </label>
+                  </div>
                 </div>
 
                 {/* Saveurs */}

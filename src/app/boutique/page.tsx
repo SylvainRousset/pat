@@ -18,6 +18,7 @@ interface Product {
   category?: string; // ID de la catégorie
   flavors?: string[];
   sizes?: { name: string; price: string }[];
+  flavorManagementType?: 'standard' | 'pack'; // Type de gestion des saveurs
 }
 
 // Interface pour les catégories
@@ -41,6 +42,7 @@ export default function BoutiquePage() {
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
   const [selectedFlavors, setSelectedFlavors] = useState<string[]>([]);
   const [selectedSize, setSelectedSize] = useState<{ name: string; price: string } | null>(null);
+  const [packFlavors, setPackFlavors] = useState<string[]>([]); // Pour les packs de saveurs
 
   // Charger les produits et catégories au chargement de la page
   useEffect(() => {
@@ -98,12 +100,28 @@ export default function BoutiquePage() {
     setSelectedFlavors([flavor]); // Une seule saveur à la fois
   };
 
+  // Fonctions pour les packs de saveurs
+  const addPackFlavor = (flavor: string) => {
+    if (!selectedProduct?.sizes || !selectedSize) return;
+    
+    const sizeNumber = parseInt(selectedSize.name.split(' ')[0]);
+    
+    if (packFlavors.length < sizeNumber) {
+      setPackFlavors(prev => [...prev, flavor]);
+    }
+  };
+
+  const removePackFlavor = (index: number) => {
+    setPackFlavors(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleAddToCart = (product: Product) => {
     // Si le produit a des options (saveurs ou tailles), ouvrir la modal
     if ((product.flavors && product.flavors.length > 0) || (product.sizes && product.sizes.length > 0)) {
       setSelectedProduct(product);
       setSelectedFlavors([]);
       setSelectedSize(null);
+      setPackFlavors([]);
       setIsOptionsModalOpen(true);
       return;
     }
@@ -129,37 +147,89 @@ export default function BoutiquePage() {
   const confirmAddToCart = () => {
     if (!selectedProduct) return;
     
-    // Vérifier si une saveur doit être sélectionnée
-    if (selectedProduct.flavors && selectedProduct.flavors.length > 0 && selectedFlavors.length === 0) {
-      alert('Veuillez sélectionner une saveur');
-      return;
-    }
-    
     // Vérifier si une taille doit être sélectionnée
     if (selectedProduct.sizes && selectedProduct.sizes.length > 0 && !selectedSize) {
       alert('Veuillez sélectionner une taille');
       return;
     }
     
-    // Construire le nom avec les options
-    let productName = selectedProduct.name;
-    if (selectedSize) {
-      productName += ` (${selectedSize.name})`;
+    // Gérer selon le type de produit
+    if (selectedProduct.flavorManagementType === 'pack') {
+      // Mode pack : vérifier les saveurs sélectionnées
+      if (selectedProduct.flavors && selectedProduct.flavors.length > 0) {
+        const sizeNumber = selectedSize ? parseInt(selectedSize.name.split(' ')[0]) : 0;
+        
+        if (packFlavors.length === 0) {
+          alert('Veuillez sélectionner au moins une saveur');
+          return;
+        }
+        
+        if (packFlavors.length !== sizeNumber) {
+          alert(`Veuillez sélectionner exactement ${sizeNumber} saveur${sizeNumber > 1 ? 's' : ''} pour le pack de ${selectedSize?.name}`);
+          return;
+        }
+      }
+      
+      // Construire le nom pour le pack
+      let productName = `${selectedProduct.name} - Pack de ${selectedSize?.name}`;
+      if (packFlavors.length > 0) {
+        productName += ` (${packFlavors.join(', ')})`;
+      }
+      
+      // Prix final
+      const finalPrice = selectedSize ? selectedSize.price : selectedProduct.price;
+      
+      // Créer un ID unique pour le pack (préserver l'ordre des saveurs)
+      const flavorsKey = packFlavors.join('-').replace(/\s+/g, '_');
+      const sizeKey = selectedSize ? selectedSize.name.replace(/\s+/g, '_') : 'default';
+      const uniqueId = `${selectedProduct.id}_pack_${sizeKey}_${flavorsKey}`;
+      
+      addToCart({
+        id: uniqueId,
+        name: productName,
+        price: finalPrice,
+        image: selectedProduct.image,
+        slug: selectedProduct.name.toLowerCase().replace(/\s+/g, '-'),
+        selectedFlavors: packFlavors,
+        flavorManagementType: 'pack',
+        portions: selectedSize?.name
+      });
+      
+    } else {
+      // Mode standard : vérifier une saveur unique
+      if (selectedProduct.flavors && selectedProduct.flavors.length > 0 && selectedFlavors.length === 0) {
+        alert('Veuillez sélectionner une saveur');
+        return;
+      }
+      
+      // Construire le nom pour le mode standard
+      let productName = selectedProduct.name;
+      if (selectedSize) {
+        productName += ` (${selectedSize.name})`;
+      }
+      if (selectedFlavors.length > 0) {
+        productName += ` - ${selectedFlavors[0]}`;
+      }
+      
+      // Prix final
+      const finalPrice = selectedSize ? selectedSize.price : selectedProduct.price;
+      
+      // Créer un ID unique pour le mode standard
+      const flavorKey = selectedFlavors.length > 0 ? selectedFlavors[0].replace(/\s+/g, '_') : 'default';
+      const sizeKey = selectedSize ? selectedSize.name.replace(/\s+/g, '_') : 'default';
+      const uniqueId = `${selectedProduct.id}_${flavorKey}_${sizeKey}`;
+      
+      addToCart({
+        id: uniqueId,
+        name: productName,
+        price: finalPrice,
+        image: selectedProduct.image,
+        slug: selectedProduct.name.toLowerCase().replace(/\s+/g, '-'),
+        flavor: selectedFlavors.length > 0 ? selectedFlavors[0] : undefined,
+        flavorManagementType: 'standard',
+        portions: selectedSize?.name
+      });
     }
-    if (selectedFlavors.length > 0) {
-      productName += ` - ${selectedFlavors[0]}`;
-    }
-    
-    // Prix final
-    const finalPrice = selectedSize ? selectedSize.price : selectedProduct.price;
-    
-    addToCart({
-      id: parseInt(selectedProduct.id),
-      name: productName,
-      price: finalPrice,
-      image: selectedProduct.image,
-      slug: selectedProduct.name.toLowerCase().replace(/\s+/g, '-')
-    });
     
     // Afficher la notification
     setAddedToCart(prev => ({ ...prev, [selectedProduct.id]: true }));
@@ -169,6 +239,7 @@ export default function BoutiquePage() {
     setSelectedProduct(null);
     setSelectedFlavors([]);
     setSelectedSize(null);
+    setPackFlavors([]);
     
     // Réinitialiser après 2 secondes
     setTimeout(() => {
@@ -341,34 +412,112 @@ export default function BoutiquePage() {
             {selectedProduct.flavors && selectedProduct.flavors.length > 0 && (
               <div className="mb-6">
                 <h4 className="text-lg font-semibold text-[#421500] mb-3">
-                  Saveurs disponibles
+                  {selectedProduct.flavorManagementType === 'pack' ? 'Choisissez vos saveurs' : 'Saveurs disponibles'}
                 </h4>
-                <p className="text-sm text-gray-600 mb-3">Choisissez UNE saveur :</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {selectedProduct.flavors.map((flavor) => (
-                    <label
-                      key={flavor}
-                      className={`flex items-center p-3 border-2 rounded-md cursor-pointer transition-all ${
-                        selectedFlavors.includes(flavor)
-                          ? 'border-[#D9844A] bg-[#f8f3eb]'
-                          : 'border-gray-300 hover:border-[#D9844A]/50'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="flavor"
-                        checked={selectedFlavors.includes(flavor)}
-                        onChange={() => selectFlavor(flavor)}
-                        className="h-4 w-4 text-[#D9844A] focus:ring-[#D9844A] border-gray-300"
-                      />
-                      <span className={`ml-3 text-sm ${
-                        selectedFlavors.includes(flavor) ? 'font-semibold text-[#421500]' : 'text-gray-700'
+                
+                {selectedProduct.flavorManagementType === 'pack' ? (
+                  // Mode pack : sélection flexible
+                  <div className="space-y-4">
+                    {/* Saveurs sélectionnées */}
+                    {packFlavors.length > 0 && (
+                      <div>
+                        <h5 className="text-sm font-medium text-[#421500] mb-2">Vos saveurs sélectionnées :</h5>
+                        <div className="flex flex-wrap gap-2">
+                          {packFlavors.map((flavor, index) => (
+                            <div key={index} className="flex items-center bg-[#D9844A] text-white px-3 py-1 rounded-full text-sm">
+                              <span>{flavor}</span>
+                              <button
+                                onClick={() => removePackFlavor(index)}
+                                className="ml-2 text-white hover:text-gray-200"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Boutons pour ajouter des saveurs */}
+                    <div>
+                      <h5 className="text-sm font-medium text-[#421500] mb-2">Ajouter une saveur :</h5>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedProduct.flavors.map((flavor) => {
+                          const sizeNumber = selectedSize ? parseInt(selectedSize.name.split(' ')[0]) : 0;
+                          const canAdd = packFlavors.length < sizeNumber;
+                          
+                          return (
+                            <button
+                              key={flavor}
+                              onClick={() => addPackFlavor(flavor)}
+                              disabled={!canAdd}
+                              className={`px-3 py-1 rounded-md text-sm transition-colors ${
+                                canAdd
+                                  ? 'bg-white text-[#421500] border border-gray-300 hover:bg-gray-50'
+                                  : 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed'
+                              }`}
+                            >
+                              + {flavor}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    
+                    {/* Message d'état */}
+                    {selectedSize && (
+                      <p className={`text-xs ${
+                        (() => {
+                          const sizeNumber = parseInt(selectedSize.name.split(' ')[0]);
+                          return packFlavors.length === sizeNumber ? 'text-green-600' : 'text-orange-500';
+                        })()
                       }`}>
-                        {flavor}
-                      </span>
-                    </label>
-                  ))}
-                </div>
+                        {(() => {
+                          const sizeNumber = parseInt(selectedSize.name.split(' ')[0]);
+                          const remaining = sizeNumber - packFlavors.length;
+                          
+                          if (packFlavors.length === sizeNumber) {
+                            return `✅ ${packFlavors.length} saveur${packFlavors.length > 1 ? 's' : ''} sélectionnée${packFlavors.length > 1 ? 's' : ''} - Prêt à ajouter !`;
+                          } else if (remaining > 0) {
+                            return `⚠️ ${packFlavors.length} sur ${sizeNumber} saveurs sélectionnées - Il reste ${remaining} saveur${remaining > 1 ? 's' : ''} à choisir`;
+                          } else {
+                            return `❌ Trop de saveurs sélectionnées - Retirez ${Math.abs(remaining)} saveur${Math.abs(remaining) > 1 ? 's' : ''}`;
+                          }
+                        })()}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  // Mode standard : une saveur unique
+                  <>
+                    <p className="text-sm text-gray-600 mb-3">Choisissez UNE saveur :</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {selectedProduct.flavors.map((flavor) => (
+                        <label
+                          key={flavor}
+                          className={`flex items-center p-3 border-2 rounded-md cursor-pointer transition-all ${
+                            selectedFlavors.includes(flavor)
+                              ? 'border-[#D9844A] bg-[#f8f3eb]'
+                              : 'border-gray-300 hover:border-[#D9844A]/50'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="flavor"
+                            checked={selectedFlavors.includes(flavor)}
+                            onChange={() => selectFlavor(flavor)}
+                            className="h-4 w-4 text-[#D9844A] focus:ring-[#D9844A] border-gray-300"
+                          />
+                          <span className={`ml-3 text-sm ${
+                            selectedFlavors.includes(flavor) ? 'font-semibold text-[#421500]' : 'text-gray-700'
+                          }`}>
+                            {flavor}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
@@ -392,7 +541,13 @@ export default function BoutiquePage() {
                         type="radio"
                         name="size"
                         checked={selectedSize?.name === size.name}
-                        onChange={() => setSelectedSize(size)}
+                        onChange={() => {
+                          setSelectedSize(size);
+                          // Réinitialiser les saveurs pack si on change de taille
+                          if (selectedProduct.flavorManagementType === 'pack') {
+                            setPackFlavors([]);
+                          }
+                        }}
                         className="sr-only"
                       />
                       <span className={`text-base font-semibold ${
@@ -421,7 +576,56 @@ export default function BoutiquePage() {
               </button>
               <button
                 onClick={confirmAddToCart}
-                className="flex-1 bg-[#D9844A] hover:bg-[#C27340] text-white font-bold py-3 px-6 rounded-md transition-colors"
+                disabled={(() => {
+                  if (!selectedProduct) return true;
+                  
+                  // Vérifier si une taille doit être sélectionnée
+                  if (selectedProduct.sizes && selectedProduct.sizes.length > 0 && !selectedSize) {
+                    return true;
+                  }
+                  
+                  // Vérifier selon le type de produit
+                  if (selectedProduct.flavorManagementType === 'pack') {
+                    if (selectedProduct.flavors && selectedProduct.flavors.length > 0) {
+                      const sizeNumber = selectedSize ? parseInt(selectedSize.name.split(' ')[0]) : 0;
+                      return packFlavors.length !== sizeNumber;
+                    }
+                  } else {
+                    // Mode standard
+                    if (selectedProduct.flavors && selectedProduct.flavors.length > 0 && selectedFlavors.length === 0) {
+                      return true;
+                    }
+                  }
+                  
+                  return false;
+                })()}
+                className={`flex-1 font-bold py-3 px-6 rounded-md transition-colors ${
+                  (() => {
+                    if (!selectedProduct) return 'bg-gray-300 text-gray-500 cursor-not-allowed';
+                    
+                    // Vérifier si une taille doit être sélectionnée
+                    if (selectedProduct.sizes && selectedProduct.sizes.length > 0 && !selectedSize) {
+                      return 'bg-gray-300 text-gray-500 cursor-not-allowed';
+                    }
+                    
+                    // Vérifier selon le type de produit
+                    if (selectedProduct.flavorManagementType === 'pack') {
+                      if (selectedProduct.flavors && selectedProduct.flavors.length > 0) {
+                        const sizeNumber = selectedSize ? parseInt(selectedSize.name.split(' ')[0]) : 0;
+                        return packFlavors.length !== sizeNumber 
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          : 'bg-[#D9844A] hover:bg-[#C27340] text-white';
+                      }
+                    } else {
+                      // Mode standard
+                      if (selectedProduct.flavors && selectedProduct.flavors.length > 0 && selectedFlavors.length === 0) {
+                        return 'bg-gray-300 text-gray-500 cursor-not-allowed';
+                      }
+                    }
+                    
+                    return 'bg-[#D9844A] hover:bg-[#C27340] text-white';
+                  })()
+                }`}
               >
                 Ajouter au panier
               </button>

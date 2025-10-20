@@ -12,6 +12,8 @@ export type CartItem = {
   slug: string;
   flavor?: string;
   portions?: string;
+  selectedFlavors?: string[]; // Pour les packs de saveurs
+  flavorManagementType?: 'standard' | 'pack'; // Type de gestion des saveurs
 };
 
 // Interface pour le contexte du panier
