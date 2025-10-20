@@ -72,6 +72,8 @@ export default function AdminDashboard() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedCategoriesModal, setSelectedCategoriesModal] = useState<string[]>([]); // Pour la modal de modification
+  const [isCreatingNewCategoryModal, setIsCreatingNewCategoryModal] = useState(false); // Pour la modal
+  const [newCategoryNameModal, setNewCategoryNameModal] = useState(''); // Pour la modal
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
   const [additionalImagesFiles, setAdditionalImagesFiles] = useState<File[]>([]);
   
@@ -701,6 +703,40 @@ export default function AdminDashboard() {
       setSuccessMessage(`Catégorie "${category.name}" supprimée avec succès`);
     } catch (error) {
       setErrorMessage('Erreur lors de la suppression de la catégorie');
+      console.error(error);
+    }
+  };
+
+  const createNewCategoryModal = async () => {
+    if (!newCategoryNameModal.trim()) {
+      setErrorMessage('Veuillez saisir un nom de catégorie');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/categories', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: newCategoryNameModal.trim(),
+          createIfNotExists: true
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la création de la catégorie');
+      }
+
+      const newCategory = await response.json();
+      setCategories([...categories, newCategory]);
+      setSelectedCategoriesModal([...selectedCategoriesModal, newCategory.id]);
+      setNewCategoryNameModal('');
+      setIsCreatingNewCategoryModal(false);
+      setSuccessMessage(`Catégorie "${newCategory.name}" créée avec succès`);
+    } catch (error) {
+      setErrorMessage('Erreur lors de la création de la catégorie');
       console.error(error);
     }
   };
@@ -2055,7 +2091,11 @@ export default function AdminDashboard() {
                     {selectedProduct.showInCreations ? 'Cacher des créations' : 'Afficher dans créations'}
                   </button>
                   <button
-                    onClick={() => setIsDetailsModalOpen(false)}
+                    onClick={() => {
+                      setIsDetailsModalOpen(false);
+                      setIsCreatingNewCategoryModal(false);
+                      setNewCategoryNameModal('');
+                    }}
                     className="text-gray-500 hover:text-gray-700"
                   >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2109,6 +2149,45 @@ export default function AdminDashboard() {
                         </div>
                       ) : (
                         <p className="text-sm text-gray-500 italic mb-3">Aucune catégorie disponible.</p>
+                      )}
+
+                      {/* Créer une nouvelle catégorie dans la modal */}
+                      {!isCreatingNewCategoryModal ? (
+                        <button
+                          type="button"
+                          onClick={() => setIsCreatingNewCategoryModal(true)}
+                          className="text-sm text-[#a75120] hover:text-[#8a421a] font-medium mb-3"
+                        >
+                          + Nouvelle catégorie
+                        </button>
+                      ) : (
+                        <div className="flex gap-2 mb-3">
+                          <input
+                            type="text"
+                            value={newCategoryNameModal}
+                            onChange={(e) => setNewCategoryNameModal(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), createNewCategoryModal())}
+                            placeholder="Nom de la nouvelle catégorie"
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] text-sm"
+                          />
+                          <button
+                            type="button"
+                            onClick={createNewCategoryModal}
+                            className="px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a] font-bold"
+                          >
+                            Créer
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsCreatingNewCategoryModal(false);
+                              setNewCategoryNameModal('');
+                            }}
+                            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                          >
+                            Annuler
+                          </button>
+                        </div>
                       )}
 
                       {/* Liste des catégories sélectionnées */}
@@ -2578,7 +2657,11 @@ export default function AdminDashboard() {
               <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
                 <button
                   type="button"
-                    onClick={() => setIsDetailsModalOpen(false)}
+                    onClick={() => {
+                      setIsDetailsModalOpen(false);
+                      setIsCreatingNewCategoryModal(false);
+                      setNewCategoryNameModal('');
+                    }}
                   className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
                   >
                     Annuler
