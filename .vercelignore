@@ -1,0 +1,38 @@
+# Cache Next.js
+.next/cache
+
+# Node modules (Vercel les installe automatiquement)
+node_modules
+
+# Fichiers de développement
+*.log
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Fichiers temporaires
+.tmp
+.temp
+
+# Fichiers de build locaux
+dist
+build
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Fichiers de l'éditeur
+.vscode
+.idea
+*.swp
+*.swo
+
+# Fichiers de test
+coverage
+.nyc_output
+
+# Fichiers de documentation
+README.md
+docs/
