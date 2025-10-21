@@ -494,7 +494,7 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] bg-white text-[#421500]"
                     >
-                      <option value="">Sélectionnez une taille</option>
+                      <option value="" disabled>Sélectionnez une taille</option>
                       {product.sizes.map((size) => (
                         <option key={size.name} value={size.name}>
                           {size.name} - {size.price} €
@@ -551,7 +551,7 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] bg-white text-[#421500]"
                     >
-                      <option value="">Sélectionnez une taille</option>
+                      <option value="" disabled>Sélectionnez une taille</option>
                       {product.sizes.map((size) => (
                         <option key={size.name} value={size.name}>
                           {size.name} - {size.price} €
