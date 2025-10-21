@@ -123,8 +123,6 @@ export default function AdminDashboard() {
   const [flavors, setFlavors] = useState<string[]>([]);
   // const [currentFlavor, setCurrentFlavor] = useState(''); // Non utilisé
   const [sizes, setSizes] = useState<{ name: string; price: string }[]>([]);
-  const [customSizeName, setCustomSizeName] = useState('');
-  const [customSizePrice, setCustomSizePrice] = useState('');
   const [selectedAllergens, setSelectedAllergens] = useState<string[]>([]);
   const [customAllergen, setCustomAllergen] = useState('');
   const [customFlavor, setCustomFlavor] = useState('');
@@ -654,15 +652,6 @@ export default function AdminDashboard() {
 
   const removeSize = (sizeName: string) => {
     setSizes(sizes.filter(s => s.name !== sizeName));
-  };
-
-  const addCustomSize = () => {
-    if (customSizeName.trim() && customSizePrice.trim()) {
-      const newSize = { name: customSizeName.trim(), price: customSizePrice.trim() };
-      setSizes([...sizes, newSize]);
-      setCustomSizeName('');
-      setCustomSizePrice('');
-    }
   };
 
   // Gestion des catégories
@@ -1700,10 +1689,15 @@ export default function AdminDashboard() {
                           {existingSize && (
                             <div className="flex items-center gap-2 flex-1">
                               <input
-                                type="number"
-                                step="0.01"
+                                type="text"
                                 value={existingSize.price}
-                                onChange={(e) => addOrUpdateSize(`${sizeNum} parts`, e.target.value)}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  // Permettre seulement les chiffres et un point
+                                  if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                                    addOrUpdateSize(`${sizeNum} parts`, value);
+                                  }
+                                }}
                                 placeholder="Prix"
                                 className="w-24 px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] text-sm"
                               />
@@ -1738,10 +1732,15 @@ export default function AdminDashboard() {
                           {existingSize && (
                             <div className="flex items-center gap-2">
                               <input
-                                type="number"
-                                step="0.01"
+                                type="text"
                                 value={existingSize.price}
-                                onChange={(e) => addOrUpdateSize(predefinedSize.name, e.target.value)}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  // Permettre seulement les chiffres et un point
+                                  if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                                    addOrUpdateSize(predefinedSize.name, value);
+                                  }
+                                }}
                                 placeholder="Prix"
                                 className="w-24 px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] text-sm"
                               />
@@ -1789,10 +1788,15 @@ export default function AdminDashboard() {
                           className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120]"
                         />
                         <input
-                          type="number"
-                          step="0.01"
+                          type="text"
                           value={newPredefinedSizePrice}
-                          onChange={(e) => setNewPredefinedSizePrice(e.target.value)}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            // Permettre seulement les chiffres et un point
+                            if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                              setNewPredefinedSizePrice(value);
+                            }
+                          }}
                           placeholder="Prix (€)"
                           className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120]"
                         />
