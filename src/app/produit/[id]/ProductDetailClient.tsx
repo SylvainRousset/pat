@@ -369,6 +369,14 @@ export default function ProductDetailClient({ params }: { params: { id: string }
           </Link>
           
           <div className="bg-[#FAF0E6] rounded-lg shadow-lg overflow-hidden">
+            {/* Titre du produit - Visible seulement sur mobile */}
+            <div className="md:hidden p-6 pb-0">
+              <h1 className="text-2xl font-bold text-[#421500] mb-2">{String(product.name)}</h1>
+              {(typeof product.title === "string" && product.title) && (
+                <h2 className="text-lg text-[#a75120] font-medium">{product.title}</h2>
+              )}
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
               {/* Colonne gauche - Images */}
               <div className="space-y-6">
@@ -448,16 +456,8 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                 </div>
               </div>
               
-              {/* Colonne droite - Informations produit */}
-              <div className="space-y-6">
-                {/* Nom du produit */}
-                <div className="mt-4">
-                  <h1 className="text-2xl font-bold text-[#421500] mb-2">{String(product.name)}</h1>
-                  {(typeof product.title === "string" && product.title) && (
-                    <h2 className="text-lg text-[#a75120] font-medium">{product.title}</h2>
-                  )}
-                </div>
-                
+              {/* Prix et tailles - Visible seulement sur mobile */}
+              <div className="md:hidden px-6 pb-6">
                 {/* Prix */}
                 <div className="py-4 border-t border-b border-[#a75120]/20">
                   <p className="text-3xl font-bold text-[#a75120]">
@@ -472,6 +472,94 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                     <p className="text-sm text-[#421500] mt-1">pour {selectedSize}</p>
                   )}
                 </div>
+
+                {/* Choix des tailles */}
+                {product.sizes && product.sizes.length > 0 && (
+                  <div className="pt-4">
+                    <label htmlFor="size-select-mobile" className="block text-sm font-medium text-[#421500] mb-3">
+                      Tailles disponibles
+                    </label>
+                    <select
+                      id="size-select-mobile"
+                      value={selectedSize}
+                      onChange={(e) => {
+                        console.log('Taille changée de', selectedSize, 'vers', e.target.value);
+                        setSelectedSize(e.target.value);
+                        // Réinitialiser les saveurs sélectionnées pour les packs
+                        if (product?.flavorManagementType === 'pack') {
+                          console.log('Réinitialisation des saveurs à cause du changement de taille');
+                          selectedFlavorsRef.current = [];
+                          setSelectedFlavors([]);
+                        }
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] bg-white text-[#421500]"
+                    >
+                      <option value="">Sélectionnez une taille</option>
+                      {product.sizes.map((size) => (
+                        <option key={size.name} value={size.name}>
+                          {size.name} - {size.price} €
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+              
+              {/* Colonne droite - Informations produit */}
+              <div className="space-y-6">
+                {/* Nom du produit - Visible seulement sur desktop */}
+                <div className="mt-4 hidden md:block">
+                  <h1 className="text-2xl font-bold text-[#421500] mb-2">{String(product.name)}</h1>
+                  {(typeof product.title === "string" && product.title) && (
+                    <h2 className="text-lg text-[#a75120] font-medium">{product.title}</h2>
+                  )}
+                </div>
+                
+                {/* Prix - Visible seulement sur desktop */}
+                <div className="py-4 border-t border-b border-[#a75120]/20 hidden md:block">
+                  <p className="text-3xl font-bold text-[#a75120]">
+                    {selectedSize && product.sizes?.find(size => size.name === selectedSize)?.price 
+                      ? `${product.sizes.find(size => size.name === selectedSize)?.price} €`
+                      : product.sizes && product.sizes.length > 0
+                        ? `${product.sizes[0].price} €`
+                        : `${product.price} €`
+                    }
+                  </p>
+                  {selectedSize && (
+                    <p className="text-sm text-[#421500] mt-1">pour {selectedSize}</p>
+                  )}
+                </div>
+
+                {/* Choix des tailles - Visible seulement sur desktop */}
+                {product.sizes && product.sizes.length > 0 && (
+                  <div className="pt-4 hidden md:block">
+                    <label htmlFor="size-select-desktop" className="block text-sm font-medium text-[#421500] mb-3">
+                      Tailles disponibles
+                    </label>
+                    <select
+                      id="size-select-desktop"
+                      value={selectedSize}
+                      onChange={(e) => {
+                        console.log('Taille changée de', selectedSize, 'vers', e.target.value);
+                        setSelectedSize(e.target.value);
+                        // Réinitialiser les saveurs sélectionnées pour les packs
+                        if (product?.flavorManagementType === 'pack') {
+                          console.log('Réinitialisation des saveurs à cause du changement de taille');
+                          selectedFlavorsRef.current = [];
+                          setSelectedFlavors([]);
+                        }
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] bg-white text-[#421500]"
+                    >
+                      <option value="">Sélectionnez une taille</option>
+                      {product.sizes.map((size) => (
+                        <option key={size.name} value={size.name}>
+                          {size.name} - {size.price} €
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
 
                 {/* Choix des saveurs - Visible seulement sur mobile */}
@@ -577,35 +665,6 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                   </div>
                 )}
 
-                {/* Choix des tailles - Visible seulement sur mobile */}
-                {product.sizes && product.sizes.length > 0 && (
-                  <div className="pt-4 md:hidden">
-                    <label htmlFor="size-select" className="block text-sm font-medium text-[#421500] mb-3">
-                      Tailles disponibles
-                    </label>
-                    <select
-                      id="size-select"
-                      value={selectedSize}
-                      onChange={(e) => {
-                        console.log('Taille changée de', selectedSize, 'vers', e.target.value);
-                        setSelectedSize(e.target.value);
-                        // Réinitialiser les saveurs sélectionnées pour les packs
-                        if (product?.flavorManagementType === 'pack') {
-                          console.log('Réinitialisation des saveurs à cause du changement de taille');
-                          selectedFlavorsRef.current = [];
-                          setSelectedFlavors([]);
-                        }
-                      }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] bg-white text-[#421500]"
-                    >
-                      {product.sizes.map((size) => (
-                        <option key={size.name} value={size.name}>
-                          {size.name} - {size.price}€
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
 
                 {/* Sélecteur de quantité - Visible seulement sur mobile */}
                 <div className="pt-4 md:hidden">

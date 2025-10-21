@@ -119,7 +119,14 @@ const ProductCard = ({ product }: { product: Product }) => {
       <div className="p-2 md:p-4">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-lg font-medium text-gray-900">{product.name}</h3>
-          <span className="text-amber-600 font-semibold">{Number(product.price).toFixed(2)} €</span>
+          <span className="text-amber-600 font-semibold">
+            {(() => {
+              // Remplacer les virgules par des points pour la conversion
+              const cleanPrice = product.price.replace(',', '.');
+              const price = Number(cleanPrice);
+              return isNaN(price) ? 'Prix non disponible' : `${price.toFixed(2)} €`;
+            })()}
+          </span>
         </div>
         <p className="text-gray-500 text-sm mb-4">{product.description}</p>
         <div className="flex justify-between items-center">

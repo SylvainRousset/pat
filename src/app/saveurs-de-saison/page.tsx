@@ -285,7 +285,14 @@ export default function SaveursDeSaison() {
                     <div className="p-2 sm:p-3 md:p-4 lg:p-6">
                       <div className="flex justify-between items-start mb-2 sm:mb-3 md:mb-4">
                         <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-[#421500] leading-tight">{product.name}</h3>
-                        <span className="text-[#D9844A] font-semibold text-sm sm:text-base">{Number(product.price).toFixed(2)} €</span>
+                        <span className="text-[#D9844A] font-semibold text-sm sm:text-base">
+                          {(() => {
+                            // Remplacer les virgules par des points pour la conversion
+                            const cleanPrice = product.price.replace(',', '.');
+                            const price = Number(cleanPrice);
+                            return isNaN(price) ? 'Prix non disponible' : `${price.toFixed(2)} €`;
+                          })()}
+                        </span>
                       </div>
 
                       <div className="flex justify-between items-center">

@@ -342,7 +342,12 @@ export default function BoutiquePage() {
                       </h2>
                       <div className="flex items-center justify-between">
                         <span className="text-[#D9844A] font-bold text-lg">
-                          {Number(product.price).toFixed(2)} €
+                          {(() => {
+                            // Remplacer les virgules par des points pour la conversion
+                            const cleanPrice = product.price.replace(',', '.');
+                            const price = Number(cleanPrice);
+                            return isNaN(price) ? 'Prix non disponible' : `${price.toFixed(2)} €`;
+                          })()}
                         </span>
                         {(product.flavors && product.flavors.length > 0) || (product.sizes && product.sizes.length > 0) ? (
                           <span className="text-xs bg-[#D9844A]/10 text-[#D9844A] px-2 py-1 rounded-full">

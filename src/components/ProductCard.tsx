@@ -25,7 +25,14 @@ export default function ProductCard({ product }: ProductCardProps) {
           </h3>
           <p className="mt-1 text-sm text-gray-500">{product.description}</p>
         </div>
-        <p className="text-sm font-medium text-gray-900">{Number(product.price).toFixed(2)} €</p>
+        <p className="text-sm font-medium text-gray-900">
+          {(() => {
+            // Remplacer les virgules par des points pour la conversion
+            const cleanPrice = product.price.replace(',', '.');
+            const price = Number(cleanPrice);
+            return isNaN(price) ? 'Prix non disponible' : `${price.toFixed(2)} €`;
+          })()}
+        </p>
       </div>
     </div>
   );
