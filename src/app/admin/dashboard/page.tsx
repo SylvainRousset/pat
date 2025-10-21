@@ -15,6 +15,14 @@ interface Category {
   description?: string;
 }
 
+// Type pour les tailles prédéfinies
+interface PredefinedSize {
+  id: string;
+  name: string;
+  price: string;
+  createdAt?: unknown;
+}
+
 // Type pour les produits
 interface Product {
   id: string;
@@ -76,6 +84,11 @@ export default function AdminDashboard() {
   const [newCategoryNameModal, setNewCategoryNameModal] = useState(''); // Pour la modal
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
   const [additionalImagesFiles, setAdditionalImagesFiles] = useState<File[]>([]);
+  
+  // États pour les tailles prédéfinies
+  const [predefinedSizes, setPredefinedSizes] = useState<PredefinedSize[]>([]);
+  const [newPredefinedSizeName, setNewPredefinedSizeName] = useState('');
+  const [newPredefinedSizePrice, setNewPredefinedSizePrice] = useState('');
   
   // États pour les images des cartes d'accueil
   const [carte1File, setCarte1File] = useState<File | null>(null);
@@ -146,6 +159,8 @@ export default function AdminDashboard() {
           fetchProducts();
           // Charger les catégories
           fetchCategories();
+          // Charger les tailles prédéfinies
+          fetchPredefinedSizes();
           // Charger la configuration du contenu
           fetchContentConfig();
         } else {
@@ -213,6 +228,20 @@ export default function AdminDashboard() {
       }
     } catch (error) {
       console.error('Erreur lors du chargement de la configuration:', error);
+    }
+  };
+
+  // Fonction pour récupérer les tailles prédéfinies
+  const fetchPredefinedSizes = async () => {
+    try {
+      const response = await fetch('/api/predefined-sizes');
+      
+      if (response.ok) {
+        const sizes = await response.json();
+        setPredefinedSizes(sizes);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des tailles prédéfinies:', error);
     }
   };
 
@@ -703,6 +732,65 @@ export default function AdminDashboard() {
       setSuccessMessage(`Catégorie "${category.name}" supprimée avec succès`);
     } catch (error) {
       setErrorMessage('Erreur lors de la suppression de la catégorie');
+      console.error(error);
+    }
+  };
+
+  // Gestion des tailles prédéfinies
+  const createPredefinedSize = async () => {
+    if (!newPredefinedSizeName.trim() || !newPredefinedSizePrice.trim()) {
+      setErrorMessage('Veuillez saisir un nom et un prix pour la taille');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/predefined-sizes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: newPredefinedSizeName.trim(),
+          price: newPredefinedSizePrice.trim()
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la création de la taille prédéfinie');
+      }
+
+      const newSize = await response.json();
+      setPredefinedSizes([...predefinedSizes, newSize]);
+      setNewPredefinedSizeName('');
+      setNewPredefinedSizePrice('');
+      setSuccessMessage(`Taille "${newSize.name}" créée avec succès`);
+    } catch (error) {
+      setErrorMessage('Erreur lors de la création de la taille prédéfinie');
+      console.error(error);
+    }
+  };
+
+  const deletePredefinedSize = async (sizeId: string) => {
+    const size = predefinedSizes.find(s => s.id === sizeId);
+    if (!size) return;
+
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer la taille "${size.name}" ?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/predefined-sizes?id=${sizeId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la suppression de la taille');
+      }
+
+      setPredefinedSizes(predefinedSizes.filter(s => s.id !== sizeId));
+      setSuccessMessage(`Taille "${size.name}" supprimée avec succès`);
+    } catch (error) {
+      setErrorMessage('Erreur lors de la suppression de la taille');
       console.error(error);
     }
   };
@@ -1588,6 +1676,7 @@ export default function AdminDashboard() {
                   </label>
                   <p className="text-xs text-gray-500 mb-3">Cochez les portions disponibles et leurs prix (le client choisira UNE portion)</p>
                   <div className="space-y-2 bg-gray-50 p-3 rounded-md">
+                    {/* Tailles standard (parts) */}
                     {availableSizes.map((sizeNum) => {
                       const existingSize = sizes.find(s => s.name === `${sizeNum} parts`);
                       return (
@@ -1624,35 +1713,96 @@ export default function AdminDashboard() {
                         </div>
                       );
                     })}
+                    
+                    {/* Tailles prédéfinies */}
+                    {predefinedSizes.map((predefinedSize) => {
+                      const existingSize = sizes.find(s => s.name === predefinedSize.name);
+                      return (
+                        <div key={predefinedSize.id} className="flex items-center gap-3">
+                          <input
+                            type="checkbox"
+                            id={`predefined-size-${predefinedSize.id}`}
+                            checked={!!existingSize}
+                            onChange={(e) => {
+                              if (!e.target.checked) {
+                                removeSize(predefinedSize.name);
+                              } else {
+                                setSizes([...sizes, { name: predefinedSize.name, price: '' }]);
+                              }
+                            }}
+                            className="h-4 w-4 text-[#a75120] focus:ring-[#a75120] border-gray-300 rounded"
+                          />
+                          <label htmlFor={`predefined-size-${predefinedSize.id}`} className="text-sm text-gray-700 cursor-pointer flex-1">
+                            {predefinedSize.name}
+                          </label>
+                          {existingSize && (
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="number"
+                                step="0.01"
+                                value={existingSize.price}
+                                onChange={(e) => addOrUpdateSize(predefinedSize.name, e.target.value)}
+                                placeholder="Prix"
+                                className="w-24 px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] text-sm"
+                              />
+                              <span className="text-sm text-gray-600">€</span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
 
-                  {/* Ajout de catégorie personnalisée */}
+
+                  {/* Gestion des tailles prédéfinies */}
+                  {predefinedSizes.length > 0 && (
+                    <div className="mt-4 p-3 bg-blue-50 rounded-md border border-blue-200">
+                      <p className="text-sm font-medium text-blue-700 mb-2">Gérer les tailles prédéfinies</p>
+                      <div className="space-y-1">
+                        {predefinedSizes.map((size) => (
+                          <div key={size.id} className="flex items-center justify-between text-sm">
+                            <span className="text-gray-700">{size.name}</span>
+                            <button
+                              type="button"
+                              onClick={() => deletePredefinedSize(size.id)}
+                              className="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600"
+                              title={`Supprimer "${size.name}"`}
+                            >
+                              Supprimer
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Ajout de nouvelle taille prédéfinie */}
                   <div className="mt-4 p-3 bg-amber-50 rounded-md border border-amber-200">
-                    <p className="text-sm font-medium text-amber-700 mb-2">Ajouter une catégorie personnalisée</p>
+                    <p className="text-sm font-medium text-amber-700 mb-2">Ajouter une nouvelle taille personnalisée</p>
                     <div className="space-y-3">
                       <div className="flex gap-2">
                         <input
                           type="text"
-                          value={customSizeName}
-                          onChange={(e) => setCustomSizeName(e.target.value)}
+                          value={newPredefinedSizeName}
+                          onChange={(e) => setNewPredefinedSizeName(e.target.value)}
                           placeholder="ex: 12 pièces mignardises"
                           className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120]"
                         />
                         <input
                           type="number"
                           step="0.01"
-                          value={customSizePrice}
-                          onChange={(e) => setCustomSizePrice(e.target.value)}
+                          value={newPredefinedSizePrice}
+                          onChange={(e) => setNewPredefinedSizePrice(e.target.value)}
                           placeholder="Prix (€)"
                           className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120]"
                         />
                       </div>
                       <button
                         type="button"
-                        onClick={addCustomSize}
+                        onClick={createPredefinedSize}
                         className="px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a] w-fit"
                       >
-                        Ajouter
+                        Créer et sauvegarder
                       </button>
                     </div>
                   </div>
@@ -2282,6 +2432,37 @@ export default function AdminDashboard() {
                     </div>
                         ))}
                         
+                        {/* Tailles prédéfinies dans la modal */}
+                        {predefinedSizes.length > 0 && (
+                          <div className="mt-4 p-3 bg-blue-50 rounded-md border border-blue-200">
+                            <p className="text-sm font-medium text-blue-700 mb-2">Tailles prédéfinies disponibles</p>
+                            <div className="grid grid-cols-1 gap-2">
+                              {predefinedSizes.map((size) => (
+                                <div key={size.id} className="flex items-center justify-between p-2 bg-white rounded border">
+                                  <div className="flex items-center">
+                                    <span className="text-sm text-gray-700">{size.name} - {size.price} €</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const existingSize = (selectedProduct.sizes || []).find(s => s.name === size.name);
+                                        if (!existingSize) {
+                                          const newSizes = [...(selectedProduct.sizes || []), { name: size.name, price: size.price }];
+                                          setSelectedProduct({ ...selectedProduct, sizes: newSizes });
+                                        }
+                                      }}
+                                      className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
+                                    >
+                                      Ajouter
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
                         <button
                           type="button"
                           onClick={() => {
@@ -2290,7 +2471,7 @@ export default function AdminDashboard() {
                           }}
                           className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700"
                         >
-                          Ajouter une taille
+                          Ajouter une taille manuelle
                         </button>
                         
                         {(selectedProduct.sizes || []).length > 0 && (
