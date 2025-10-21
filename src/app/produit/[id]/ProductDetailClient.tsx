@@ -473,9 +473,9 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                   )}
                 </div>
 
-                {/* Choix des tailles */}
+                {/* Choix des tailles - Visible seulement sur mobile */}
                 {product.sizes && product.sizes.length > 0 && (
-                  <div className="pt-4">
+                  <div className="pt-4 md:hidden">
                     <label htmlFor="size-select-mobile" className="block text-sm font-medium text-[#421500] mb-3">
                       Tailles disponibles
                     </label>
@@ -860,38 +860,6 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                   </div>
                 )}
 
-                {/* Sélection de la taille - Visible seulement sur desktop */}
-                {product.sizes && product.sizes.length > 0 && (
-                  <div className="pt-4 hidden md:block">
-                    <label htmlFor="size-select" className="block text-sm font-medium text-[#421500] mb-3">
-                      Choisissez le nombre de parts
-                    </label>
-                    <div className="text-xs text-gray-500 mb-2">
-                      Taille actuellement sélectionnée: <strong>{selectedSize}</strong>
-                    </div>
-                    <select
-                      id="size-select"
-                      value={selectedSize}
-                      onChange={(e) => {
-                        console.log('Taille changée de', selectedSize, 'vers', e.target.value);
-                        setSelectedSize(e.target.value);
-                        // Réinitialiser les saveurs sélectionnées pour les packs
-                        if (product?.flavorManagementType === 'pack') {
-                          console.log('Réinitialisation des saveurs à cause du changement de taille');
-                          selectedFlavorsRef.current = [];
-                          setSelectedFlavors([]);
-                        }
-                      }}
-                      className="w-64 max-w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] bg-white text-[#421500]"
-                    >
-                      {product.sizes.map((size) => (
-                        <option key={size.name} value={size.name}>
-                          {size.name} - {size.price}€
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
                 
                 {product.address && (
                   <div className="py-3 border-t border-b border-[#a75120]/20">
