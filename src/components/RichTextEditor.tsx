@@ -62,24 +62,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }
   };
 
-  // Fonction pour obtenir la couleur de texte sélectionnée
-  const getTextColor = (): string => {
-    try {
-      return document.queryCommandValue('foreColor') || '#000000';
-    } catch {
-      return '#000000';
-    }
-  };
-
-  // Fonction pour obtenir la couleur d'arrière-plan sélectionnée
-  const getBackgroundColor = (): string => {
-    try {
-      return document.queryCommandValue('backColor') || '#ffffff';
-    } catch {
-      return '#ffffff';
-    }
-  };
-
   // Fonction pour obtenir la police sélectionnée
   const getFontFamily = (): string => {
     try {

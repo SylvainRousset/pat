@@ -331,10 +331,7 @@ export default function ProductDetailClient({ params }: { params: { id: string }
     ? product.images 
     : [product.image];
   
-  // Traiter la description pour respecter la mise en page
-  const productDescription = product.descriptionArray && product.descriptionArray.length > 0
-    ? product.descriptionArray
-    : product.description.split('\n').filter(line => line.trim() !== '');
+  // La description est maintenant gérée directement par renderDescription
 
   // Fonction pour rendre le HTML de manière sécurisée
   const renderDescription = (description: string) => {
