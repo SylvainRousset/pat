@@ -23,7 +23,14 @@ export default function ProductCard({ product }: ProductCardProps) {
           <h3 className="text-sm text-gray-700">
             <Link href={`/produit/${product.id}`}>{product.name}</Link>
           </h3>
-          <p className="mt-1 text-sm text-gray-500">{product.description}</p>
+          <div 
+            className="mt-1 text-sm text-gray-500 product-description"
+            dangerouslySetInnerHTML={{ 
+              __html: product.description.includes('<') && product.description.includes('>') 
+                ? product.description 
+                : product.description.replace(/\n/g, '<br>')
+            }}
+          />
         </div>
         <p className="text-sm font-medium text-gray-900">
           {(() => {

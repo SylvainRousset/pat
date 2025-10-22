@@ -336,6 +336,35 @@ export default function ProductDetailClient({ params }: { params: { id: string }
     ? product.descriptionArray
     : product.description.split('\n').filter(line => line.trim() !== '');
 
+  // Fonction pour rendre le HTML de manière sécurisée
+  const renderDescription = (description: string) => {
+    // Si c'est du HTML (contient des balises), le rendre directement
+    if (description.includes('<') && description.includes('>')) {
+      return <div dangerouslySetInnerHTML={{ __html: description }} />;
+    }
+    
+    // Sinon, traiter comme du texte simple avec des lignes
+    const lines = description.split('\n').filter(line => line.trim() !== '');
+    return lines.map((paragraph, index) => {
+      // Détecter les listes à puces
+      if (paragraph.trim().startsWith('•') || paragraph.trim().startsWith('-')) {
+        return (
+          <div key={index} className="flex items-start">
+            <span className="text-[#a75120] mr-2 mt-1">•</span>
+            <p className="leading-relaxed flex-1">
+              {paragraph.trim().substring(1).trim()}
+            </p>
+          </div>
+        );
+      }
+      return (
+        <p key={index} className="leading-relaxed">
+          {paragraph}
+        </p>
+      );
+    });
+  };
+
   // Fonction pour extraire l'emoji et le texte d'un allergène
   const parseAllergen = (allergen: string) => {
     // Détecter si l'allergène commence par un emoji
@@ -432,27 +461,8 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                 )}
                 
                 {/* Description sous les images - Visible seulement sur desktop */}
-                <div className="mt-8 space-y-4 text-[#421500] hidden md:block">
-                  {productDescription.map((paragraph, index) => {
-                    // Détecter les listes à puces
-                    if (paragraph.trim().startsWith('•') || paragraph.trim().startsWith('-')) {
-                      return (
-                        <div key={index} className="flex items-start">
-                          <span className="text-[#a75120] mr-2 mt-1">•</span>
-                          <p className="leading-relaxed flex-1">
-                            {paragraph.trim().substring(1).trim()}
-                          </p>
-                        </div>
-                      );
-                    }
-                    
-                    // Paragraphes normaux
-                    return (
-                    <p key={index} className="leading-relaxed">
-                      {paragraph}
-                    </p>
-                    );
-                  })}
+                <div className="mt-8 space-y-4 text-[#421500] hidden md:block product-description">
+                  {renderDescription(product.description)}
                 </div>
               </div>
               
@@ -732,23 +742,8 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                 {/* Description - Visible seulement sur mobile, après le bouton */}
                 <div className="py-4 border-t border-[#a75120]/20 md:hidden">
                   <h3 className="text-lg font-semibold text-[#421500] mb-3">Description</h3>
-                  <div className="space-y-3 text-[#421500]">
-                    {productDescription.map((paragraph, index) => {
-                      // Détecter les listes à puces
-                      if (paragraph.trim().startsWith('•') || paragraph.trim().startsWith('-')) {
-                        return (
-                          <div key={index} className="flex items-start">
-                            <span className="text-[#a75120] mr-2 mt-1">•</span>
-                            <p className="text-sm leading-relaxed">{paragraph.trim().substring(1).trim()}</p>
-                          </div>
-                        );
-                      }
-                      return (
-                        <p key={index} className="text-sm leading-relaxed">
-                          {paragraph}
-                        </p>
-                      );
-                    })}
+                  <div className="space-y-3 text-[#421500] product-description">
+                    {renderDescription(product.description)}
                   </div>
                 </div>
                 

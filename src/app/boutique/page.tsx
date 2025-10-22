@@ -359,9 +359,14 @@ export default function BoutiquePage() {
 
                     {/* Description tronquée */}
                     <div className="mb-4 flex-grow">
-                      <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-                        {product.description}
-                      </p>
+                      <div 
+                        className="text-sm text-gray-600 line-clamp-2 leading-relaxed product-description"
+                        dangerouslySetInnerHTML={{ 
+                          __html: product.description.includes('<') && product.description.includes('>') 
+                            ? product.description 
+                            : product.description.replace(/\n/g, '<br>')
+                        }}
+                      />
                     </div>
 
                     {/* Actions */}

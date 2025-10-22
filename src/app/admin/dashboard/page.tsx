@@ -7,6 +7,7 @@ import { signOut } from 'firebase/auth';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
 import { onAuthStateChanged } from 'firebase/auth';
+import RichTextEditor from '@/components/RichTextEditor';
 
 // Type pour les catégories
 interface Category {
@@ -1637,23 +1638,20 @@ export default function AdminDashboard() {
                   </label>
                   <div className="bg-gray-50 p-3 rounded-md mb-2">
                     <p className="text-xs text-gray-600 mb-2">
-                      <strong>Conseil :</strong> Collez simplement votre texte ici. La mise en page sera automatique.
+                      <strong>Éditeur de texte riche :</strong> Utilisez les outils ci-dessous pour formater votre texte.
                     </p>
                     <p className="text-xs text-gray-500">
-                      • Les paragraphes seront automatiquement séparés<br/>
-                      • Les listes à puces seront formatées<br/>
-                      • Les retours à la ligne seront préservés
+                      • <strong>Gras</strong>, <em>italique</em>, <u>souligné</u><br/>
+                      • Couleurs et polices personnalisées<br/>
+                      • Listes à puces et numérotées<br/>
+                      • Liens et images
                     </p>
                   </div>
-                  <textarea
-                    id="description"
-                    name="description"
+                  <RichTextEditor
                     value={newProduct.description}
-                    onChange={handleInputChange}
-                    rows={6}
-                    placeholder="Collez votre texte ici...&#10;&#10;Exemple :&#10;Une délicieuse tarte aux fruits de saison, préparée avec des ingrédients frais et locaux.&#10;&#10;• Fruits de saison sélectionnés&#10;• Pâte brisée maison&#10;• Crème pâtissière vanille&#10;&#10;Parfait pour accompagner vos moments de gourmandise."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500 font-mono text-sm"
-                    required
+                    onChange={(value) => setNewProduct({...newProduct, description: value})}
+                    placeholder="Saisissez votre description ici... Vous pouvez utiliser tous les outils de formatage disponibles."
+                    className="mb-2"
                   />
                 </div>
                 
@@ -2132,58 +2130,122 @@ export default function AdminDashboard() {
                 </div>
               ) : (
                 <div className="w-full">
-                  <table className="w-full table-fixed divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th scope="col" className="w-16 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Image
-                        </th>
-                        <th scope="col" className="w-1/3 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Nom
-                        </th>
-                        <th scope="col" className="w-20 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Prix
-                        </th>
-                        <th scope="col" className="w-1/4 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Affichage
-                        </th>
-                        <th scope="col" className="w-32 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {products.map((product) => (
-                        <tr key={product.id}>
-                          <td className="px-2 py-4">
-                            <div className="relative h-10 w-10 rounded overflow-hidden">
-                              <Image
-                                src={product.image}
-                                alt={product.name}
-                                fill
-                                className="object-cover"
-                              />
+                  {/* Version desktop - Tableau */}
+                  <div className="hidden md:block">
+                    <table className="w-full table-fixed divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th scope="col" className="w-16 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Image
+                          </th>
+                          <th scope="col" className="w-1/3 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Nom
+                          </th>
+                          <th scope="col" className="w-20 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Prix
+                          </th>
+                          <th scope="col" className="w-1/4 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Affichage
+                          </th>
+                          <th scope="col" className="w-32 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {products.map((product) => (
+                          <tr key={product.id}>
+                            <td className="px-2 py-4">
+                              <div className="relative h-10 w-10 rounded overflow-hidden">
+                                <Image
+                                  src={product.image}
+                                  alt={product.name}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                            </td>
+                            <td className="px-2 py-4">
+                              <div className="text-sm font-medium text-gray-900 truncate">{product.name}</div>
+                              <div className="text-xs text-gray-500 truncate">{product.description.substring(0, 60)}...</div>
+                            </td>
+                            <td className="px-2 py-4">
+                              <div className="text-sm text-gray-900">{product.price}</div>
+                            </td>
+                            <td className="px-2 py-4">
+                              <div className="flex flex-col space-y-1">
+                                <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${product.showInCreations ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                                  {product.showInCreations ? 'Créations' : 'Non affiché'}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-2 py-4 text-sm font-medium">
+                              <div className="flex items-center space-x-2">
+                                <button
+                                  onClick={() => {
+                                    // S'assurer que la description et les tailles sont correctement formatées
+                                    const productWithFormattedDescription = {
+                                      ...product,
+                                      descriptionArray: product.descriptionArray || (product.description ? product.description.split('\n') : []),
+                                      sizes: product.sizes || [],
+                                      flavorManagementType: product.flavorManagementType || 'standard'
+                                    };
+                                    setSelectedProduct(productWithFormattedDescription);
+                                    // Initialiser les catégories sélectionnées pour la modal
+                                    setSelectedCategoriesModal(product.categories || (product.category ? [product.category] : []));
+                                    setIsDetailsModalOpen(true);
+                                  }}
+                                  className="text-amber-600 hover:text-amber-900"
+                                >
+                                  Modifier
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteProduct(product.id)}
+                                  className="text-red-600 hover:text-red-900"
+                                >
+                                  Supprimer
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Version mobile - Cartes */}
+                  <div className="md:hidden space-y-4">
+                    {products.map((product) => (
+                      <div key={product.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <div className="flex items-start space-x-3">
+                          {/* Image */}
+                          <div className="relative h-16 w-16 rounded overflow-hidden flex-shrink-0">
+                            <Image
+                              src={product.image}
+                              alt={product.name}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          
+                          {/* Contenu */}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-sm font-medium text-gray-900 truncate">{product.name}</h3>
+                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{product.description}</p>
+                            
+                            <div className="mt-2 flex items-center justify-between">
+                              <div className="flex items-center space-x-2">
+                                <span className="text-sm font-medium text-gray-900">{product.price}</span>
+                                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${product.showInCreations ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                                  {product.showInCreations ? 'Créations' : 'Non affiché'}
+                                </span>
+                              </div>
                             </div>
-                          </td>
-                          <td className="px-2 py-4">
-                            <div className="text-sm font-medium text-gray-900 truncate">{product.name}</div>
-                            <div className="text-xs text-gray-500 truncate">{product.description.substring(0, 60)}...</div>
-                          </td>
-                          <td className="px-2 py-4">
-                            <div className="text-sm text-gray-900">{product.price}</div>
-                          </td>
-                          <td className="px-2 py-4">
-                            <div className="flex flex-col space-y-1">
-                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${product.showInCreations ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                                {product.showInCreations ? 'Créations' : 'Non affiché'}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-2 py-4 text-sm font-medium">
-                            <div className="flex items-center space-x-2">
+                            
+                            {/* Actions */}
+                            <div className="mt-3 flex space-x-3">
                               <button
                                 onClick={() => {
-                                  // S'assurer que la description et les tailles sont correctement formatées
                                   const productWithFormattedDescription = {
                                     ...product,
                                     descriptionArray: product.descriptionArray || (product.description ? product.description.split('\n') : []),
@@ -2191,26 +2253,25 @@ export default function AdminDashboard() {
                                     flavorManagementType: product.flavorManagementType || 'standard'
                                   };
                                   setSelectedProduct(productWithFormattedDescription);
-                                  // Initialiser les catégories sélectionnées pour la modal
                                   setSelectedCategoriesModal(product.categories || (product.category ? [product.category] : []));
                                   setIsDetailsModalOpen(true);
                                 }}
-                                className="text-amber-600 hover:text-amber-900"
+                                className="flex-1 bg-[#a75120] text-white text-sm font-medium py-2 px-3 rounded-md hover:bg-[#8a421a] transition-colors"
                               >
                                 Modifier
                               </button>
                               <button
                                 onClick={() => handleDeleteProduct(product.id)}
-                                className="text-red-600 hover:text-red-900"
+                                className="flex-1 bg-red-600 text-white text-sm font-medium py-2 px-3 rounded-md hover:bg-red-700 transition-colors"
                               >
                                 Supprimer
                               </button>
                             </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
               
@@ -2697,21 +2758,28 @@ export default function AdminDashboard() {
                 {/* Description détaillée */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Description détaillée (un paragraphe par ligne)
+                        Description détaillée
                       </label>
-                      <textarea
-                    value={selectedProduct.descriptionArray ? selectedProduct.descriptionArray.join('\n') : ''}
-                        onChange={(e) => {
-                      const lines = e.target.value.split('\n');
-                      setSelectedProduct({ ...selectedProduct, descriptionArray: lines });
-                    }}
-                    rows={8}
-                    placeholder="Collez votre texte ici...&#10;&#10;Exemple :&#10;Une délicieuse tarte aux fruits de saison, préparée avec des ingrédients frais et locaux.&#10;&#10;• Fruits de saison sélectionnés&#10;• Pâte brisée maison&#10;• Crème pâtissière vanille&#10;&#10;Parfait pour accompagner vos moments de gourmandise."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500 font-mono text-sm"
+                      <div className="bg-gray-50 p-3 rounded-md mb-2">
+                        <p className="text-xs text-gray-600 mb-2">
+                          <strong>Éditeur de texte riche :</strong> Utilisez les outils ci-dessous pour formater votre texte.
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          • <strong>Gras</strong>, <em>italique</em>, <u>souligné</u><br/>
+                          • Couleurs et polices personnalisées<br/>
+                          • Listes à puces et numérotées<br/>
+                          • Liens et images
+                        </p>
+                      </div>
+                      <RichTextEditor
+                        value={selectedProduct.description || ''}
+                        onChange={(value) => {
+                          // Sauvegarder directement le HTML
+                          setSelectedProduct({ ...selectedProduct, description: value });
+                        }}
+                        placeholder="Saisissez votre description ici... Vous pouvez utiliser tous les outils de formatage disponibles."
+                        className="mb-2"
                       />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Séparez les paragraphes par une ligne vide pour une meilleure présentation.
-                      </p>
                     </div>
 
                 {/* Allergènes */}

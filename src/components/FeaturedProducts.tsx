@@ -128,7 +128,14 @@ const ProductCard = ({ product }: { product: Product }) => {
             })()}
           </span>
         </div>
-        <p className="text-gray-500 text-sm mb-4">{product.description}</p>
+        <div 
+          className="text-gray-500 text-sm mb-4 product-description"
+          dangerouslySetInnerHTML={{ 
+            __html: product.description.includes('<') && product.description.includes('>') 
+              ? product.description 
+              : product.description.replace(/\n/g, '<br>')
+          }}
+        />
         <div className="flex justify-between items-center">
           <button
             onClick={() => handleAddToCart(product)}

@@ -48,4 +48,76 @@ h1, h2, h3, h4, h5, h6 {
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+  
+  /* Styles pour les descriptions HTML */
+  .product-description {
+    line-height: 1.6;
+  }
+  
+  .product-description h1,
+  .product-description h2,
+  .product-description h3 {
+    font-family: var(--font-display), serif;
+    font-weight: 600;
+    margin: 1rem 0 0.5rem 0;
+    color: #421500;
+  }
+  
+  .product-description h1 {
+    font-size: 1.5rem;
+  }
+  
+  .product-description h2 {
+    font-size: 1.25rem;
+  }
+  
+  .product-description h3 {
+    font-size: 1.125rem;
+  }
+  
+  .product-description p {
+    margin: 0.75rem 0;
+    line-height: 1.6;
+  }
+  
+  .product-description ul,
+  .product-description ol {
+    margin: 0.75rem 0;
+    padding-left: 1.5rem;
+  }
+  
+  .product-description li {
+    margin: 0.25rem 0;
+    line-height: 1.5;
+  }
+  
+  .product-description strong {
+    font-weight: 600;
+    color: #421500;
+  }
+  
+  .product-description em {
+    font-style: italic;
+  }
+  
+  .product-description u {
+    text-decoration: underline;
+  }
+  
+  .product-description a {
+    color: #a75120;
+    text-decoration: underline;
+  }
+  
+  .product-description a:hover {
+    color: #8a421a;
+  }
+  
+  .product-description blockquote {
+    border-left: 3px solid #a75120;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    font-style: italic;
+    color: #6d4c41;
+  }
 }
