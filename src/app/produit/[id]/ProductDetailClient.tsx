@@ -141,7 +141,8 @@ export default function ProductDetailClient({ params }: { params: { id: string }
     }
   }, [product, selectedSize]);
 
-  // Fonction pour retirer une saveur spécifique (par index)
+  // Fonction pour retirer une saveur spécifique (par index) - non utilisée (remplacée par handleRemoveFlavorInstance)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleRemoveFlavor = useCallback((index: number) => {
     console.log('=== SUPPRESSION SAVEUR ===');
     console.log('index à supprimer:', index);

@@ -108,6 +108,7 @@ function formatCartItemHTML(item: CartItem): string {
 }
 
 // Initialiser Mailjet si les clés sont disponibles
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let mailjetClient: any = null;
 
 if (process.env.MAILJET_API_KEY && process.env.MAILJET_SECRET_KEY) {
@@ -237,14 +238,15 @@ Ce message a été envoyé depuis le formulaire de contact du site web Pâtisser
           messageId: messageId,
           provider: 'Mailjet'
         });
-      } catch (error: any) {
-        console.error('Erreur lors de l\'envoi du message de contact:', error);
-        console.error('Détails:', error.message);
+      } catch (error: unknown) {
+        const err = error as Error;
+        console.error('Erreur lors de l\'envoi du message de contact:', err);
+        console.error('Détails:', err.message);
         
         return NextResponse.json(
           { 
             error: 'Erreur lors de l\'envoi du message de contact',
-            details: error.message
+            details: err.message
           },
           { status: 500 }
         );
@@ -477,25 +479,27 @@ L'équipe Coquelicot`,
           orderId: orderId,
           provider: 'Mailjet'
         });
-      } catch (error: any) {
-        console.error('Erreur générale lors de l\'envoi des emails via Mailjet:', error);
-        console.error('Détails:', error.message);
+      } catch (error: unknown) {
+        const err = error as Error;
+        console.error('Erreur générale lors de l\'envoi des emails via Mailjet:', err);
+        console.error('Détails:', err.message);
         
         return NextResponse.json(
           { 
             error: 'Erreur générale lors de l\'envoi des emails',
-            message: error.message
+            message: err.message
           },
           { status: 500 }
         );
       }
     }
-  } catch (error: any) {
-    console.error('Erreur générale lors de l\'envoi des emails:', error);
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error('Erreur générale lors de l\'envoi des emails:', err);
     return NextResponse.json(
       { 
         error: 'Erreur générale lors de l\'envoi des emails',
-        message: error.message
+        message: err.message
       },
       { status: 500 }
     );

@@ -117,6 +117,8 @@ export default function BoutiquePage() {
     }
   };
 
+  // Fonction non utilisée (remplacée par removePackFlavorInstance)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const removePackFlavor = (index: number) => {
     setPackFlavors(prev => prev.filter((_, i) => i !== index));
   };
