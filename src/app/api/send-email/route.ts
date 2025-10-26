@@ -380,7 +380,7 @@ Prix total: ${totalPrice}`,
               },
               To: [
                 {
-                  Email: clientInfo.email,
+                  Email: ADMIN_EMAIL,
                   Name: `${clientInfo.prenom} ${clientInfo.nom}`
                 }
               ],
