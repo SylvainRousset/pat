@@ -91,18 +91,30 @@ const Cart = () => {
                                 {/* Afficher les saveurs en badges */}
                                 <div className="mt-2">
                                   {item.flavorManagementType === 'pack' ? (
-                                    // Mode pack : afficher les saveurs en badges
+                                    // Mode pack : regrouper les saveurs identiques et afficher avec le nombre
                                     <>
                                       {item.selectedFlavors && item.selectedFlavors.length > 0 && (
-                                        <div className="flex flex-wrap gap-1 mb-1">
-                                          {item.selectedFlavors.map((flavor, index) => (
-                                            <span 
-                                              key={index}
-                                              className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800"
-                                            >
-                                              {flavor}
-                                            </span>
-                                          ))}
+                                        <div className="flex flex-wrap gap-1.5 mb-1">
+                                          {(() => {
+                                            // Compter les occurrences de chaque saveur
+                                            const flavorCounts = item.selectedFlavors.reduce((acc, flavor) => {
+                                              acc[flavor] = (acc[flavor] || 0) + 1;
+                                              return acc;
+                                            }, {} as Record<string, number>);
+                                            
+                                            // Créer les badges avec les saveurs et leurs comptages
+                                            return Object.entries(flavorCounts).map(([flavor, count], index) => (
+                                              <span 
+                                                key={index}
+                                                className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 shadow-sm"
+                                              >
+                                                <span className="mr-1">{flavor}</span>
+                                                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-600 text-white text-[10px] font-bold">
+                                                  {count}
+                                                </span>
+                                              </span>
+                                            ));
+                                          })()}
                                         </div>
                                       )}
                                     </>
@@ -110,12 +122,12 @@ const Cart = () => {
                                     // Mode standard : afficher une saveur unique en badge
                                     <>
                                       {item.flavor && (
-                                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 mr-2">
+                                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 mr-2 shadow-sm">
                                           {item.flavor}
                                         </span>
                                       )}
                                       {item.portions && (
-                                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 shadow-sm">
                                           {item.portions}
                                         </span>
                                       )}

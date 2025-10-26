@@ -141,13 +141,32 @@ export default function ProductDetailClient({ params }: { params: { id: string }
     }
   }, [product, selectedSize]);
 
-  // Fonction pour retirer une saveur spécifique
+  // Fonction pour retirer une saveur spécifique (par index)
   const handleRemoveFlavor = useCallback((index: number) => {
     console.log('=== SUPPRESSION SAVEUR ===');
     console.log('index à supprimer:', index);
     console.log('selectedFlavorsRef.current avant:', selectedFlavorsRef.current);
     
     const newFlavors = selectedFlavorsRef.current.filter((_, i) => i !== index);
+    selectedFlavorsRef.current = newFlavors;
+    setSelectedFlavors(newFlavors);
+    console.log('selectedFlavorsRef.current après:', selectedFlavorsRef.current);
+  }, []);
+
+  // Fonction pour retirer une instance spécifique d'une saveur (groupée)
+  const handleRemoveFlavorInstance = useCallback((flavorToRemove: string) => {
+    console.log('=== SUPPRESSION SAVEUR (instance) ===');
+    console.log('saveur à supprimer:', flavorToRemove);
+    
+    let removed = false;
+    const newFlavors = selectedFlavorsRef.current.filter((flavor) => {
+      if (!removed && flavor === flavorToRemove) {
+        removed = true;
+        return false;
+      }
+      return true;
+    });
+    
     selectedFlavorsRef.current = newFlavors;
     setSelectedFlavors(newFlavors);
     console.log('selectedFlavorsRef.current après:', selectedFlavorsRef.current);
@@ -579,22 +598,35 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                     {product.flavorManagementType === 'pack' ? (
                       // Mode pack : sélection flexible
                       <div className="space-y-4">
-                        {/* Saveurs sélectionnées */}
+                        {/* Saveurs sélectionnées avec compteur */}
                         {selectedFlavors.length > 0 && (
                           <div>
                             <h4 className="text-sm font-medium text-[#421500] mb-2">Vos saveurs sélectionnées :</h4>
                             <div className="flex flex-wrap gap-2">
-                              {selectedFlavors.map((flavor, index) => (
-                                <div key={index} className="flex items-center bg-[#a75120] text-white px-3 py-1 rounded-full text-sm">
-                                  <span>{flavor}</span>
-                                  <button
-                                    onClick={() => handleRemoveFlavor(index)}
-                                    className="ml-2 text-white hover:text-gray-200"
-                                  >
-                                    ×
-                                  </button>
-                                </div>
-                              ))}
+                              {(() => {
+                                // Compter les occurrences de chaque saveur
+                                const flavorCounts = selectedFlavors.reduce((acc, flavor) => {
+                                  acc[flavor] = (acc[flavor] || 0) + 1;
+                                  return acc;
+                                }, {} as Record<string, number>);
+                                
+                                // Créer les badges avec saveurs et comptages
+                                return Object.entries(flavorCounts).map(([flavor, count], index) => (
+                                  <div key={index} className="inline-flex items-center bg-[#a75120] text-white px-3 py-1.5 rounded-full text-sm shadow-sm">
+                                    <span className="mr-1.5">{flavor}</span>
+                                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#6B3410] text-white text-xs font-bold">
+                                      {count}
+                                    </span>
+                                    <button
+                                      onClick={() => handleRemoveFlavorInstance(flavor)}
+                                      className="ml-2 text-white hover:text-orange-200 font-bold"
+                                      title="Retirer une instance"
+                                    >
+                                      −
+                                    </button>
+                                  </div>
+                                ));
+                              })()}
                             </div>
                           </div>
                         )}
@@ -754,22 +786,35 @@ export default function ProductDetailClient({ params }: { params: { id: string }
                     {product.flavorManagementType === 'pack' ? (
                       // Mode pack : sélection flexible
                       <div className="space-y-4">
-                        {/* Saveurs sélectionnées */}
+                        {/* Saveurs sélectionnées avec compteur */}
                         {selectedFlavors.length > 0 && (
                           <div>
                             <h4 className="text-sm font-medium text-[#421500] mb-2">Vos saveurs sélectionnées :</h4>
                             <div className="flex flex-wrap gap-2">
-                              {selectedFlavors.map((flavor, index) => (
-                                <div key={index} className="flex items-center bg-[#a75120] text-white px-3 py-1 rounded-full text-sm">
-                                  <span>{flavor}</span>
-                                  <button
-                                    onClick={() => handleRemoveFlavor(index)}
-                                    className="ml-2 text-white hover:text-gray-200"
-                                  >
-                                    ×
-                                  </button>
-                                </div>
-                              ))}
+                              {(() => {
+                                // Compter les occurrences de chaque saveur
+                                const flavorCounts = selectedFlavors.reduce((acc, flavor) => {
+                                  acc[flavor] = (acc[flavor] || 0) + 1;
+                                  return acc;
+                                }, {} as Record<string, number>);
+                                
+                                // Créer les badges avec saveurs et comptages
+                                return Object.entries(flavorCounts).map(([flavor, count], index) => (
+                                  <div key={index} className="inline-flex items-center bg-[#a75120] text-white px-3 py-1.5 rounded-full text-sm shadow-sm">
+                                    <span className="mr-1.5">{flavor}</span>
+                                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#6B3410] text-white text-xs font-bold">
+                                      {count}
+                                    </span>
+                                    <button
+                                      onClick={() => handleRemoveFlavorInstance(flavor)}
+                                      className="ml-2 text-white hover:text-orange-200 font-bold"
+                                      title="Retirer une instance"
+                                    >
+                                      −
+                                    </button>
+                                  </div>
+                                ));
+                              })()}
                             </div>
                           </div>
                         )}

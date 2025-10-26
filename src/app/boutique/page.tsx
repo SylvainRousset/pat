@@ -121,6 +121,20 @@ export default function BoutiquePage() {
     setPackFlavors(prev => prev.filter((_, i) => i !== index));
   };
 
+  // Nouvelle fonction pour retirer une instance spécifique d'une saveur
+  const removePackFlavorInstance = (flavorToRemove: string) => {
+    let removed = false;
+    setPackFlavors(prev => 
+      prev.filter((flavor) => {
+        if (!removed && flavor === flavorToRemove) {
+          removed = true;
+          return false; // Retirer cette occurrence
+        }
+        return true; // Garder les autres
+      })
+    );
+  };
+
   const handleAddToCart = (product: Product) => {
     // Si le produit a des options (saveurs ou tailles), ouvrir la modal
     if ((product.flavors && product.flavors.length > 0) || (product.sizes && product.sizes.length > 0)) {
@@ -434,22 +448,35 @@ export default function BoutiquePage() {
                 {selectedProduct.flavorManagementType === 'pack' ? (
                   // Mode pack : sélection flexible
                   <div className="space-y-4">
-                    {/* Saveurs sélectionnées */}
+                    {/* Saveurs sélectionnées avec compteur */}
                     {packFlavors.length > 0 && (
                       <div>
                         <h5 className="text-sm font-medium text-[#421500] mb-2">Vos saveurs sélectionnées :</h5>
                         <div className="flex flex-wrap gap-2">
-                          {packFlavors.map((flavor, index) => (
-                            <div key={index} className="flex items-center bg-[#D9844A] text-white px-3 py-1 rounded-full text-sm">
-                              <span>{flavor}</span>
-                              <button
-                                onClick={() => removePackFlavor(index)}
-                                className="ml-2 text-white hover:text-gray-200"
-                              >
-                                ×
-                              </button>
-                            </div>
-                          ))}
+                          {(() => {
+                            // Compter les occurrences de chaque saveur
+                            const flavorCounts = packFlavors.reduce((acc, flavor) => {
+                              acc[flavor] = (acc[flavor] || 0) + 1;
+                              return acc;
+                            }, {} as Record<string, number>);
+                            
+                            // Créer les badges avec saveurs et comptages
+                            return Object.entries(flavorCounts).map(([flavor, count], index) => (
+                              <div key={index} className="inline-flex items-center bg-[#D9844A] text-white px-3 py-1.5 rounded-full text-sm shadow-sm">
+                                <span className="mr-1.5">{flavor}</span>
+                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#8B4513] text-white text-xs font-bold">
+                                  {count}
+                                </span>
+                                <button
+                                  onClick={() => removePackFlavorInstance(flavor)}
+                                  className="ml-2 text-white hover:text-orange-200 font-bold"
+                                  title="Retirer une instance"
+                                >
+                                  −
+                                </button>
+                              </div>
+                            ));
+                          })()}
                         </div>
                       </div>
                     )}

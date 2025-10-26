@@ -227,8 +227,51 @@ const CheckoutPage = () => {
                           <div className="ml-4 flex flex-1 flex-col">
                             <div>
                               <div className="flex justify-between text-base font-medium text-gray-900">
-                                <h3>{item.name}</h3>
+                                <h3>
+                                  {item.flavorManagementType === 'pack' 
+                                    ? `${item.name.split(' - Pack de')[0]} - Pack de ${item.portions}`
+                                    : item.name
+                                  }
+                                </h3>
                                 <p className="ml-4">{item.price}</p>
+                              </div>
+                              {/* Afficher les saveurs en badges si pack */}
+                              <div className="mt-2">
+                                {item.flavorManagementType === 'pack' && item.selectedFlavors && item.selectedFlavors.length > 0 ? (
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {(() => {
+                                      const flavorCounts = item.selectedFlavors.reduce((acc, flavor) => {
+                                        acc[flavor] = (acc[flavor] || 0) + 1;
+                                        return acc;
+                                      }, {} as Record<string, number>);
+                                      
+                                      return Object.entries(flavorCounts).map(([flavor, count], index) => (
+                                        <span 
+                                          key={index}
+                                          className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 shadow-sm"
+                                        >
+                                          <span className="mr-1">{flavor}</span>
+                                          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-600 text-white text-[10px] font-bold">
+                                            {count}
+                                          </span>
+                                        </span>
+                                      ));
+                                    })()}
+                                  </div>
+                                ) : (
+                                  <>
+                                    {item.flavor && (
+                                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 mr-2 shadow-sm">
+                                        {item.flavor}
+                                      </span>
+                                    )}
+                                    {item.portions && (
+                                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 shadow-sm">
+                                        {item.portions}
+                                      </span>
+                                    )}
+                                  </>
+                                )}
                               </div>
                             </div>
                             <div className="flex flex-1 items-end justify-between text-sm">
