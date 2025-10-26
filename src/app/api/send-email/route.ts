@@ -281,10 +281,11 @@ Ce message a été envoyé depuis le formulaire de contact du site web Pâtisser
       try {
         console.log('Tentative d\'envoi des emails de commande via Mailjet...');
         
-        // Envoi de l'email à l'administrateur
-        console.log('Envoi de l\'email à l\'administrateur...');
-        const adminResult = await mailjetClient.post('send', { version: 'v3.1' }).request({
+        // Envoi simultané des emails à l'admin ET au client dans un seul appel
+        console.log('Envoi simultané des emails à l\'admin et au client...');
+        const result = await mailjetClient.post('send', { version: 'v3.1' }).request({
           Messages: [
+            // Email admin
             {
               From: {
                 Email: VERIFIED_SENDER,
@@ -370,14 +371,8 @@ Prix total: ${totalPrice}`,
               </div>
             </div>
           `
-            }
-          ]
-        });
-
-        // Envoi de l'email au client
-        console.log('Envoi de l\'email au client...');
-        const clientResult = await mailjetClient.post('send', { version: 'v3.1' }).request({
-          Messages: [
+            },
+            // Email client
             {
               From: {
                 Email: VERIFIED_SENDER,
@@ -470,8 +465,7 @@ L'équipe Coquelicot`,
         });
         
         console.log('Emails de commande envoyés avec succès via Mailjet!');
-        console.log('Réponse Mailjet (admin):', JSON.stringify(adminResult.body));
-        console.log('Réponse Mailjet (client):', JSON.stringify(clientResult.body));
+        console.log('Réponse Mailjet:', JSON.stringify(result.body));
         
         return NextResponse.json({ 
           success: true,
