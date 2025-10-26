@@ -44,8 +44,8 @@ interface OrderData {
 type RequestData = ContactData | OrderData;
 
 // Configuration de Mailjet
-const VERIFIED_SENDER = 'sylvaindebisca@hotmail.fr';
-const ADMIN_EMAIL = 'sylvaindebisca@hotmail.fr';
+const VERIFIED_SENDER = process.env.MAILJET_SENDER_EMAIL || 'sylvaindebisca@hotmail.fr';
+const ADMIN_EMAIL = process.env.MAILJET_ADMIN_EMAIL || 'sylvaindebisca@hotmail.fr';
 
 // Fonction pour formater les articles avec saveurs groupées (version texte)
 function formatCartItem(item: CartItem): string {
