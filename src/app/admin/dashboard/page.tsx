@@ -94,7 +94,6 @@ export default function AdminDashboard() {
   
   // États pour les parfums prédéfinis
   const [predefinedFlavors, setPredefinedFlavors] = useState<{id: string; name: string}[]>([]);
-  const [newPredefinedFlavorName, setNewPredefinedFlavorName] = useState('');
   
   // États pour les images des cartes d'accueil
   const [carte1File, setCarte1File] = useState<File | null>(null);
@@ -930,37 +929,6 @@ export default function AdminDashboard() {
       setSuccessMessage(`Taille "${size.name}" supprimée avec succès`);
     } catch (error) {
       setErrorMessage('Erreur lors de la suppression de la taille');
-      console.error(error);
-    }
-  };
-
-  const createPredefinedFlavor = async () => {
-    if (!newPredefinedFlavorName.trim()) {
-      setErrorMessage('Veuillez saisir un nom pour le parfum');
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/predefined-flavors', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: newPredefinedFlavorName.trim()
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Erreur lors de la création du parfum prédéfini');
-      }
-
-      const newFlavor = await response.json();
-      setPredefinedFlavors([...predefinedFlavors, newFlavor]);
-      setNewPredefinedFlavorName('');
-      setSuccessMessage(`Parfum "${newFlavor.name}" créé avec succès.`);
-    } catch (error) {
-      setErrorMessage('Erreur lors de la création du parfum prédéfini');
       console.error(error);
     }
   };
