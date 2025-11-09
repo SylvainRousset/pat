@@ -164,6 +164,7 @@ export default function AdminDashboard() {
       // Utiliser Firebase Auth pour vérifier l'authentification
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
+          console.log('🔐 Admin connecté avec UID:', user.uid);
           setIsAuthenticated(true);
           localStorage.setItem('adminAuthenticated', 'true');
           // Charger les produits depuis l'API
