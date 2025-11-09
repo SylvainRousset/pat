@@ -12,32 +12,92 @@ interface Product {
   image: string;
   description?: string;
   showInCreations?: boolean;
+  categories?: string[];
+}
+
+interface GalleryItem {
+  id: string;
+  title: string;
+  image: string;
+  categories?: string[];
+}
+
+interface Category {
+  id: string;
+  name: string;
+}
+
+// Type commun pour afficher les créations
+interface CreationItem {
+  id: string;
+  name: string;
+  image: string;
+  categories?: string[];
 }
 
 export default function Creations() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [creations, setCreations] = useState<Product[]>([]);
+  const [creations, setCreations] = useState<CreationItem[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
 
-  // Charger les produits depuis Firebase
+  // Charger les catégories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/categories');
+        if (response.ok) {
+          const data = await response.json();
+          setCategories(data);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des catégories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Charger les produits ET les images de la galerie
   useEffect(() => {
     const fetchCreations = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('/api/products');
         
-        if (!response.ok) {
-          throw new Error('Erreur lors de la récupération des produits');
+        // Charger les produits
+        const productsResponse = await fetch('/api/products');
+        const galleryResponse = await fetch('/api/creations-gallery');
+        
+        if (!productsResponse.ok || !galleryResponse.ok) {
+          throw new Error('Erreur lors de la récupération des créations');
         }
         
-        const data = await response.json();
+        const products: Product[] = await productsResponse.json();
+        const galleryItems: GalleryItem[] = await galleryResponse.json();
         
         // Filtrer uniquement les produits à afficher dans créations
-        const creationsProducts = data.filter((product: Product) => 
-          product.showInCreations !== false
-        );
+        const creationsProducts = products
+          .filter((product) => product.showInCreations !== false)
+          .map((product) => ({
+            id: product.id,
+            name: product.name,
+            image: product.image,
+            categories: product.categories || [],
+          }));
         
-        setCreations(creationsProducts);
+        // Transformer les items de la galerie en format commun
+        const galleryCreations = galleryItems.map((item) => ({
+          id: `gallery-${item.id}`,
+          name: item.title,
+          image: item.image,
+          categories: item.categories || [],
+        }));
+        
+        // Combiner les deux listes
+        const allCreations = [...creationsProducts, ...galleryCreations];
+        
+        setCreations(allCreations);
       } catch (error) {
         console.error('Erreur:', error);
       } finally {
@@ -47,6 +107,20 @@ export default function Creations() {
     
     fetchCreations();
   }, []);
+
+  // Filtrer les créations par catégorie
+  const filteredCreations = selectedCategory === 'all' 
+    ? creations 
+    : creations.filter(creation => 
+        creation.categories && creation.categories.includes(selectedCategory)
+      );
+
+  // Filtrer les catégories qui ont au moins une création
+  const categoriesWithItems = categories.filter(category => 
+    creations.some(creation => 
+      creation.categories && creation.categories.includes(category.id)
+    )
+  );
 
   return (
     <>
@@ -62,18 +136,51 @@ export default function Creations() {
               </p>
             </div>
 
+            {/* Filtres par catégorie */}
+            {categoriesWithItems.length > 0 && (
+              <div className="mb-8">
+                <div className="flex flex-wrap justify-center gap-3">
+                  <button
+                    onClick={() => setSelectedCategory('all')}
+                    className={`px-6 py-2 rounded-full font-medium transition-all ${
+                      selectedCategory === 'all'
+                        ? 'bg-[#a75120] text-white shadow-lg'
+                        : 'bg-white text-[#421500] hover:bg-[#a75120]/10 border-2 border-[#a75120]/20'
+                    }`}
+                  >
+                    Toutes
+                  </button>
+                  {categoriesWithItems.map((category) => (
+                    <button
+                      key={category.id}
+                      onClick={() => setSelectedCategory(category.id)}
+                      className={`px-6 py-2 rounded-full font-medium transition-all ${
+                        selectedCategory === category.id
+                          ? 'bg-[#a75120] text-white shadow-lg'
+                          : 'bg-white text-[#421500] hover:bg-[#a75120]/10 border-2 border-[#a75120]/20'
+                      }`}
+                    >
+                      {category.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {isLoading ? (
               <div className="text-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#a75120] mx-auto"></div>
                 <p className="mt-4 text-[#421500]/80">Chargement des créations...</p>
               </div>
-            ) : creations.length === 0 ? (
+            ) : filteredCreations.length === 0 ? (
               <div className="text-center py-12 text-[#421500]/70">
-                Aucune création à afficher pour le moment.
+                {selectedCategory === 'all' 
+                  ? 'Aucune création à afficher pour le moment.'
+                  : 'Aucune création dans cette catégorie.'}
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-8 mb-6">
-                {creations.map((creation, index) => (
+                {filteredCreations.map((creation, index) => (
                 <div 
                   key={index} 
                   className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer transform transition-all hover:scale-105 hover:shadow-xl border-2 border-transparent hover:border-[#a75120]/30"

@@ -92,12 +92,24 @@ export default function AdminDashboard() {
   const [predefinedSizes, setPredefinedSizes] = useState<PredefinedSize[]>([]);
   const [newPredefinedSizeName, setNewPredefinedSizeName] = useState('');
   
+  // États pour les parfums prédéfinis
+  const [predefinedFlavors, setPredefinedFlavors] = useState<{id: string; name: string}[]>([]);
+  const [newPredefinedFlavorName, setNewPredefinedFlavorName] = useState('');
+  
   // États pour les images des cartes d'accueil
   const [carte1File, setCarte1File] = useState<File | null>(null);
   const [carte2File, setCarte2File] = useState<File | null>(null);
   const [carte1Preview, setCarte1Preview] = useState<string>('/images/carteacc1.avif');
   const [carte2Preview, setCarte2Preview] = useState<string>('/images/carteacc2.avif');
   const [isUploadingCartes, setIsUploadingCartes] = useState(false);
+
+  // États pour la galerie créations
+  const [creationsGallery, setCreationsGallery] = useState<{ id: string; title: string; image: string; categories?: string[] }[]>([]);
+  const [newGalleryItem, setNewGalleryItem] = useState({ title: '', image: '', categories: [] as string[] });
+  const [galleryImageFile, setGalleryImageFile] = useState<File | null>(null);
+  const [galleryImagePreview, setGalleryImagePreview] = useState<string>('');
+  const [isAddingGalleryItem, setIsAddingGalleryItem] = useState(false);
+  const [newGalleryCategory, setNewGalleryCategory] = useState<string>('');
   
   // États pour la configuration du contenu
   const [, setContentConfig] = useState<ContentConfig>({
@@ -161,6 +173,9 @@ export default function AdminDashboard() {
           fetchCategories();
           // Charger les tailles prédéfinies
           fetchPredefinedSizes();
+          fetchPredefinedFlavors();
+          // Charger la galerie créations
+          fetchCreationsGallery();
           // Charger la configuration du contenu
           fetchContentConfig();
         } else {
@@ -242,6 +257,33 @@ export default function AdminDashboard() {
       }
     } catch (error) {
       console.error('Erreur lors du chargement des tailles prédéfinies:', error);
+    }
+  };
+
+  const fetchPredefinedFlavors = async () => {
+    try {
+      const response = await fetch('/api/predefined-flavors');
+      
+      if (response.ok) {
+        const flavors = await response.json();
+        setPredefinedFlavors(flavors);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des parfums prédéfinis:', error);
+    }
+  };
+
+  // Fonction pour récupérer les images de la galerie créations
+  const fetchCreationsGallery = async () => {
+    try {
+      const response = await fetch('/api/creations-gallery');
+      
+      if (response.ok) {
+        const items = await response.json();
+        setCreationsGallery(items);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement de la galerie:', error);
     }
   };
 
@@ -727,6 +769,113 @@ export default function AdminDashboard() {
     }
   };
 
+  // ==================== GESTION DE LA GALERIE CRÉATIONS ====================
+  
+  // Gérer le changement d'image de la galerie
+  const handleGalleryImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setGalleryImageFile(file);
+      
+      // Créer un aperçu de l'image
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setGalleryImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Ajouter une image à la galerie
+  const handleAddGalleryItem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!newGalleryItem.title || !galleryImageFile) {
+      setErrorMessage('Titre et image requis');
+      return;
+    }
+
+    try {
+      setIsAddingGalleryItem(true);
+      setErrorMessage('');
+      
+      // Upload de l'image vers Cloudinary
+      const formData = new FormData();
+      formData.append('file', galleryImageFile);
+      
+      const uploadResponse = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!uploadResponse.ok) {
+        throw new Error('Erreur lors de l\'upload de l\'image');
+      }
+      
+      const uploadData = await uploadResponse.json();
+      const imageUrl = uploadData.imageUrl;
+      
+      // Ajouter l'image à la galerie créations avec les catégories
+      const response = await fetch('/api/creations-gallery', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: newGalleryItem.title,
+          image: imageUrl,
+          categories: newGalleryItem.categories
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erreur lors de l\'ajout de l\'image');
+      }
+      
+      // Recharger la galerie
+      await fetchCreationsGallery();
+      
+      // Réinitialiser le formulaire
+      setNewGalleryItem({ title: '', image: '', categories: [] });
+      setGalleryImageFile(null);
+      setGalleryImagePreview('');
+      
+      setSuccessMessage('Image ajoutée avec succès !');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (error) {
+      console.error(error);
+      setErrorMessage('Erreur lors de l\'ajout de l\'image');
+    } finally {
+      setIsAddingGalleryItem(false);
+    }
+  };
+
+  // Supprimer une image de la galerie
+  const handleDeleteGalleryItem = async (id: string) => {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette image ?')) {
+      return;
+    }
+    
+    try {
+      const response = await fetch(`/api/creations-gallery?id=${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erreur lors de la suppression');
+      }
+      
+      // Recharger la galerie
+      await fetchCreationsGallery();
+      
+      setSuccessMessage('Image supprimée avec succès !');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (error) {
+      console.error(error);
+      setErrorMessage('Erreur lors de la suppression');
+    }
+  };
+
   // Gestion des tailles prédéfinies
   const createPredefinedSize = async () => {
     if (!newPredefinedSizeName.trim()) {
@@ -781,6 +930,62 @@ export default function AdminDashboard() {
       setSuccessMessage(`Taille "${size.name}" supprimée avec succès`);
     } catch (error) {
       setErrorMessage('Erreur lors de la suppression de la taille');
+      console.error(error);
+    }
+  };
+
+  const createPredefinedFlavor = async () => {
+    if (!newPredefinedFlavorName.trim()) {
+      setErrorMessage('Veuillez saisir un nom pour le parfum');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/predefined-flavors', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: newPredefinedFlavorName.trim()
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la création du parfum prédéfini');
+      }
+
+      const newFlavor = await response.json();
+      setPredefinedFlavors([...predefinedFlavors, newFlavor]);
+      setNewPredefinedFlavorName('');
+      setSuccessMessage(`Parfum "${newFlavor.name}" créé avec succès.`);
+    } catch (error) {
+      setErrorMessage('Erreur lors de la création du parfum prédéfini');
+      console.error(error);
+    }
+  };
+
+  const deletePredefinedFlavor = async (flavorId: string) => {
+    const flavor = predefinedFlavors.find(f => f.id === flavorId);
+    if (!flavor) return;
+
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer le parfum "${flavor.name}" ?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/predefined-flavors?id=${flavorId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la suppression du parfum');
+      }
+
+      setPredefinedFlavors(predefinedFlavors.filter(f => f.id !== flavorId));
+      setSuccessMessage(`Parfum "${flavor.name}" supprimé avec succès`);
+    } catch (error) {
+      setErrorMessage('Erreur lors de la suppression du parfum');
       console.error(error);
     }
   };
@@ -871,20 +1076,78 @@ export default function AdminDashboard() {
     setSelectedAllergens(selectedAllergens.filter(a => a !== allergen));
   };
 
-  const addCustomFlavor = () => {
+  const addCustomFlavor = async () => {
     if (customFlavor.trim() && !flavors.includes(customFlavor.trim())) {
-      setFlavors([...flavors, customFlavor.trim()]);
+      const newFlavorName = customFlavor.trim();
+      
+      // Ajouter le parfum à la liste locale
+      setFlavors([...flavors, newFlavorName]);
       setCustomFlavor('');
+      
+      // Vérifier si ce parfum existe déjà dans les prédéfinis
+      const flavorExists = predefinedFlavors.some(f => f.name === newFlavorName);
+      
+      // Si le parfum n'existe pas, l'enregistrer dans Firebase
+      if (!flavorExists) {
+        try {
+          const response = await fetch('/api/predefined-flavors', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: newFlavorName
+            }),
+          });
+
+          if (response.ok) {
+            const newFlavor = await response.json();
+            setPredefinedFlavors([...predefinedFlavors, newFlavor]);
+          }
+        } catch (error) {
+          console.error('Erreur lors de l\'enregistrement du parfum:', error);
+          // On continue même si l'enregistrement échoue
+        }
+      }
     }
   };
 
-  const addCustomFlavorForEdit = () => {
+  const addCustomFlavorForEdit = async () => {
     if (customFlavor.trim() && selectedProduct && !(selectedProduct.flavors || []).includes(customFlavor.trim())) {
+      const newFlavorName = customFlavor.trim();
+      
+      // Ajouter le parfum au produit en cours d'édition
       setSelectedProduct({ 
         ...selectedProduct, 
-        flavors: [...(selectedProduct.flavors || []), customFlavor.trim()] 
+        flavors: [...(selectedProduct.flavors || []), newFlavorName] 
       });
       setCustomFlavor('');
+      
+      // Vérifier si ce parfum existe déjà dans les prédéfinis
+      const flavorExists = predefinedFlavors.some(f => f.name === newFlavorName);
+      
+      // Si le parfum n'existe pas, l'enregistrer dans Firebase
+      if (!flavorExists) {
+        try {
+          const response = await fetch('/api/predefined-flavors', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: newFlavorName
+            }),
+          });
+
+          if (response.ok) {
+            const newFlavor = await response.json();
+            setPredefinedFlavors([...predefinedFlavors, newFlavor]);
+          }
+        } catch (error) {
+          console.error('Erreur lors de l\'enregistrement du parfum:', error);
+          // On continue même si l'enregistrement échoue
+        }
+      }
     }
   };
 
@@ -1805,6 +2068,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
+
                   {sizes.length > 0 && (
                     <div className="mt-3 p-2 bg-[#f8f3eb] rounded-md border border-[#a75120]/30">
                       <p className="text-xs font-semibold text-[#421500] mb-1">Portions proposées :</p>
@@ -1930,13 +2194,48 @@ export default function AdminDashboard() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Saveurs (optionnel)
                   </label>
+                  <p className="text-xs text-gray-500 mb-3">Cochez les saveurs disponibles</p>
+                  
+                  {/* Parfums prédéfinis */}
+                  <div className="space-y-2 bg-gray-50 p-3 rounded-md mb-3">
+                    {predefinedFlavors.map((predefinedFlavor) => (
+                      <div key={predefinedFlavor.id} className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          id={`predefined-flavor-${predefinedFlavor.id}`}
+                          checked={flavors.includes(predefinedFlavor.name)}
+                          onChange={(e) => {
+                            if (!e.target.checked) {
+                              setFlavors(flavors.filter(f => f !== predefinedFlavor.name));
+                            } else {
+                              setFlavors([...flavors, predefinedFlavor.name]);
+                            }
+                          }}
+                          className="h-4 w-4 text-[#a75120] focus:ring-[#a75120] border-gray-300 rounded"
+                        />
+                        <label htmlFor={`predefined-flavor-${predefinedFlavor.id}`} className="text-sm text-gray-700 cursor-pointer flex-1">
+                          {predefinedFlavor.name}
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => deletePredefinedFlavor(predefinedFlavor.id)}
+                          className="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600"
+                          title={`Supprimer "${predefinedFlavor.name}"`}
+                        >
+                          Supprimer
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Ajouter un parfum personnalisé */}
                   <div className="flex gap-2 mb-2">
                     <input
                       type="text"
                       value={customFlavor}
                       onChange={(e) => setCustomFlavor(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomFlavor())}
-                      placeholder="Ex: Chocolat Passion"
+                      placeholder="Ajouter un parfum personnalisé (ex: Chocolat Passion)"
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
                     />
                     <button
@@ -1948,23 +2247,27 @@ export default function AdminDashboard() {
                     </button>
                   </div>
                   
-                  {flavors.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {flavors.map((flavor, index) => (
-                        <span
-                          key={index}
-                          className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-[#a75120]/10 text-[#a75120] border border-[#a75120]/20"
-                        >
-                          {flavor}
-                          <button
-                            type="button"
-                            onClick={() => setFlavors(flavors.filter((_, i) => i !== index))}
-                            className="ml-1 text-red-600 hover:text-red-900 font-bold"
+                  {/* Parfums personnalisés ajoutés */}
+                  {flavors.filter(f => !predefinedFlavors.some(pf => pf.name === f)).length > 0 && (
+                    <div>
+                      <p className="text-xs text-gray-500 mb-2">Parfums personnalisés :</p>
+                      <div className="flex flex-wrap gap-2">
+                        {flavors.filter(f => !predefinedFlavors.some(pf => pf.name === f)).map((flavor, index) => (
+                          <span
+                            key={index}
+                            className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-[#a75120]/10 text-[#a75120] border border-[#a75120]/20"
                           >
-                            ×
-                          </button>
-                        </span>
-                      ))}
+                            {flavor}
+                            <button
+                              type="button"
+                              onClick={() => setFlavors(flavors.filter((_, i) => flavors.indexOf(flavor) !== i))}
+                              className="ml-1 text-red-600 hover:text-red-900 font-bold"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -2073,7 +2376,9 @@ export default function AdminDashboard() {
                             </td>
                             <td className="px-2 py-4">
                               <div className="text-sm font-medium text-gray-900 truncate">{product.name}</div>
-                              <div className="text-xs text-gray-500 truncate">{product.description.substring(0, 60)}...</div>
+                              <div className="text-xs text-gray-500 truncate">
+                                {product.description.replace(/<[^>]*>/g, '').substring(0, 60)}...
+                              </div>
                             </td>
                             <td className="px-2 py-4">
                               <div className="text-sm text-gray-900">{product.price}</div>
@@ -2137,7 +2442,9 @@ export default function AdminDashboard() {
                           {/* Contenu */}
                           <div className="flex-1 min-w-0">
                             <h3 className="text-sm font-medium text-gray-900 truncate">{product.name}</h3>
-                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{product.description}</p>
+                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                              {product.description.replace(/<[^>]*>/g, '')}
+                            </p>
                             
                             <div className="mt-2 flex items-center justify-between">
                               <div className="flex items-center space-x-2">
@@ -2190,6 +2497,193 @@ export default function AdminDashboard() {
           </div>
         </div>
       </main>
+      {/* Section Galerie Créations */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-gradient-to-r from-[#a75120] to-[#8a421a] rounded-lg shadow-lg p-6 mb-8">
+          <h2 className="text-2xl font-bold text-white">📸 Galerie Créations</h2>
+          <p className="text-[#f1e9dc] mt-2">Ajoutez des images qui s'afficheront uniquement dans la page Créations</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Formulaire d'ajout d'image */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Ajouter une image</h3>
+              
+              <form onSubmit={handleAddGalleryItem} className="space-y-4">
+                <div>
+                  <label htmlFor="gallery-title" className="block text-sm font-medium text-gray-700 mb-1">
+                    Titre *
+                  </label>
+                  <input
+                    type="text"
+                    id="gallery-title"
+                    value={newGalleryItem.title}
+                    onChange={(e) => setNewGalleryItem({ ...newGalleryItem, title: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="gallery-image" className="block text-sm font-medium text-gray-700 mb-1">
+                    Image *
+                  </label>
+                  <input
+                    type="file"
+                    id="gallery-image"
+                    accept="image/*"
+                    onChange={handleGalleryImageChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                    required
+                  />
+                  {galleryImagePreview && (
+                    <div className="mt-2">
+                      <Image
+                        src={galleryImagePreview}
+                        alt="Aperçu"
+                        width={200}
+                        height={200}
+                        className="rounded-lg object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Catégories */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Catégories (optionnel)
+                  </label>
+                  <div className="space-y-2">
+                    {categories.map((category) => (
+                      <label key={category.id} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={newGalleryItem.categories.includes(category.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setNewGalleryItem({
+                                ...newGalleryItem,
+                                categories: [...newGalleryItem.categories, category.id]
+                              });
+                            } else {
+                              setNewGalleryItem({
+                                ...newGalleryItem,
+                                categories: newGalleryItem.categories.filter(id => id !== category.id)
+                              });
+                            }
+                          }}
+                          className="mr-2"
+                        />
+                        <span className="text-sm text-gray-700">{category.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                  
+                  {/* Ajouter une nouvelle catégorie */}
+                  <div className="mt-3 flex gap-2">
+                    <input
+                      type="text"
+                      value={newGalleryCategory}
+                      onChange={(e) => setNewGalleryCategory(e.target.value)}
+                      placeholder="Nouvelle catégorie"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (!newGalleryCategory.trim()) return;
+                        
+                        try {
+                          const response = await fetch('/api/categories', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name: newGalleryCategory.trim() }),
+                          });
+                          
+                          if (response.ok) {
+                            const newCat = await response.json();
+                            setCategories([...categories, newCat]);
+                            setNewGalleryItem({
+                              ...newGalleryItem,
+                              categories: [...newGalleryItem.categories, newCat.id]
+                            });
+                            setNewGalleryCategory('');
+                          }
+                        } catch (error) {
+                          console.error('Erreur lors de l\'ajout de la catégorie:', error);
+                        }
+                      }}
+                      className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 whitespace-nowrap"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isAddingGalleryItem}
+                  className="w-full bg-[#a75120] text-white py-2 px-4 rounded-md hover:bg-[#8a421a] disabled:bg-gray-400 disabled:cursor-not-allowed font-bold"
+                >
+                  {isAddingGalleryItem ? 'Ajout en cours...' : 'Ajouter l\'image'}
+                </button>
+              </form>
+            </div>
+          </div>
+
+          {/* Liste des images */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Images de la galerie</h3>
+              
+              {creationsGallery.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">Aucune image dans la galerie</p>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {creationsGallery.map((item) => (
+                    <div key={item.id} className="relative group">
+                      <div className="aspect-square rounded-lg overflow-hidden border-2 border-gray-200">
+                        <Image
+                          src={item.image}
+                          alt={item.title}
+                          width={200}
+                          height={200}
+                          className="object-cover w-full h-full"
+                        />
+                      </div>
+                      <p className="mt-2 text-sm text-gray-700 font-medium truncate">{item.title}</p>
+                      {item.categories && item.categories.length > 0 && (
+                        <div className="mt-1 flex flex-wrap gap-1">
+                          {item.categories.map((catId) => {
+                            const category = categories.find(c => c.id === catId);
+                            return category ? (
+                              <span key={catId} className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">
+                                {category.name}
+                              </span>
+                            ) : null;
+                          })}
+                        </div>
+                      )}
+                      <button
+                        onClick={() => handleDeleteGalleryItem(item.id)}
+                        className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                        title="Supprimer"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <Footer />
 
       {/* Modal de détails du produit */}

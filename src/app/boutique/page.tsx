@@ -103,6 +103,16 @@ export default function BoutiquePage() {
 
   const filteredProducts = getFilteredProducts();
 
+  // Filtrer les catégories qui ont au moins un produit
+  const categoriesWithProducts = categories.filter(category => 
+    products.some(product => {
+      if (product.categories && product.categories.length > 0) {
+        return product.categories.includes(category.id);
+      }
+      return product.category === category.id;
+    })
+  );
+
   const selectFlavor = (flavor: string) => {
     setSelectedFlavors([flavor]); // Une seule saveur à la fois
   };
@@ -292,8 +302,8 @@ export default function BoutiquePage() {
                 Tous les produits
               </button>
               
-              {/* Catégories dynamiques */}
-              {categories.map((category) => (
+              {/* Catégories dynamiques - uniquement celles qui ont des produits */}
+              {categoriesWithProducts.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}

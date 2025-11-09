@@ -58,6 +58,16 @@ export interface Product {
   [key: string]: unknown;
 }
 
+// Interface pour les images de la galerie créations
+export interface CreationGalleryItem {
+  id: string;
+  title: string;
+  image: string;
+  categories?: string[];
+  createdAt?: FirebaseTimestamp;
+  updatedAt?: FirebaseTimestamp;
+}
+
 // Interface pour les commandes
 export interface Order {
   id: string;
@@ -94,6 +104,7 @@ export interface Order {
 const productsCollection = collection(db, 'products');
 const categoriesCollection = collection(db, 'categories');
 const ordersCollection = collection(db, 'orders');
+const creationsGalleryCollection = collection(db, 'creationsGallery');
 
 // Récupérer tous les produits
 export const getAllProducts = async () => {
@@ -487,6 +498,68 @@ export const deleteOrder = async (id: string): Promise<boolean> => {
     return true;
   } catch (error) {
     console.error('Erreur lors de la suppression de la commande:', error);
+    return false;
+  }
+};
+
+// ==================== CREATIONS GALLERY ====================
+
+// Récupérer toutes les images de la galerie créations
+export const getAllCreationsGalleryItems = async () => {
+  const snapshot = await getDocs(creationsGalleryCollection);
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  })) as CreationGalleryItem[];
+};
+
+// Récupérer une image de la galerie par ID
+export const getCreationGalleryItemById = async (id: string) => {
+  const docRef = doc(db, 'creationsGallery', id);
+  const docSnap = await getDoc(docRef);
+  
+  if (docSnap.exists()) {
+    return {
+      id: docSnap.id,
+      ...docSnap.data()
+    } as CreationGalleryItem;
+  }
+  return null;
+};
+
+// Ajouter une nouvelle image à la galerie
+export const addCreationGalleryItem = async (item: Omit<CreationGalleryItem, 'id'>) => {
+  const docRef = await addDoc(creationsGalleryCollection, {
+    ...item,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  });
+  
+  return { id: docRef.id, ...item } as CreationGalleryItem;
+};
+
+// Mettre à jour une image de la galerie
+export const updateCreationGalleryItem = async (id: string, item: Partial<Omit<CreationGalleryItem, 'id'>>) => {
+  const docRef = doc(db, 'creationsGallery', id);
+  await updateDoc(docRef, {
+    ...item,
+    updatedAt: serverTimestamp()
+  });
+  
+  return {
+    id,
+    ...item
+  } as CreationGalleryItem;
+};
+
+// Supprimer une image de la galerie
+export const deleteCreationGalleryItem = async (id: string): Promise<boolean> => {
+  try {
+    const docRef = doc(db, 'creationsGallery', id);
+    await deleteDoc(docRef);
+    return true;
+  } catch (error) {
+    console.error('Erreur lors de la suppression de l\'image:', error);
     return false;
   }
 }; 
