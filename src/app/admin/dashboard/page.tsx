@@ -753,7 +753,6 @@ export default function AdminDashboard() {
       const newSize = await response.json();
       setPredefinedSizes([...predefinedSizes, newSize]);
       setNewPredefinedSizeName('');
-      setNewPredefinedSizePrice('');
       setSuccessMessage(`Taille "${newSize.name}" créée avec succès. Vous pouvez maintenant définir son prix.`);
     } catch (error) {
       setErrorMessage('Erreur lors de la création de la taille prédéfinie');
