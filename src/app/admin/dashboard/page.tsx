@@ -91,7 +91,6 @@ export default function AdminDashboard() {
   // États pour les tailles prédéfinies
   const [predefinedSizes, setPredefinedSizes] = useState<PredefinedSize[]>([]);
   const [newPredefinedSizeName, setNewPredefinedSizeName] = useState('');
-  const [newPredefinedSizePrice, setNewPredefinedSizePrice] = useState('');
   
   // États pour les images des cartes d'accueil
   const [carte1File, setCarte1File] = useState<File | null>(null);
