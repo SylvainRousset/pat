@@ -33,6 +33,7 @@ interface Product {
   description: string;
   showInCreations: boolean;
   showOnHome: boolean;
+  isNew?: boolean; // Badge "Nouveauté" sur le produit
   category?: string; // ID de la catégorie (pour compatibilité)
   categories?: string[]; // IDs des catégories (nouveau système)
   portions?: string;
@@ -69,6 +70,7 @@ export default function AdminDashboard() {
     description: '',
     showInCreations: true,
     showOnHome: true,
+    isNew: false,
     category: '',
     flavorManagementType: 'standard'
   });
@@ -728,8 +730,8 @@ export default function AdminDashboard() {
 
   // Gestion des tailles prédéfinies
   const createPredefinedSize = async () => {
-    if (!newPredefinedSizeName.trim() || !newPredefinedSizePrice.trim()) {
-      setErrorMessage('Veuillez saisir un nom et un prix pour la taille');
+    if (!newPredefinedSizeName.trim()) {
+      setErrorMessage('Veuillez saisir un nom pour la taille');
       return;
     }
 
@@ -741,7 +743,7 @@ export default function AdminDashboard() {
         },
         body: JSON.stringify({
           name: newPredefinedSizeName.trim(),
-          price: newPredefinedSizePrice.trim()
+          price: '0' // Prix par défaut, sera modifié après
         }),
       });
 
@@ -753,7 +755,7 @@ export default function AdminDashboard() {
       setPredefinedSizes([...predefinedSizes, newSize]);
       setNewPredefinedSizeName('');
       setNewPredefinedSizePrice('');
-      setSuccessMessage(`Taille "${newSize.name}" créée avec succès`);
+      setSuccessMessage(`Taille "${newSize.name}" créée avec succès. Vous pouvez maintenant définir son prix.`);
     } catch (error) {
       setErrorMessage('Erreur lors de la création de la taille prédéfinie');
       console.error(error);
@@ -1029,7 +1031,8 @@ export default function AdminDashboard() {
         image: '',
         description: '',
         showInCreations: true,
-        showOnHome: true
+        showOnHome: true,
+        isNew: false
       });
       setImageFile(null);
       setImagePreview('');
@@ -1117,12 +1120,20 @@ export default function AdminDashboard() {
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <h1 className="text-2xl font-semibold text-gray-900">Tableau de bord</h1>
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
-          >
-            Déconnexion
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => router.push('/admin/orders')}
+              className="px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#a75120] font-medium transition-colors"
+            >
+              Gestion des commandes
+            </button>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
+            >
+              Déconnexion
+            </button>
+          </div>
         </div>
       </header>
       
@@ -1776,35 +1787,22 @@ export default function AdminDashboard() {
                   {/* Ajout de nouvelle taille prédéfinie */}
                   <div className="mt-4 p-3 bg-amber-50 rounded-md border border-amber-200">
                     <p className="text-sm font-medium text-amber-700 mb-2">Ajouter une nouvelle taille personnalisée</p>
-                    <div className="space-y-3">
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={newPredefinedSizeName}
-                          onChange={(e) => setNewPredefinedSizeName(e.target.value)}
-                          placeholder="ex: 12 pièces mignardises"
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120]"
-                        />
-                        <input
-                          type="text"
-                          value={newPredefinedSizePrice}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            // Permettre seulement les chiffres et un point
-                            if (value === '' || /^\d*\.?\d*$/.test(value)) {
-                              setNewPredefinedSizePrice(value);
-                            }
-                          }}
-                          placeholder="Prix (€)"
-                          className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120]"
-                        />
-                      </div>
+                    <p className="text-xs text-gray-600 mb-3">Créez la taille, puis définissez son prix dans la liste ci-dessous</p>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={newPredefinedSizeName}
+                        onChange={(e) => setNewPredefinedSizeName(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && createPredefinedSize()}
+                        placeholder="ex: 12 pièces mignardises"
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120]"
+                      />
                       <button
                         type="button"
                         onClick={createPredefinedSize}
-                        className="px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a] w-fit"
+                        className="px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a] font-medium"
                       >
-                        Créer et sauvegarder
+                        Créer
                       </button>
                     </div>
                   </div>
@@ -1898,110 +1896,6 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                {/* Catégories */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Catégories
-                  </label>
-                  <p className="text-xs text-gray-500 mb-3">
-                    Sélectionnez une ou plusieurs catégories pour ce produit
-                  </p>
-                  
-                  {/* Catégories disponibles */}
-                  {categories.length > 0 ? (
-                    <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto p-3 bg-gray-50 rounded-md mb-3">
-                      {categories.map((category) => (
-                        <div key={category.id} className="flex items-center justify-between p-2 bg-white rounded border">
-                          <div className="flex items-center">
-                            <input
-                              type="checkbox"
-                              id={`category-${category.id}`}
-                              checked={selectedCategories.includes(category.id)}
-                              onChange={() => toggleCategory(category.id)}
-                              className="h-4 w-4 text-[#a75120] focus:ring-[#a75120] border-gray-300 rounded"
-                            />
-                            <label htmlFor={`category-${category.id}`} className="ml-2 block text-sm text-gray-700 cursor-pointer">
-                              {category.name}
-                            </label>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => deleteCategory(category.id)}
-                            className="text-red-500 hover:text-red-700 p-1"
-                            title={`Supprimer la catégorie "${category.name}"`}
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-gray-500 italic mb-3">Aucune catégorie disponible. Créez-en une ci-dessous.</p>
-                  )}
-
-                  {/* Créer une nouvelle catégorie */}
-                  {!isCreatingNewCategory ? (
-                    <button
-                      type="button"
-                      onClick={() => setIsCreatingNewCategory(true)}
-                      className="text-sm text-[#a75120] hover:text-[#8a421a] font-medium"
-                    >
-                      + Nouvelle catégorie
-                    </button>
-                  ) : (
-                    <div className="flex gap-2 mb-3">
-                      <input
-                        type="text"
-                        value={newCategoryName}
-                        onChange={(e) => setNewCategoryName(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), createNewCategory())}
-                        placeholder="Nom de la nouvelle catégorie"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#a75120] focus:border-[#a75120] text-sm"
-                      />
-                      <button
-                        type="button"
-                        onClick={createNewCategory}
-                        className="px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a] font-bold"
-                      >
-                        Créer
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsCreatingNewCategory(false);
-                          setNewCategoryName('');
-                        }}
-                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
-                      >
-                        Annuler
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Liste des catégories sélectionnées */}
-                  {selectedCategories.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {selectedCategories.map((categoryId) => {
-                        const category = categories.find(c => c.id === categoryId);
-                        return category ? (
-                          <span key={categoryId} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-amber-100 text-amber-800">
-                            {category.name}
-                            <button
-                              type="button"
-                              onClick={() => toggleCategory(categoryId)}
-                              className="ml-1 text-amber-600 hover:text-amber-900 font-bold"
-                            >
-                              ×
-                            </button>
-                          </span>
-                        ) : null;
-                      })}
-                    </div>
-                  )}
-                </div>
-
                 {/* Type de gestion des saveurs */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -2089,6 +1983,20 @@ export default function AdminDashboard() {
                     />
                     <label htmlFor="showInCreations" className="ml-2 block text-sm text-gray-700">
                       Afficher dans la galerie Créations
+                    </label>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="isNew"
+                      name="isNew"
+                      checked={newProduct.isNew || false}
+                      onChange={handleCheckboxChange}
+                      className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="isNew" className="ml-2 block text-sm text-gray-700">
+                      Afficher le badge &quot;Nouveauté&quot;
                     </label>
                   </div>
                 </div>
@@ -2567,6 +2475,19 @@ export default function AdminDashboard() {
                         />
                         <label htmlFor="detail-show-in-creations" className="ml-2 block text-sm text-gray-700">
                           Afficher dans créations
+                        </label>
+                      </div>
+                      
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedProduct.isNew || false}
+                          onChange={(e) => setSelectedProduct({ ...selectedProduct, isNew: e.target.checked })}
+                          className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                          id="detail-is-new"
+                        />
+                        <label htmlFor="detail-is-new" className="ml-2 block text-sm text-gray-700">
+                          Afficher le badge &quot;Nouveauté&quot;
                         </label>
                       </div>
                     </div>

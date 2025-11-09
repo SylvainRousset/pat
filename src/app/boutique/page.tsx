@@ -15,6 +15,7 @@ interface Product {
   price: string;
   image: string;
   description: string;
+  isNew?: boolean; // Badge "Nouveauté" sur le produit
   category?: string; // ID de la catégorie (pour compatibilité)
   categories?: string[]; // IDs des catégories (nouveau système)
   flavors?: string[];
@@ -327,16 +328,16 @@ export default function BoutiquePage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
               {filteredProducts.map((product) => (
-                <div key={product.id} className="bg-[#FAF0E6] rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105 h-full flex flex-col">
+                <div key={product.id} className="bg-[#FAF0E6] rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105 h-full flex flex-col relative">
                   {/* Notification d'ajout au panier */}
                   {addedToCart[product.id] && (
-                    <div className="absolute top-2 right-2 z-10 bg-green-500 text-white text-xs py-1 px-2 rounded-full animate-bounce">
+                    <div className="absolute top-12 right-2 z-20 bg-green-500 text-white text-xs py-1 px-2 rounded-full animate-bounce">
                       Ajouté !
                     </div>
                   )}
 
                   {/* Image du produit */}
-                  <Link href={`/produit/${product.id}`} className="block relative flex-shrink-0">
+                  <Link href={`/produit/${product.id}`} className="block flex-shrink-0">
                     <div className="relative w-full h-48 overflow-hidden">
                       <Image
                         src={product.image}
@@ -346,6 +347,11 @@ export default function BoutiquePage() {
                         className="object-cover hover:scale-110 transition-transform duration-300 w-full h-full"
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                       />
+                      {product.isNew && (
+                        <div className="absolute top-2 right-2 bg-[#D9844A] text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">
+                          Nouveauté
+                        </div>
+                      )}
                     </div>
                   </Link>
 

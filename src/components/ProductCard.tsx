@@ -9,7 +9,7 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="group relative">
-      <div className="w-[200px] h-[200px] sm:w-[220px] sm:h-[220px] lg:w-[240px] lg:h-[240px] xl:w-[260px] xl:h-[260px] 2xl:w-[280px] 2xl:h-[280px] overflow-hidden rounded-lg bg-gray-200 group-hover:opacity-75 mx-auto">
+      <div className="w-[200px] h-[200px] sm:w-[220px] sm:h-[220px] lg:w-[240px] lg:h-[240px] xl:w-[260px] xl:h-[260px] 2xl:w-[280px] 2xl:h-[280px] overflow-hidden rounded-lg bg-gray-200 group-hover:opacity-75 mx-auto relative">
         <Image
           src={product.image}
           alt={product.name}
@@ -17,6 +17,11 @@ export default function ProductCard({ product }: ProductCardProps) {
           height={280}
           className="h-full w-full object-cover object-center lg:h-full lg:w-full"
         />
+        {product.isNew && (
+          <div className="absolute top-2 right-2 bg-[#D9844A] text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+            Nouveauté
+          </div>
+        )}
       </div>
       <div className="mt-4 flex justify-between">
         <div>

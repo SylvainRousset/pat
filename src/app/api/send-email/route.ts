@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import mailjet from 'node-mailjet';
+import { addOrder } from '@/lib/firebaseAdmin';
 
 // Types pour les données
 interface ClientInfo {
@@ -278,6 +279,65 @@ Ce message a été envoyé depuis le formulaire de contact du site web Pâtisser
       console.log('Email admin:', ADMIN_EMAIL);
       console.log('Email client:', clientInfo.email);
       
+      // Sauvegarder la commande dans Firebase AVANT d'envoyer l'email
+      try {
+        console.log('Sauvegarde de la commande dans Firebase...');
+        const savedOrder = await addOrder({
+          orderId: orderId,
+          clientInfo: {
+            nom: clientInfo.nom || '',
+            prenom: clientInfo.prenom || '',
+            telephone: clientInfo.telephone || '',
+            email: clientInfo.email
+          },
+          orderDetails: {
+            dateRetrait: orderDetails.dateRetrait,
+            heureRetrait: orderDetails.heureRetrait || ''
+          },
+          cartItems: cartItems.map(item => {
+            // Créer l'objet de base
+            const cartItem: {
+              id: string | number;
+              name: string;
+              price: string;
+              image: string;
+              quantity: number;
+              flavor?: string;
+              selectedFlavors?: string[];
+              portions?: string;
+            } = {
+              id: item.name,
+              name: item.name,
+              price: item.price,
+              image: item.image || '',
+              quantity: item.quantity
+            };
+            
+            // Ajouter les champs optionnels seulement s'ils existent
+            if (item.flavor) cartItem.flavor = item.flavor;
+            if (item.selectedFlavors && item.selectedFlavors.length > 0) {
+              cartItem.selectedFlavors = item.selectedFlavors;
+            }
+            if (item.portions) cartItem.portions = item.portions;
+            
+            return cartItem;
+          }),
+          totalPrice: totalPrice,
+          status: 'pending' // Statut initial
+        });
+        console.log('✅ Commande sauvegardée avec succès dans Firebase, ID:', savedOrder.id);
+      } catch (dbError) {
+        console.error('❌ ERREUR lors de la sauvegarde dans Firebase:', dbError);
+        // Retourner une erreur car c'est critique
+        return NextResponse.json(
+          { 
+            error: 'Erreur lors de la sauvegarde de la commande',
+            details: dbError instanceof Error ? dbError.message : 'Erreur inconnue'
+          },
+          { status: 500 }
+        );
+      }
+      
       try {
         console.log('Tentative d\'envoi des emails de commande via Mailjet...');
         
@@ -464,7 +524,7 @@ L'équipe Coquelicot`,
           ]
         });
         
-        console.log('Emails de commande envoyés avec succès via Mailjet!');
+        console.log('✅ Emails de commande envoyés avec succès via Mailjet!');
         console.log('Réponse Mailjet:', JSON.stringify(result.body));
         
         return NextResponse.json({ 

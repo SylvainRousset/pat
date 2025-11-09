@@ -41,6 +41,7 @@ export interface Product {
   description: string;
   showInCreations: boolean;
   showOnHome: boolean;
+  isNew?: boolean; // Badge "Nouveauté" sur le produit
   category?: string; // ID de la catégorie (pour compatibilité)
   categories?: string[]; // IDs des catégories (nouveau système)
   createdAt?: FirebaseTimestamp;
@@ -57,9 +58,42 @@ export interface Product {
   [key: string]: unknown;
 }
 
+// Interface pour les commandes
+export interface Order {
+  id: string;
+  orderId: string; // ID unique de commande (ex: CMD-123456)
+  clientInfo: {
+    nom: string;
+    prenom: string;
+    telephone: string;
+    email: string;
+  };
+  orderDetails: {
+    dateRetrait: string;
+    heureRetrait: string;
+  };
+  cartItems: Array<{
+    id: string | number;
+    name: string;
+    price: string;
+    image: string;
+    quantity: number;
+    slug?: string;
+    flavor?: string;
+    selectedFlavors?: string[];
+    portions?: string;
+  }>;
+  totalPrice: string;
+  status: 'pending' | 'confirmed' | 'ready' | 'completed' | 'cancelled'; // Statut de la commande
+  createdAt?: FirebaseTimestamp;
+  updatedAt?: FirebaseTimestamp;
+  [key: string]: unknown;
+}
+
 // Collections
 const productsCollection = collection(db, 'products');
 const categoriesCollection = collection(db, 'categories');
+const ordersCollection = collection(db, 'orders');
 
 // Récupérer tous les produits
 export const getAllProducts = async () => {
@@ -379,5 +413,80 @@ export const updateContentConfig = async (config: Partial<ContentConfig>): Promi
   } catch (error) {
     console.error('Erreur lors de la mise à jour de la configuration:', error);
     throw error;
+  }
+};
+
+// ===== FONCTIONS POUR LES COMMANDES =====
+
+// Récupérer toutes les commandes
+export const getAllOrders = async (): Promise<Order[]> => {
+  try {
+    const snapshot = await getDocs(ordersCollection);
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as Order[];
+  } catch (error) {
+    console.error('Erreur lors de la récupération des commandes:', error);
+    return [];
+  }
+};
+
+// Récupérer une commande par ID
+export const getOrderById = async (id: string): Promise<Order | null> => {
+  try {
+    const docRef = doc(db, 'orders', id);
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      return {
+        id: docSnap.id,
+        ...docSnap.data()
+      } as Order;
+    }
+    return null;
+  } catch (error) {
+    console.error('Erreur lors de la récupération de la commande:', error);
+    return null;
+  }
+};
+
+// Ajouter une nouvelle commande
+export const addOrder = async (order: Omit<Order, 'id'>): Promise<Order> => {
+  const docRef = await addDoc(ordersCollection, {
+    ...order,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  });
+  
+  return {
+    id: docRef.id,
+    ...order
+  } as Order;
+};
+
+// Mettre à jour une commande (notamment le statut)
+export const updateOrder = async (id: string, order: Partial<Order>): Promise<Order> => {
+  const docRef = doc(db, 'orders', id);
+  await updateDoc(docRef, {
+    ...order,
+    updatedAt: serverTimestamp()
+  });
+  
+  return {
+    id,
+    ...order
+  } as Order;
+};
+
+// Supprimer une commande
+export const deleteOrder = async (id: string): Promise<boolean> => {
+  try {
+    const docRef = doc(db, 'orders', id);
+    await deleteDoc(docRef);
+    return true;
+  } catch (error) {
+    console.error('Erreur lors de la suppression de la commande:', error);
+    return false;
   }
 }; 
