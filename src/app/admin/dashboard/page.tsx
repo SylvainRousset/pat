@@ -2469,7 +2469,7 @@ export default function AdminDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-gradient-to-r from-[#a75120] to-[#8a421a] rounded-lg shadow-lg p-6 mb-8">
           <h2 className="text-2xl font-bold text-white">📸 Galerie Créations</h2>
-          <p className="text-[#f1e9dc] mt-2">Ajoutez des images qui s'afficheront uniquement dans la page Créations</p>
+          <p className="text-[#f1e9dc] mt-2">Ajoutez des images qui s&apos;afficheront uniquement dans la page Créations</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
