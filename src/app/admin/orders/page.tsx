@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import Image from 'next/image';
+import ScrollToTop from '@/components/ScrollToTop';
 
 // Type pour les commandes
 interface Order {
@@ -322,23 +323,23 @@ export default function OrdersManagement() {
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-[#421500]">Gestion des Commandes</h1>
-              <p className="text-sm text-gray-600 mt-1">
+              <h1 className="text-xl sm:text-2xl font-bold text-[#421500]">Gestion des Commandes</h1>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1">
                 {filteredOrders.length} commande{filteredOrders.length > 1 ? 's' : ''}
               </p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
               <button
                 onClick={() => router.push('/admin/dashboard')}
-                className="px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a] font-medium transition-colors"
+                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a] font-medium transition-colors text-sm"
               >
                 Dashboard
               </button>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 font-medium transition-colors"
+                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 font-medium transition-colors text-sm"
               >
                 Déconnexion
               </button>
@@ -350,28 +351,28 @@ export default function OrdersManagement() {
       {/* Filtres */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Statistiques comptables */}
-        <div className="bg-gradient-to-r from-[#a75120] to-[#8a421a] rounded-lg shadow-lg p-6 mb-6 text-white">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-bold">📊 Récapitulatif Comptable</h3>
+        <div className="bg-gradient-to-r from-[#a75120] to-[#8a421a] rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 text-white">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+            <h3 className="text-base sm:text-lg font-bold">📊 Récapitulatif Comptable</h3>
             <button
               onClick={() => setShowStats(!showStats)}
-              className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-md text-sm font-medium transition-colors"
+              className="w-full sm:w-auto px-4 py-2 bg-white/20 hover:bg-white/30 rounded-md text-xs sm:text-sm font-medium transition-colors"
             >
               {showStats ? 'Masquer' : 'Afficher'} les détails
             </button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div className="bg-white/10 rounded-lg p-4">
-              <p className="text-sm opacity-90">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4">
+            <div className="bg-white/10 rounded-lg p-3 sm:p-4">
+              <p className="text-xs sm:text-sm opacity-90 line-clamp-2">
                 Total {selectedMonth !== 'all' ? months[parseInt(selectedMonth)] : ''} {selectedYear !== 'all' ? selectedYear : 'période filtrée'}
               </p>
-              <p className="text-3xl font-bold">{calculateTotal(filteredOrders).toFixed(2)} €</p>
+              <p className="text-2xl sm:text-3xl font-bold mt-2">{calculateTotal(filteredOrders).toFixed(2)} €</p>
               <p className="text-xs opacity-75 mt-1">{filteredOrders.length} commande{filteredOrders.length > 1 ? 's' : ''}</p>
             </div>
-            <div className="bg-white/10 rounded-lg p-4">
-              <p className="text-sm opacity-90">Total {selectedYear}</p>
-              <p className="text-3xl font-bold">
+            <div className="bg-white/10 rounded-lg p-3 sm:p-4">
+              <p className="text-xs sm:text-sm opacity-90">Total {selectedYear}</p>
+              <p className="text-2xl sm:text-3xl font-bold mt-2">
                 {calculateTotal(
                   orders.filter(o => {
                     if (!o.createdAt) return false;
@@ -380,23 +381,23 @@ export default function OrdersManagement() {
                 ).toFixed(2)} €
               </p>
             </div>
-            <div className="bg-white/10 rounded-lg p-4">
-              <p className="text-sm opacity-90">Total général</p>
-              <p className="text-3xl font-bold">{calculateTotal(orders).toFixed(2)} €</p>
+            <div className="bg-white/10 rounded-lg p-3 sm:p-4 sm:col-span-2 lg:col-span-1">
+              <p className="text-xs sm:text-sm opacity-90">Total général</p>
+              <p className="text-2xl sm:text-3xl font-bold mt-2">{calculateTotal(orders).toFixed(2)} €</p>
               <p className="text-xs opacity-75 mt-1">{orders.length} commande{orders.length > 1 ? 's' : ''}</p>
             </div>
           </div>
 
           {showStats && (
-            <div className="bg-white/10 rounded-lg p-4">
-              <h4 className="font-semibold mb-3">Détails par mois</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="bg-white/10 rounded-lg p-3 sm:p-4">
+              <h4 className="text-sm sm:text-base font-semibold mb-3">Détails par mois</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
                 {getMonthlyStats().map(([key, data]) => {
                   const [year, month] = key.split('-');
                   return (
                     <div key={key} className="bg-white/10 rounded p-3">
-                      <p className="font-medium">{months[parseInt(month) - 1]} {year}</p>
-                      <p className="text-2xl font-bold">{data.total.toFixed(2)} €</p>
+                      <p className="text-sm font-medium">{months[parseInt(month) - 1]} {year}</p>
+                      <p className="text-xl sm:text-2xl font-bold mt-1">{data.total.toFixed(2)} €</p>
                       <p className="text-xs opacity-75">{data.count} commande{data.count > 1 ? 's' : ''}</p>
                     </div>
                   );
@@ -408,15 +409,15 @@ export default function OrdersManagement() {
 
         {/* Filtres période */}
         <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
-          <h3 className="text-sm font-medium text-gray-700 mb-3">📅 Filtrer par période</h3>
-          <div className="flex flex-wrap gap-3">
+          <h3 className="text-xs sm:text-sm font-medium text-gray-700 mb-3">📅 Filtrer par période</h3>
+          <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3">
             <select
               value={selectedYear}
               onChange={(e) => {
                 setSelectedYear(e.target.value);
                 setSelectedMonth('all');
               }}
-              className="px-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#a75120]"
+              className="w-full sm:w-auto px-3 sm:px-4 py-2 border border-gray-300 rounded-md text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#a75120]"
             >
               <option value="all">Toutes les années</option>
               {availableYears.map(year => (
@@ -427,7 +428,7 @@ export default function OrdersManagement() {
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#a75120]"
+              className="w-full sm:w-auto px-3 sm:px-4 py-2 border border-gray-300 rounded-md text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#a75120]"
               disabled={selectedYear === 'all'}
             >
               <option value="all">Tous les mois</option>
@@ -442,7 +443,7 @@ export default function OrdersManagement() {
                   setSelectedYear(new Date().getFullYear().toString());
                   setSelectedMonth('all');
                 }}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md text-sm hover:bg-gray-300 transition-colors"
+                className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-gray-200 text-gray-700 rounded-md text-xs sm:text-sm hover:bg-gray-300 transition-colors"
               >
                 Réinitialiser
               </button>
@@ -451,58 +452,63 @@ export default function OrdersManagement() {
         </div>
 
         {/* Filtres statut */}
-        <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-          <h3 className="text-sm font-medium text-gray-700 mb-3">🏷️ Filtrer par statut</h3>
-          <div className="flex flex-wrap gap-2">
+        <div className="bg-white rounded-lg shadow-sm p-4 mb-4 sm:mb-6">
+          <h3 className="text-xs sm:text-sm font-medium text-gray-700 mb-3">🏷️ Filtrer par statut</h3>
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
             <button
               onClick={() => setFilterStatus('all')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                 filterStatus === 'all'
                   ? 'bg-[#a75120] text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              Toutes ({orders.length})
+              <span className="hidden sm:inline">Toutes ({orders.length})</span>
+              <span className="sm:hidden">Toutes</span>
             </button>
             <button
               onClick={() => setFilterStatus('pending')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                 filterStatus === 'pending'
                   ? 'bg-yellow-500 text-white'
                   : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
               }`}
             >
-              En attente ({orders.filter(o => o.status === 'pending').length})
+              <span className="hidden sm:inline">En attente ({orders.filter(o => o.status === 'pending').length})</span>
+              <span className="sm:hidden">Attente</span>
             </button>
             <button
               onClick={() => setFilterStatus('confirmed')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                 filterStatus === 'confirmed'
                   ? 'bg-blue-500 text-white'
                   : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
               }`}
             >
-              Confirmées ({orders.filter(o => o.status === 'confirmed').length})
+              <span className="hidden sm:inline">Confirmées ({orders.filter(o => o.status === 'confirmed').length})</span>
+              <span className="sm:hidden">Confirmées</span>
             </button>
             <button
               onClick={() => setFilterStatus('ready')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
                 filterStatus === 'ready'
                   ? 'bg-green-500 text-white'
                   : 'bg-green-100 text-green-800 hover:bg-green-200'
               }`}
             >
-              Prêtes ({orders.filter(o => o.status === 'ready').length})
+              <span className="hidden sm:inline">Prêtes ({orders.filter(o => o.status === 'ready').length})</span>
+              <span className="sm:hidden">Prêtes</span>
             </button>
             <button
               onClick={() => setFilterStatus('completed')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors col-span-2 sm:col-span-1 ${
                 filterStatus === 'completed'
                   ? 'bg-gray-500 text-white'
                   : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
               }`}
             >
-              Terminées ({orders.filter(o => o.status === 'completed').length})
+              <span className="hidden sm:inline">Terminées ({orders.filter(o => o.status === 'completed').length})</span>
+              <span className="sm:hidden">Terminées</span>
             </button>
           </div>
         </div>
@@ -533,11 +539,11 @@ export default function OrdersManagement() {
                     {/* En-tête Année */}
                     <button
                       onClick={() => toggleYear(year)}
-                      className="w-full bg-gradient-to-r from-[#421500] to-[#632100] text-white p-5 flex justify-between items-center hover:from-[#532100] hover:to-[#742400] transition-colors"
+                      className="w-full bg-gradient-to-r from-[#421500] to-[#632100] text-white p-3 sm:p-5 flex justify-between items-center hover:from-[#532100] hover:to-[#742400] transition-colors"
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 sm:gap-3">
                         <svg 
-                          className={`w-6 h-6 transition-transform ${isYearExpanded ? 'rotate-90' : ''}`}
+                          className={`w-5 h-5 sm:w-6 sm:h-6 transition-transform flex-shrink-0 ${isYearExpanded ? 'rotate-90' : ''}`}
                           fill="none" 
                           stroke="currentColor" 
                           viewBox="0 0 24 24"
@@ -545,13 +551,13 @@ export default function OrdersManagement() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                         <div className="text-left">
-                          <h2 className="text-2xl font-bold">{year}</h2>
-                          <p className="text-sm opacity-90">{yearOrders.length} commande{yearOrders.length > 1 ? 's' : ''}</p>
+                          <h2 className="text-xl sm:text-2xl font-bold">{year}</h2>
+                          <p className="text-xs sm:text-sm opacity-90">{yearOrders.length} commande{yearOrders.length > 1 ? 's' : ''}</p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm opacity-90">Total annuel</p>
-                        <p className="text-3xl font-bold">{yearTotal.toFixed(2)} €</p>
+                        <p className="text-xs sm:text-sm opacity-90">Total annuel</p>
+                        <p className="text-xl sm:text-3xl font-bold">{yearTotal.toFixed(2)} €</p>
                       </div>
                     </button>
 
@@ -572,11 +578,11 @@ export default function OrdersManagement() {
                                 {/* En-tête Mois */}
                                 <button
                                   onClick={() => toggleMonth(monthKey)}
-                                  className="w-full bg-gradient-to-r from-[#a75120] to-[#8a421a] text-white p-4 flex justify-between items-center hover:from-[#8a421a] hover:to-[#6d3415] transition-colors"
+                                  className="w-full bg-gradient-to-r from-[#a75120] to-[#8a421a] text-white p-3 sm:p-4 flex justify-between items-center hover:from-[#8a421a] hover:to-[#6d3415] transition-colors"
                                 >
-                                  <div className="flex items-center gap-3">
+                                  <div className="flex items-center gap-2 sm:gap-3">
                                     <svg 
-                                      className={`w-5 h-5 transition-transform ${isMonthExpanded ? 'rotate-90' : ''}`}
+                                      className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform flex-shrink-0 ${isMonthExpanded ? 'rotate-90' : ''}`}
                                       fill="none" 
                                       stroke="currentColor" 
                                       viewBox="0 0 24 24"
@@ -584,13 +590,13 @@ export default function OrdersManagement() {
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                     </svg>
                                     <div className="text-left">
-                                      <h3 className="text-lg font-bold">{monthName}</h3>
+                                      <h3 className="text-base sm:text-lg font-bold">{monthName}</h3>
                                       <p className="text-xs opacity-90">{monthOrders.length} commande{monthOrders.length > 1 ? 's' : ''}</p>
                                     </div>
                                   </div>
                                   <div className="text-right">
                                     <p className="text-xs opacity-90">Total</p>
-                                    <p className="text-xl font-bold">{monthTotal.toFixed(2)} €</p>
+                                    <p className="text-lg sm:text-xl font-bold">{monthTotal.toFixed(2)} €</p>
                                   </div>
                                 </button>
 
@@ -606,53 +612,53 @@ export default function OrdersManagement() {
                   setIsDetailsModalOpen(true);
                 }}
               >
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="text-lg font-bold text-[#421500]">
+                <div className="p-3 sm:p-4 lg:p-6">
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-2 sm:gap-4 mb-3 sm:mb-4">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base sm:text-lg font-bold text-[#421500] truncate">
                         Commande #{order.orderId}
                       </h3>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-xs sm:text-sm text-gray-600 truncate">
                         {order.clientInfo.prenom} {order.clientInfo.nom}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-500 mt-1 hidden sm:block">
                         Passée le {formatDate(order.createdAt)}
                       </p>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                    <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap flex-shrink-0 ${getStatusColor(order.status)}`}>
                       {getStatusText(order.status)}
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 text-xs sm:text-sm mb-3 sm:mb-4">
                     <div>
-                      <p className="text-gray-500">Date de retrait</p>
-                      <p className="font-medium text-gray-900">{order.orderDetails.dateRetrait}</p>
+                      <p className="text-gray-500 text-xs">Date de retrait</p>
+                      <p className="font-medium text-gray-900 truncate">{order.orderDetails.dateRetrait}</p>
                     </div>
                     <div>
-                      <p className="text-gray-500">Heure</p>
+                      <p className="text-gray-500 text-xs">Heure</p>
                       <p className="font-medium text-gray-900">{order.orderDetails.heureRetrait}</p>
                     </div>
                     <div>
-                      <p className="text-gray-500">Articles</p>
+                      <p className="text-gray-500 text-xs">Articles</p>
                       <p className="font-medium text-gray-900">
                         {order.cartItems.reduce((sum, item) => sum + item.quantity, 0)} article{order.cartItems.reduce((sum, item) => sum + item.quantity, 0) > 1 ? 's' : ''}
                       </p>
                     </div>
                     <div>
-                      <p className="text-gray-500">Total</p>
+                      <p className="text-gray-500 text-xs">Total</p>
                       <p className="font-bold text-[#D9844A]">{formatPrice(order.totalPrice)}</p>
                     </div>
                   </div>
 
-                  <div className="mt-4 flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {order.status === 'pending' && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           updateOrderStatus(order.id, 'confirmed');
                         }}
-                        className="px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition-colors"
+                        className="flex-1 sm:flex-none px-3 py-1.5 bg-blue-500 text-white text-xs sm:text-sm rounded-md hover:bg-blue-600 transition-colors"
                       >
                         Confirmer
                       </button>
@@ -663,7 +669,7 @@ export default function OrdersManagement() {
                           e.stopPropagation();
                           updateOrderStatus(order.id, 'ready');
                         }}
-                        className="px-3 py-1 bg-green-500 text-white text-sm rounded-md hover:bg-green-600 transition-colors"
+                        className="flex-1 sm:flex-none px-3 py-1.5 bg-green-500 text-white text-xs sm:text-sm rounded-md hover:bg-green-600 transition-colors"
                       >
                         Marquer prête
                       </button>
@@ -674,7 +680,7 @@ export default function OrdersManagement() {
                           e.stopPropagation();
                           updateOrderStatus(order.id, 'completed');
                         }}
-                        className="px-3 py-1 bg-gray-500 text-white text-sm rounded-md hover:bg-gray-600 transition-colors"
+                        className="flex-1 sm:flex-none px-3 py-1.5 bg-gray-500 text-white text-xs sm:text-sm rounded-md hover:bg-gray-600 transition-colors"
                       >
                         Marquer terminée
                       </button>
@@ -700,32 +706,32 @@ export default function OrdersManagement() {
 
       {/* Modal de détails */}
       {isDetailsModalOpen && selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-[#421500]">
-                Détails de la commande #{selectedOrder.orderId}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-lg sm:rounded-xl shadow-2xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto my-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center z-10">
+              <h2 className="text-lg sm:text-2xl font-bold text-[#421500] pr-2 truncate">
+                Détails #{selectedOrder.orderId}
               </h2>
               <button
                 onClick={() => setIsDetailsModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600 text-2xl"
+                className="text-gray-400 hover:text-gray-600 text-2xl sm:text-3xl flex-shrink-0 w-8 h-8 flex items-center justify-center"
               >
                 ×
               </button>
             </div>
 
-            <div className="p-6 space-y-6">
+            <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
               {/* Statut */}
               <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">Statut de la commande</h3>
-                <div className="flex gap-2">
+                <h3 className="text-xs sm:text-sm font-medium text-gray-700 mb-2 sm:mb-3">Statut de la commande</h3>
+                <div className="grid grid-cols-2 sm:flex gap-2">
                   {(['pending', 'confirmed', 'ready', 'completed', 'cancelled'] as const).map((status) => (
                     <button
                       key={status}
                       onClick={() => updateOrderStatus(selectedOrder.id, status)}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                      className={`px-2 sm:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-colors ${
                         selectedOrder.status === status
-                          ? getStatusColor(status) + ' ring-2 ring-offset-2 ring-gray-400'
+                          ? getStatusColor(status) + ' ring-2 ring-offset-1 sm:ring-offset-2 ring-gray-400'
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
                     >
@@ -736,90 +742,90 @@ export default function OrdersManagement() {
               </div>
 
               {/* Informations client */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Informations client</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">Informations client</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <p className="text-sm text-gray-500">Nom complet</p>
-                    <p className="font-medium">{selectedOrder.clientInfo.prenom} {selectedOrder.clientInfo.nom}</p>
+                    <p className="text-xs sm:text-sm text-gray-500">Nom complet</p>
+                    <p className="font-medium text-sm sm:text-base">{selectedOrder.clientInfo.prenom} {selectedOrder.clientInfo.nom}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Téléphone</p>
-                    <p className="font-medium">{selectedOrder.clientInfo.telephone}</p>
+                    <p className="text-xs sm:text-sm text-gray-500">Téléphone</p>
+                    <p className="font-medium text-sm sm:text-base">{selectedOrder.clientInfo.telephone}</p>
                   </div>
-                  <div className="md:col-span-2">
-                    <p className="text-sm text-gray-500">Email</p>
-                    <p className="font-medium">{selectedOrder.clientInfo.email}</p>
+                  <div className="sm:col-span-2">
+                    <p className="text-xs sm:text-sm text-gray-500">Email</p>
+                    <p className="font-medium text-sm sm:text-base break-all">{selectedOrder.clientInfo.email}</p>
                   </div>
                 </div>
               </div>
 
               {/* Détails du retrait */}
-              <div className="bg-amber-50 rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Détails du retrait</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-amber-50 rounded-lg p-3 sm:p-4">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">Détails du retrait</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <p className="text-sm text-gray-500">Date</p>
-                    <p className="font-medium">{selectedOrder.orderDetails.dateRetrait}</p>
+                    <p className="text-xs sm:text-sm text-gray-500">Date</p>
+                    <p className="font-medium text-sm sm:text-base">{selectedOrder.orderDetails.dateRetrait}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Heure</p>
-                    <p className="font-medium">{selectedOrder.orderDetails.heureRetrait}</p>
+                    <p className="text-xs sm:text-sm text-gray-500">Heure</p>
+                    <p className="font-medium text-sm sm:text-base">{selectedOrder.orderDetails.heureRetrait}</p>
                   </div>
                 </div>
               </div>
 
               {/* Articles commandés */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Articles commandés</h3>
-                <div className="space-y-3">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">Articles commandés</h3>
+                <div className="space-y-2 sm:space-y-3">
                   {selectedOrder.cartItems.map((item, index) => (
-                    <div key={index} className="flex items-center gap-4 bg-white border border-gray-200 rounded-lg p-3">
+                    <div key={index} className="flex items-center gap-2 sm:gap-4 bg-white border border-gray-200 rounded-lg p-2 sm:p-3">
                       {item.image && (
                         <Image
                           src={item.image}
                           alt={item.name}
-                          width={60}
-                          height={60}
-                          className="rounded-md object-cover"
+                          width={50}
+                          height={50}
+                          className="rounded-md object-cover flex-shrink-0 sm:w-[60px] sm:h-[60px]"
                         />
                       )}
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900">{item.name}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-gray-900 text-sm sm:text-base truncate">{item.name}</p>
                         {item.flavor && (
-                          <p className="text-xs text-gray-500">Saveur: {item.flavor}</p>
+                          <p className="text-xs text-gray-500 truncate">Saveur: {item.flavor}</p>
                         )}
                         {item.selectedFlavors && item.selectedFlavors.length > 0 && (
-                          <p className="text-xs text-gray-500">Saveurs: {item.selectedFlavors.join(', ')}</p>
+                          <p className="text-xs text-gray-500 line-clamp-2">Saveurs: {item.selectedFlavors.join(', ')}</p>
                         )}
                         {item.portions && (
                           <p className="text-xs text-gray-500">Portions: {item.portions}</p>
                         )}
                       </div>
-                      <div className="text-right">
-                        <p className="text-sm text-gray-500">Quantité: {item.quantity}</p>
-                        <p className="font-bold text-[#D9844A]">{item.price} €</p>
+                      <div className="text-right flex-shrink-0">
+                        <p className="text-xs sm:text-sm text-gray-500">Qté: {item.quantity}</p>
+                        <p className="font-bold text-[#D9844A] text-sm sm:text-base">{item.price} €</p>
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center">
-                  <p className="text-lg font-semibold">Total</p>
-                  <p className="text-2xl font-bold text-[#D9844A]">{formatPrice(selectedOrder.totalPrice)}</p>
+                <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200 flex justify-between items-center">
+                  <p className="text-base sm:text-lg font-semibold">Total</p>
+                  <p className="text-xl sm:text-2xl font-bold text-[#D9844A]">{formatPrice(selectedOrder.totalPrice)}</p>
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3 pt-4">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4">
                 <button
                   onClick={() => setIsDetailsModalOpen(false)}
-                  className="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 font-medium transition-colors"
+                  className="flex-1 px-4 py-2 sm:py-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 font-medium transition-colors text-sm sm:text-base"
                 >
                   Fermer
                 </button>
                 <button
                   onClick={() => deleteOrder(selectedOrder.id)}
-                  className="px-4 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 font-medium transition-colors"
+                  className="px-4 py-2 sm:py-3 bg-red-600 text-white rounded-md hover:bg-red-700 font-medium transition-colors text-sm sm:text-base"
                 >
                   Supprimer
                 </button>
@@ -828,6 +834,9 @@ export default function OrdersManagement() {
           </div>
         </div>
       )}
+      
+      {/* Bouton retour en haut */}
+      <ScrollToTop />
     </div>
   );
 }

@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import Image from 'next/image';
 import { onAuthStateChanged } from 'firebase/auth';
 import RichTextEditor from '@/components/RichTextEditor';
+import ScrollToTop from '@/components/ScrollToTop';
 
 // Type pour les catégories
 interface Category {
@@ -1348,21 +1349,23 @@ export default function AdminDashboard() {
     <div className={`min-h-screen bg-[#f8f5f0] ${!isAuthenticated ? 'hidden' : ''}`}>
       {/* Header du tableau de bord */}
       <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-2xl font-semibold text-gray-900">Tableau de bord</h1>
-          <div className="flex gap-3">
-            <button
-              onClick={() => router.push('/admin/orders')}
-              className="px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#a75120] font-medium transition-colors"
-            >
-              Gestion des commandes
-            </button>
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
-            >
-              Déconnexion
-            </button>
+        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+            <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Tableau de bord</h1>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+              <button
+                onClick={() => router.push('/admin/orders')}
+                className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#a75120] font-medium transition-colors text-sm sm:text-base"
+              >
+                Gestion des commandes
+              </button>
+              <button
+                onClick={handleLogout}
+                className="w-full sm:w-auto px-3 sm:px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 text-sm sm:text-base"
+              >
+                Déconnexion
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -1384,14 +1387,14 @@ export default function AdminDashboard() {
         )}
 
         {/* Section Gestion des Images Cartes Accueil */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Images des Cartes - Page d&apos;Accueil</h2>
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Images des Cartes - Page d&apos;Accueil</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {/* Carte 1 */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-[#a75120]">Carte Boutique (carteacc1.avif)</h3>
-              <div className="relative h-64 rounded-lg overflow-hidden bg-gray-100">
+            <div className="space-y-3 sm:space-y-4">
+              <h3 className="text-base sm:text-lg font-semibold text-[#a75120]">Carte Boutique (carteacc1.avif)</h3>
+              <div className="relative h-48 sm:h-64 rounded-lg overflow-hidden bg-gray-100">
                 <Image
                   src={carte1Preview}
                   alt="Carte Boutique Preview"
@@ -1404,14 +1407,14 @@ export default function AdminDashboard() {
                 type="file"
                 accept="image/*"
                 onChange={handleCarte1Change}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-[#a75120] file:text-white hover:file:bg-[#8a421a]"
+                className="block w-full text-xs sm:text-sm text-gray-500 file:mr-2 sm:file:mr-4 file:py-1.5 sm:file:py-2 file:px-3 sm:file:px-4 file:rounded file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-[#a75120] file:text-white hover:file:bg-[#8a421a]"
               />
             </div>
 
             {/* Carte 2 */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-[#a75120]">Carte Événementielle (carteacc2.avif)</h3>
-              <div className="relative h-64 rounded-lg overflow-hidden bg-gray-100">
+            <div className="space-y-3 sm:space-y-4">
+              <h3 className="text-base sm:text-lg font-semibold text-[#a75120]">Carte Événementielle (carteacc2.avif)</h3>
+              <div className="relative h-48 sm:h-64 rounded-lg overflow-hidden bg-gray-100">
                 <Image
                   src={carte2Preview}
                   alt="Carte Événementielle Preview"
@@ -1424,17 +1427,17 @@ export default function AdminDashboard() {
                 type="file"
                 accept="image/*"
                 onChange={handleCarte2Change}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-[#a75120] file:text-white hover:file:bg-[#8a421a]"
+                className="block w-full text-xs sm:text-sm text-gray-500 file:mr-2 sm:file:mr-4 file:py-1.5 sm:file:py-2 file:px-3 sm:file:px-4 file:rounded file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-[#a75120] file:text-white hover:file:bg-[#8a421a]"
               />
             </div>
           </div>
 
           {/* Bouton de sauvegarde */}
-          <div className="mt-6 text-center">
+          <div className="mt-4 sm:mt-6 text-center">
             <button
               onClick={handleUploadCartes}
               disabled={isUploadingCartes || (!carte1File && !carte2File)}
-              className={`px-6 py-3 text-white rounded-md font-semibold ${
+              className={`w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 text-white rounded-md font-semibold text-sm sm:text-base ${
                 isUploadingCartes || (!carte1File && !carte2File)
                   ? 'bg-gray-400 cursor-not-allowed'
                   : 'bg-[#a75120] hover:bg-[#8a421a]'
@@ -1446,17 +1449,17 @@ export default function AdminDashboard() {
         </div>
 
         {/* Section Image des Saveurs de Saison */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Image des Saveurs de Saison</h2>
-          <p className="text-gray-600 mb-4">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">Image des Saveurs de Saison</h2>
+          <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
             Gérez l&apos;image affichée dans la section &quot;Les racines du concept&quot; de la page des saveurs de saison.
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {/* Aperçu de l'image actuelle */}
             <div>
-              <h3 className="text-lg font-semibold text-[#a75120] mb-3">Image actuelle</h3>
-              <div className="relative h-64 rounded-lg overflow-hidden bg-gray-100">
+              <h3 className="text-base sm:text-lg font-semibold text-[#a75120] mb-2 sm:mb-3">Image actuelle</h3>
+              <div className="relative h-48 sm:h-64 rounded-lg overflow-hidden bg-gray-100">
                 <Image
                   src={seasonalImagePreview}
                   alt="Image des saveurs de saison"
@@ -1468,8 +1471,8 @@ export default function AdminDashboard() {
             
             {/* Formulaire d'upload */}
             <div>
-              <h3 className="text-lg font-semibold text-[#a75120] mb-3">Nouvelle image</h3>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+              <h3 className="text-base sm:text-lg font-semibold text-[#a75120] mb-2 sm:mb-3">Nouvelle image</h3>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 sm:p-6 text-center">
                 <input
                   type="file"
                   id="seasonalImageFile"
@@ -1482,11 +1485,11 @@ export default function AdminDashboard() {
                   className="cursor-pointer block"
                 >
                   <div className="text-gray-500 mb-2">
-                    <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                    <svg className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                       <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-xs sm:text-sm text-gray-600">
                     Cliquez pour sélectionner une image
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
@@ -1496,14 +1499,14 @@ export default function AdminDashboard() {
               </div>
               
               {seasonalImageFile && (
-                <div className="mt-4">
-                  <p className="text-sm text-gray-600 mb-2">
+                <div className="mt-3 sm:mt-4">
+                  <p className="text-xs sm:text-sm text-gray-600 mb-2">
                     Fichier sélectionné: {seasonalImageFile.name}
                   </p>
                   <button
                     onClick={uploadSeasonalImage}
                     disabled={isUploadingSeasonalImage}
-                    className="w-full bg-[#a75120] hover:bg-[#8a421a] text-white font-medium py-2 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-[#a75120] hover:bg-[#8a421a] text-white font-medium py-2 px-3 sm:px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm"
                   >
                     {isUploadingSeasonalImage ? 'Mise à jour en cours...' : 'Mettre à jour l\'image'}
                   </button>
@@ -1514,22 +1517,22 @@ export default function AdminDashboard() {
         </div>
 
         {/* Section Images des Cartes Événementielles */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Images des Cartes Événementielles</h2>
-          <p className="text-gray-600 mb-6">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">Images des Cartes Événementielles</h2>
+          <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
             Gérez les images affichées dans la section &quot;Cartes Événementielles&quot; de la page événementiel.
           </p>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
             {/* Carte Événementielle 1 */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-[#a75120]">Carte Événementielle 1</h3>
+            <div className="space-y-3 sm:space-y-4">
+              <h3 className="text-base sm:text-lg font-semibold text-[#a75120]">Carte Événementielle 1</h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-3 sm:gap-4">
                 {/* Aperçu */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Image actuelle</h4>
-                  <div className="relative h-48 rounded-lg overflow-hidden bg-gray-100">
+                  <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-2">Image actuelle</h4>
+                  <div className="relative h-40 sm:h-48 rounded-lg overflow-hidden bg-gray-100">
                     <Image
                       src={eventCard1Preview}
                       alt="Carte Événementielle 1"
@@ -1541,8 +1544,8 @@ export default function AdminDashboard() {
                 
                 {/* Upload */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Nouvelle image</h4>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                  <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-2">Nouvelle image</h4>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-3 sm:p-4 text-center">
                     <input
                       type="file"
                       id="eventCard1File"
@@ -1555,7 +1558,7 @@ export default function AdminDashboard() {
                       className="cursor-pointer block"
                     >
                       <div className="text-gray-500 mb-2">
-                        <svg className="mx-auto h-8 w-8 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                        <svg className="mx-auto h-6 w-6 sm:h-8 sm:w-8 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                           <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       </div>
@@ -1564,14 +1567,14 @@ export default function AdminDashboard() {
                   </div>
                   
                   {eventCard1File && (
-                    <div className="mt-3">
-                      <p className="text-xs text-gray-600 mb-2">
+                    <div className="mt-2 sm:mt-3">
+                      <p className="text-xs text-gray-600 mb-2 truncate">
                         Fichier: {eventCard1File.name}
                       </p>
                       <button
                         onClick={uploadEventCard1}
                         disabled={isUploadingEventCard1}
-                        className="w-full bg-[#a75120] hover:bg-[#8a421a] text-white font-medium py-2 px-3 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                        className="w-full bg-[#a75120] hover:bg-[#8a421a] text-white font-medium py-1.5 sm:py-2 px-3 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm"
                       >
                         {isUploadingEventCard1 ? 'Mise à jour...' : 'Mettre à jour'}
                       </button>
@@ -1582,14 +1585,14 @@ export default function AdminDashboard() {
             </div>
 
             {/* Carte Événementielle 2 */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-[#a75120]">Carte des Saveurs de Saison</h3>
+            <div className="space-y-3 sm:space-y-4">
+              <h3 className="text-base sm:text-lg font-semibold text-[#a75120]">Carte des Saveurs de Saison</h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-3 sm:gap-4">
                 {/* Aperçu */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Image actuelle</h4>
-                  <div className="relative h-48 rounded-lg overflow-hidden bg-gray-100">
+                  <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-2">Image actuelle</h4>
+                  <div className="relative h-40 sm:h-48 rounded-lg overflow-hidden bg-gray-100">
                     <Image
                       src={eventCard2Preview}
                       alt="Carte des Saveurs de Saison"
@@ -1601,8 +1604,8 @@ export default function AdminDashboard() {
                 
                 {/* Upload */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Nouvelle image</h4>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                  <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-2">Nouvelle image</h4>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-3 sm:p-4 text-center">
                     <input
                       type="file"
                       id="eventCard2File"
@@ -1615,7 +1618,7 @@ export default function AdminDashboard() {
                       className="cursor-pointer block"
                     >
                       <div className="text-gray-500 mb-2">
-                        <svg className="mx-auto h-8 w-8 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                        <svg className="mx-auto h-6 w-6 sm:h-8 sm:w-8 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                           <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       </div>
@@ -1624,14 +1627,14 @@ export default function AdminDashboard() {
                   </div>
                   
                   {eventCard2File && (
-                    <div className="mt-3">
-                      <p className="text-xs text-gray-600 mb-2">
+                    <div className="mt-2 sm:mt-3">
+                      <p className="text-xs text-gray-600 mb-2 truncate">
                         Fichier: {eventCard2File.name}
                       </p>
                       <button
                         onClick={uploadEventCard2}
                         disabled={isUploadingEventCard2}
-                        className="w-full bg-[#a75120] hover:bg-[#8a421a] text-white font-medium py-2 px-3 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                        className="w-full bg-[#a75120] hover:bg-[#8a421a] text-white font-medium py-1.5 sm:py-2 px-3 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm"
                       >
                         {isUploadingEventCard2 ? 'Mise à jour...' : 'Mettre à jour'}
                       </button>
@@ -1643,11 +1646,11 @@ export default function AdminDashboard() {
           </div>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Formulaire d'ajout de produit */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Ajouter un produit</h2>
+            <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">Ajouter un produit</h2>
               
               <form onSubmit={handleAddProduct} className="space-y-4">
                 <div>
@@ -3380,6 +3383,9 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
+      
+      {/* Bouton retour en haut */}
+      <ScrollToTop />
     </div>
   );
 } 
