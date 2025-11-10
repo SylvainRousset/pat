@@ -1,6 +1,13 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+// Étendre le type jsPDF pour inclure lastAutoTable
+interface jsPDFWithAutoTable extends jsPDF {
+  lastAutoTable?: {
+    finalY: number;
+  };
+}
+
 interface OrderItem {
   name: string;
   quantity: number;
@@ -31,7 +38,7 @@ interface Order {
 
 export const generateInvoice = (order: Order) => {
   // Créer un nouveau document PDF
-  const doc = new jsPDF();
+  const doc = new jsPDF() as jsPDFWithAutoTable;
 
   // Couleurs du thème
   const primaryColor: [number, number, number] = [165, 81, 32]; // #a75120
@@ -128,7 +135,7 @@ export const generateInvoice = (order: Order) => {
   });
 
   // Récupérer la position Y après le tableau
-  const finalY = (doc as any).lastAutoTable.finalY || 95;
+  const finalY = doc.lastAutoTable?.finalY || 95;
 
   // Total
   doc.setFillColor(...primaryColor);
