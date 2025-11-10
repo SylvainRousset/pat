@@ -6,6 +6,7 @@ import { auth } from '@/lib/firebase';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import Image from 'next/image';
 import ScrollToTop from '@/components/ScrollToTop';
+import { generateInvoice } from '@/lib/generateInvoice';
 
 // Type pour les commandes
 interface Order {
@@ -685,6 +686,29 @@ export default function OrdersManagement() {
                         Marquer terminée
                       </button>
                     )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        generateInvoice(order);
+                      }}
+                      className="flex-1 sm:flex-none px-3 py-1.5 bg-[#a75120] text-white text-xs sm:text-sm rounded-md hover:bg-[#8a421a] transition-colors flex items-center justify-center gap-1"
+                      title="Télécharger la facture"
+                    >
+                      <svg 
+                        className="w-3 h-3 sm:w-4 sm:h-4" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round" 
+                          strokeWidth={2} 
+                          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" 
+                        />
+                      </svg>
+                      <span className="hidden sm:inline">Facture</span>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -817,6 +841,25 @@ export default function OrdersManagement() {
 
               {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4">
+                <button
+                  onClick={() => generateInvoice(selectedOrder)}
+                  className="flex-1 px-4 py-2 sm:py-3 bg-[#a75120] text-white rounded-md hover:bg-[#8a421a] font-medium transition-colors text-sm sm:text-base flex items-center justify-center gap-2"
+                >
+                  <svg 
+                    className="w-4 h-4 sm:w-5 sm:h-5" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" 
+                    />
+                  </svg>
+                  <span>Facture PDF</span>
+                </button>
                 <button
                   onClick={() => setIsDetailsModalOpen(false)}
                   className="flex-1 px-4 py-2 sm:py-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 font-medium transition-colors text-sm sm:text-base"
